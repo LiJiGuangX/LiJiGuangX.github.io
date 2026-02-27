@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>志愿通</title>
+  <title>后浪高考通</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .service-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; padding: 0 12px 4px; }
@@ -73,15 +73,10 @@
 
   <div class="navbar">
     <div style="width:32px"></div>
-    <div class="navbar-title" id="navTitle">志愿通</div>
+    <div class="navbar-title" id="navTitle">后浪高考通</div>
     <div class="navbar-action" id="navRight">消息</div>
   </div>
 
-  <!-- 角色切换 -->
-  <div class="role-bar">
-    <div class="role-btn active-user" id="btnUser" onclick="setRole('user')">👤 用户端</div>
-    <div class="role-btn" id="btnAdvisor" onclick="setRole('advisor')">🎓 导师端</div>
-  </div>
 
   <!-- ===== 用户端内容 ===== -->
   <div class="user-section">
@@ -259,10 +254,13 @@
 <!-- TabBar -->
 <div class="tabbar">
   <a href="index.html" class="tab-item active"><span class="tab-icon">🏠</span><span class="tab-label">首页</span></a>
-  <a href="group-meeting.html" class="tab-item"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
-  <a href="instant-order.html" class="tab-item"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
-  <a href="advisor.html" class="tab-item"><span class="tab-icon">🎓</span><span class="tab-label" id="tabAdvisorLabel">导师</span></a>
-  <a href="#" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
+  <a href="group-meeting.html" class="tab-item user-tab"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
+  <a href="instant-order.html" class="tab-item user-tab"><span class="tab-icon">💬</span><span class="tab-label">问答</span></a>
+  <a href="advisor.html" class="tab-item user-tab"><span class="tab-icon">🎓</span><span class="tab-label">导师</span></a>
+  <a href="instant-order.html" class="tab-item advisor-tab"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
+  <a href="appointment.html" class="tab-item advisor-tab"><span class="tab-icon">📅</span><span class="tab-label">排期</span></a>
+  <a href="group-meeting.html" class="tab-item advisor-tab"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
+  <a href="mine.html" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
 </div>
 
 <!-- 接单成功抽屉 -->
@@ -281,30 +279,17 @@
 </div>
 
 <script>
-  // 角色管理
-  function setRole(role) {
-    localStorage.setItem('role', role);
-    applyRole(role);
-  }
-
   function applyRole(role) {
     const body = document.getElementById('mainBody');
-    const btnUser = document.getElementById('btnUser');
-    const btnAdvisor = document.getElementById('btnAdvisor');
     const navTitle = document.getElementById('navTitle');
     const navRight = document.getElementById('navRight');
-
     if (role === 'advisor') {
       body.classList.add('advisor-mode');
-      btnUser.classList.remove('active-user');
-      btnAdvisor.classList.add('active-advisor');
       navTitle.textContent = '导师工作台';
       navRight.textContent = '收益';
     } else {
       body.classList.remove('advisor-mode');
-      btnUser.classList.add('active-user');
-      btnAdvisor.classList.remove('active-advisor');
-      navTitle.textContent = '志愿通';
+      navTitle.textContent = '后浪高考通';
       navRight.textContent = '消息';
     }
   }
@@ -317,7 +302,6 @@
     o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
   });
 
-  // 初始化角色
   applyRole(localStorage.getItem('role') || 'user');
 </script>
 </body>

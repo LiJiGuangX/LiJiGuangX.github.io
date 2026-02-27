@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>答疑员 — 志愿通</title>
+  <title>答疑员 — 后浪高考通</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .advisor-list-item { background:var(--card);margin:0 12px 10px;border-radius:var(--radius);padding:14px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:all .15s;box-shadow:0 1px 4px rgba(0,0,0,.06); }
@@ -74,11 +74,6 @@
     <div style="width:32px"></div>
   </div>
 
-  <!-- 角色切换 -->
-  <div class="role-bar view-list">
-    <div class="role-btn active-user" id="btnUser" onclick="setRole('user')">👤 用户端</div>
-    <div class="role-btn" id="btnAdvisor" onclick="setRole('advisor')">🎓 导师端</div>
-  </div>
 
   <!-- ===== 用户端：答疑员列表 ===== -->
   <div class="view-list user-only">
@@ -293,10 +288,13 @@
 <!-- TabBar -->
 <div class="tabbar">
   <a href="index.html" class="tab-item"><span class="tab-icon">🏠</span><span class="tab-label">首页</span></a>
-  <a href="group-meeting.html" class="tab-item"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
-  <a href="instant-order.html" class="tab-item"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
-  <a href="advisor.html" class="tab-item active"><span class="tab-icon">🎓</span><span class="tab-label">答疑员</span></a>
-  <a href="#" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
+  <a href="group-meeting.html" class="tab-item user-tab"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
+  <a href="instant-order.html" class="tab-item user-tab"><span class="tab-icon">💬</span><span class="tab-label">问答</span></a>
+  <a href="advisor.html" class="tab-item user-tab active"><span class="tab-icon">🎓</span><span class="tab-label">导师</span></a>
+  <a href="instant-order.html" class="tab-item advisor-tab"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
+  <a href="appointment.html" class="tab-item advisor-tab"><span class="tab-icon">📅</span><span class="tab-label">排期</span></a>
+  <a href="group-meeting.html" class="tab-item advisor-tab"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
+  <a href="mine.html" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
 </div>
 
 <!-- 编辑简介抽屉（导师端） -->
@@ -348,10 +346,7 @@
     applyRole(role);
   }
   function applyRole(role) {
-    const body = document.getElementById('mainBody');
-    document.getElementById('btnUser').classList.toggle('active-user', role === 'user');
-    document.getElementById('btnAdvisor').classList.toggle('active-advisor', role === 'advisor');
-    body.classList.toggle('advisor-mode', role === 'advisor');
+    document.getElementById('mainBody').classList.toggle('advisor-mode', role === 'advisor');
     document.getElementById('navTitle').textContent = role === 'advisor' ? '我的主页' : '答疑员';
   }
 

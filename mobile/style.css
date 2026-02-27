@@ -209,6 +209,12 @@ body::before {
 .tab-icon { font-size: 22px; line-height: 1; }
 .tab-label { font-size: 10px; font-weight: 500; }
 
+/* ===== 身份标签 Tab 显示控制 ===== */
+.user-tab { display: flex; }
+.advisor-tab { display: none; }
+body.advisor-mode .user-tab { display: none; }
+body.advisor-mode .advisor-tab { display: flex; }
+
 /* ===== 滚动内容区 ===== */
 .scroll-view { overflow-y: auto; }
 

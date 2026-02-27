@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>即时抢单 — 志愿通</title>
+  <title>即时抢单 — 后浪高考通</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .order-card { background: var(--card); border-radius: var(--radius); margin: 0 12px 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
@@ -46,15 +46,10 @@
 
   <div class="navbar">
     <a href="index.html" class="navbar-back">‹</a>
-    <div class="navbar-title" id="navTitle">即时抢单</div>
+    <div class="navbar-title" id="navTitle">即时问答</div>
     <div style="width:32px"></div>
   </div>
 
-  <!-- 角色切换 -->
-  <div class="role-bar">
-    <div class="role-btn active-user" id="btnUser" onclick="setRole('user')">👤 用户端</div>
-    <div class="role-btn" id="btnAdvisor" onclick="setRole('advisor')">🎓 导师端</div>
-  </div>
 
   <!-- ===== 用户端：发布问题入口提示 ===== -->
   <div class="user-only">
@@ -121,7 +116,7 @@
       </div>
       <div class="order-card-footer">
         <div class="order-price">¥35<span>/次</span></div>
-        <button class="btn btn-primary btn-sm" onclick="grabOrder(this)">立即抢单</button>
+        <button class="btn btn-primary btn-sm advisor-only" onclick="grabOrder(this)">立即抢单</button>
       </div>
     </div>
 
@@ -137,7 +132,7 @@
       </div>
       <div class="order-card-footer">
         <div class="order-price">¥50<span>/次</span></div>
-        <button class="btn btn-primary btn-sm" onclick="grabOrder(this)">立即抢单</button>
+        <button class="btn btn-primary btn-sm advisor-only" onclick="grabOrder(this)">立即抢单</button>
       </div>
     </div>
 
@@ -153,7 +148,7 @@
       </div>
       <div class="order-card-footer">
         <div class="order-price">¥28<span>/次</span></div>
-        <button class="btn btn-primary btn-sm" onclick="grabOrder(this)">立即抢单</button>
+        <button class="btn btn-primary btn-sm advisor-only" onclick="grabOrder(this)">立即抢单</button>
       </div>
     </div>
 
@@ -169,7 +164,7 @@
       </div>
       <div class="order-card-footer">
         <div class="order-price">¥45<span>/次</span></div>
-        <button class="btn btn-primary btn-sm" onclick="grabOrder(this)">立即抢单</button>
+        <button class="btn btn-primary btn-sm advisor-only" onclick="grabOrder(this)">立即抢单</button>
       </div>
     </div>
   </div>
@@ -183,10 +178,13 @@
 <!-- TabBar -->
 <div class="tabbar">
   <a href="index.html" class="tab-item"><span class="tab-icon">🏠</span><span class="tab-label">首页</span></a>
-  <a href="group-meeting.html" class="tab-item"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
-  <a href="instant-order.html" class="tab-item active"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
-  <a href="advisor.html" class="tab-item"><span class="tab-icon">🎓</span><span class="tab-label">导师</span></a>
-  <a href="#" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
+  <a href="group-meeting.html" class="tab-item user-tab"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
+  <a href="instant-order.html" class="tab-item user-tab active"><span class="tab-icon">💬</span><span class="tab-label">问答</span></a>
+  <a href="advisor.html" class="tab-item user-tab"><span class="tab-icon">🎓</span><span class="tab-label">导师</span></a>
+  <a href="instant-order.html" class="tab-item advisor-tab active"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
+  <a href="appointment.html" class="tab-item advisor-tab"><span class="tab-icon">📅</span><span class="tab-label">排期</span></a>
+  <a href="group-meeting.html" class="tab-item advisor-tab"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
+  <a href="mine.html" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
 </div>
 
 <!-- 用户：发布问题抽屉 -->
@@ -316,11 +314,8 @@
     applyRole(role);
   }
   function applyRole(role) {
-    const body = document.getElementById('mainBody');
-    document.getElementById('btnUser').classList.toggle('active-user', role === 'user');
-    document.getElementById('btnAdvisor').classList.toggle('active-advisor', role === 'advisor');
-    body.classList.toggle('advisor-mode', role === 'advisor');
-    document.getElementById('navTitle').textContent = role === 'advisor' ? '抢单池' : '即时抢单';
+    document.getElementById('mainBody').classList.toggle('advisor-mode', role === 'advisor');
+    document.getElementById('navTitle').textContent = role === 'advisor' ? '抢单池' : '即时问答';
   }
   function filterChip(el, type) {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
