@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>即时抢单 — 志愿通</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .order-card {
+      background: var(--card); border-radius: var(--radius);
+      margin: 0 12px 12px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    .order-card-body { padding: 14px 16px; }
+    .order-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; line-height: 1.5; }
+    .order-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .order-meta span { font-size: 12px; color: var(--text-muted); }
+    .order-timer { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; }
+    .order-timer.urgent { color: var(--danger); }
+    .order-timer.normal { color: var(--warning); }
+    .order-timer.plenty { color: var(--success); }
+    .order-card-footer {
+      padding: 10px 16px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: #fafafa;
+    }
+    .order-price { font-size: 18px; font-weight: 800; color: var(--accent); }
+    .order-price span { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+
+    .filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 10px 12px; scrollbar-width: none; }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+
+    /* 发布按钮 FAB */
+    .fab {
+      position: fixed; bottom: calc(var(--tabbar-h) + 16px); right: 16px;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; box-shadow: 0 4px 16px rgba(255,107,53,.4);
+      cursor: pointer; border: none; z-index: 50;
+      transition: transform .15s;
+    }
+    .fab:active { transform: scale(.92); }
+
+    .tag-selector { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-opt {
+      padding: 5px 12px; border-radius: 20px; font-size: 12px;
+      border: 1.5px solid var(--border); cursor: pointer; transition: all .15s;
+      color: var(--text-muted); background: #fff;
+    }
+    .tag-opt.selected { border-color: var(--primary); color: var(--primary); background: #eef1fe; }
+
+    .svc-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .svc-btn {
+      padding: 6px 14px; border-radius: 8px; font-size: 12px;
+      border: 1.5px solid var(--border); cursor: pointer; transition: all .15s;
+      color: var(--text-muted); background: #fff;
+    }
+    .svc-btn.selected { border-color: var(--primary); color: var(--primary); background: #eef1fe; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="statusbar">
+    <span class="statusbar-time">9:41</span>
+    <div class="statusbar-icons"><span>📶</span><span>🔋</span></div>
+  </div>
+
+  <div class="navbar">
+    <a href="index.html" class="navbar-back">‹</a>
+    <div class="navbar-title">即时抢单</div>
+    <div style="width:32px"></div>
+  </div>
+
+  <!-- 说明 -->
+  <div class="alert alert-warning" style="margin: 10px 12px 0; font-size:12px">
+    <span>⚡</span><span>发布问题后，符合条件的答疑员将在 <strong>30分钟内</strong> 响应，超时自动取消并退款。</span>
+  </div>
+
+  <!-- 筛选 -->
+  <div class="filter-scroll">
+    <div class="chip active" onclick="filterChip(this,'all')">全部</div>
+    <div class="chip" onclick="filterChip(this,'school')">就读体验</div>
+    <div class="chip" onclick="filterChip(this,'plan')">学习规划</div>
+    <div class="chip" onclick="filterChip(this,'urgent')">紧急</div>
+  </div>
+
+  <!-- 抢单列表 -->
+  <div id="orderList">
+
+    <div class="order-card" data-type="school" data-urgent="true">
+      <div class="order-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="tag tag-blue">就读体验</span>
+            <span class="tag tag-orange">紧急</span>
+          </div>
+          <div class="order-timer urgent"><span>🔴</span><strong id="t1">08:32</strong></div>
+        </div>
+        <div class="order-title">想了解北京大学计算机专业的宿舍环境、食堂和学风氛围，以及转专业难度</div>
+        <div class="order-meta">
+          <span>🏫 北京大学</span><span>💻 计算机</span><span>💬 图文</span><span>📅 刚刚</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted)">已有 2 人抢单</div>
+      </div>
+      <div class="order-card-footer">
+        <div class="order-price">¥35<span>/次</span></div>
+        <button class="btn btn-primary btn-sm" onclick="grabOrder(this)">立即抢单</button>
+      </div>
+    </div>
+
+    <div class="order-card" data-type="plan">
+      <div class="order-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="tag tag-green">学习规划</span>
+          </div>
+          <div class="order-timer normal"><span>🟡</span><strong id="t2">18:45</strong></div>
+        </div>
+        <div class="order-title">高二学生，数学和物理较弱，想要一份针对性的每周学习计划，目标985</div>
+        <div class="order-meta">
+          <span>📚 学习规划</span><span>🎙️ 语音</span><span>📅 5分钟前</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted)">已有 1 人抢单</div>
+      </div>
+      <div class="order-card-footer">
+        <div class="order-price">¥50<span>/次</span></div>
+        <button class="btn btn-primary btn-sm" onclick="grabOrder(this)">立即抢单</button>
+      </div>
+    </div>
+
+    <div class="order-card" data-type="school">
+      <div class="order-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="tag tag-blue">就读体验</span>
+          </div>
+          <div class="order-timer plenty"><span>🟢</span><strong id="t3">24:10</strong></div>
+        </div>
+        <div class="order-title">复旦大学金融学和经济学哪个更好就业？日常课程压力大吗？</div>
+        <div class="order-meta">
+          <span>🏫 复旦大学</span><span>💰 金融/经济</span><span>💬 图文</span><span>📅 12分钟前</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted)">暂无人抢单</div>
+      </div>
+      <div class="order-card-footer">
+        <div class="order-price">¥28<span>/次</span></div>
+        <button class="btn btn-primary btn-sm" onclick="grabOrder(this)">立即抢单</button>
+      </div>
+    </div>
+
+    <div class="order-card" data-type="plan">
+      <div class="order-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="tag tag-green">学习规划</span>
+            <span class="tag tag-orange">高三冲刺</span>
+          </div>
+          <div class="order-timer normal"><span>🟡</span><strong id="t4">15:22</strong></div>
+        </div>
+        <div class="order-title">高三冲刺，距高考还有90天，如何合理分配各科复习时间？</div>
+        <div class="order-meta">
+          <span>📚 学习规划</span><span>🎙️ 语音</span><span>📅 18分钟前</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted)">已有 3 人抢单</div>
+      </div>
+      <div class="order-card-footer">
+        <div class="order-price">¥45<span>/次</span></div>
+        <button class="btn btn-primary btn-sm" onclick="grabOrder(this)">立即抢单</button>
+      </div>
+    </div>
+
+    <div class="order-card" data-type="school">
+      <div class="order-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="tag tag-blue">就读体验</span>
+          </div>
+          <div class="order-timer plenty"><span>🟢</span><strong id="t5">27:05</strong></div>
+        </div>
+        <div class="order-title">浙江大学医学院的学习强度怎么样？宿舍条件和周边生活配套如何？</div>
+        <div class="order-meta">
+          <span>🏫 浙江大学</span><span>🏥 医学院</span><span>💬 图文</span><span>📅 22分钟前</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted)">已有 1 人抢单</div>
+      </div>
+      <div class="order-card-footer">
+        <div class="order-price">¥32<span>/次</span></div>
+        <button class="btn btn-primary btn-sm" onclick="grabOrder(this)">立即抢单</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FAB 发布按钮 -->
+<button class="fab" onclick="openPublish()">+</button>
+
+<!-- TabBar -->
+<div class="tabbar">
+  <a href="index.html" class="tab-item"><span class="tab-icon">🏠</span><span class="tab-label">首页</span></a>
+  <a href="group-meeting.html" class="tab-item"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
+  <a href="instant-order.html" class="tab-item active"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
+  <a href="advisor.html" class="tab-item"><span class="tab-icon">🎓</span><span class="tab-label">答疑员</span></a>
+  <a href="#" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
+</div>
+
+<!-- 发布问题抽屉 -->
+<div class="drawer-overlay" id="publishDrawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header">发布我的问题</div>
+    <div class="drawer-body">
+      <div class="form-group">
+        <label class="form-label">问题描述 <span style="color:var(--danger)">*</span></label>
+        <textarea class="form-control" id="questionText" placeholder="详细描述你的问题，如：想了解XX大学XX专业的宿舍环境..." rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">相关标签</label>
+        <div class="tag-selector">
+          <div class="tag-opt" onclick="toggleTag(this)">北京大学</div>
+          <div class="tag-opt" onclick="toggleTag(this)">清华大学</div>
+          <div class="tag-opt" onclick="toggleTag(this)">复旦大学</div>
+          <div class="tag-opt" onclick="toggleTag(this)">浙江大学</div>
+          <div class="tag-opt" onclick="toggleTag(this)">计算机</div>
+          <div class="tag-opt" onclick="toggleTag(this)">金融</div>
+          <div class="tag-opt" onclick="toggleTag(this)">医学</div>
+          <div class="tag-opt" onclick="toggleTag(this)">学习规划</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">服务方式偏好</label>
+        <div class="svc-row">
+          <div class="svc-btn selected" onclick="selectSvc(this)">💬 图文</div>
+          <div class="svc-btn" onclick="selectSvc(this)">🎙️ 语音</div>
+          <div class="svc-btn" onclick="selectSvc(this)">📞 电话</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">预算（元）</label>
+        <input type="number" class="form-control" placeholder="如：30" min="1">
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeDrawer('publishDrawer')">取消</button>
+      <button class="btn btn-accent" style="flex:2" onclick="confirmPublish()">发布到抢单池</button>
+    </div>
+  </div>
+</div>
+
+<!-- 发布成功抽屉 -->
+<div class="drawer-overlay" id="publishSuccessDrawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-body">
+      <div class="success-page" style="padding:32px 16px">
+        <div class="success-icon">⚡</div>
+        <div class="success-title">问题已发布！</div>
+        <div class="success-desc">你的问题已进入抢单池，符合条件的答疑员将在 <strong>30分钟内</strong> 响应。超时未响应将自动取消并全额退款。</div>
+        <button class="btn btn-primary btn-block" onclick="closeDrawer('publishSuccessDrawer')">知道了</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 抢单成功抽屉 -->
+<div class="drawer-overlay" id="grabSuccessDrawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-body">
+      <div class="success-page" style="padding:32px 16px">
+        <div class="success-icon">🎯</div>
+        <div class="success-title">抢单成功！</div>
+        <div class="success-desc">请在 <strong>30分钟内</strong> 联系用户并提供回答。服务质量将影响你的抢单权重排名。</div>
+        <button class="btn btn-accent btn-block" onclick="closeDrawer('grabSuccessDrawer')">立即联系用户</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function filterChip(el, type) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.order-card').forEach(card => {
+      const show = type === 'all'
+        || card.dataset.type === type
+        || (type === 'urgent' && card.dataset.urgent === 'true');
+      card.style.display = show ? '' : 'none';
+    });
+  }
+  function toggleTag(el) { el.classList.toggle('selected'); }
+  function selectSvc(el) {
+    document.querySelectorAll('.svc-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function openPublish() { document.getElementById('publishDrawer').classList.add('active'); }
+  function confirmPublish() {
+    const q = document.getElementById('questionText').value.trim();
+    if (!q) { alert('请填写问题描述'); return; }
+    closeDrawer('publishDrawer');
+    document.getElementById('publishSuccessDrawer').classList.add('active');
+  }
+  function grabOrder(btn) {
+    document.getElementById('grabSuccessDrawer').classList.add('active');
+  }
+  function closeDrawer(id) { document.getElementById(id).classList.remove('active'); }
+  document.querySelectorAll('.drawer-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
+  });
+
+  // 倒计时
+  const timerIds = ['t1','t2','t3','t4','t5'];
+  setInterval(() => {
+    timerIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const parts = el.textContent.split(':');
+      let m = parseInt(parts[0]), s = parseInt(parts[1]);
+      if (s > 0) s--; else if (m > 0) { m--; s = 59; }
+      el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    });
+  }, 1000);
+</script>
+</body>
+</html>

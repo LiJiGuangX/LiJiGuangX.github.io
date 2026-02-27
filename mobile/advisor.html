@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>答疑员 — 志愿通</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* 答疑员列表 */
+    .advisor-list-item {
+      background: var(--card); margin: 0 12px 10px;
+      border-radius: var(--radius); padding: 14px 16px;
+      display: flex; gap: 12px; align-items: flex-start;
+      cursor: pointer; transition: all .15s;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    .advisor-list-item:active { transform: scale(.98); }
+    .advisor-list-item.selected { border: 2px solid var(--primary); background: #eef1fe; }
+    .ali-info { flex: 1; min-width: 0; }
+    .ali-name { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+    .ali-school { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .ali-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+    .ali-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-muted); }
+    .ali-price { font-size: 14px; font-weight: 800; color: var(--accent); }
+    .ali-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+
+    /* 详情页 */
+    .detail-header {
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      padding: 20px 16px 24px; color: #fff;
+    }
+    .detail-header-inner { display: flex; gap: 14px; align-items: flex-start; }
+    .detail-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .detail-school { font-size: 13px; opacity: .88; margin-bottom: 10px; }
+    .detail-stats { display: flex; gap: 20px; }
+    .detail-stat .num { font-size: 18px; font-weight: 800; }
+    .detail-stat .lbl { font-size: 11px; opacity: .8; }
+
+    /* 服务项 */
+    .svc-item { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .svc-item:last-child { border-bottom: none; }
+    .svc-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .svc-item-title { font-size: 14px; font-weight: 700; }
+    .svc-item-price { font-size: 16px; font-weight: 800; color: var(--accent); }
+    .svc-item-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+
+    /* 评价 */
+    .review-item { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .review-item:last-child { border-bottom: none; }
+    .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .reviewer { display: flex; align-items: center; gap: 8px; }
+    .reviewer-name { font-size: 13px; font-weight: 600; }
+    .review-date { font-size: 11px; color: var(--text-muted); }
+    .review-text { font-size: 13px; color: #374151; line-height: 1.6; }
+    .review-svc { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+    /* 认证徽章 */
+    .badge-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .badge-item:last-child { border-bottom: none; }
+    .badge-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .badge-info .badge-name { font-size: 13px; font-weight: 600; }
+    .badge-info .badge-desc { font-size: 11px; color: var(--text-muted); }
+
+    /* 底部操作栏 */
+    .action-bar {
+      position: sticky; bottom: calc(var(--tabbar-h)); left: 0; right: 0;
+      background: #fff; border-top: 1px solid var(--border);
+      padding: 10px 16px; display: flex; gap: 10px;
+    }
+
+    /* 视图切换 */
+    .view-list { display: block; }
+    .view-detail { display: none; }
+    .showing-detail .view-list { display: none; }
+    .showing-detail .view-detail { display: block; }
+  </style>
+</head>
+<body>
+<div class="page" id="mainPage">
+
+  <div class="statusbar">
+    <span class="statusbar-time">9:41</span>
+    <div class="statusbar-icons"><span>📶</span><span>🔋</span></div>
+  </div>
+
+  <!-- 列表视图导航 -->
+  <div class="navbar view-list">
+    <a href="index.html" class="navbar-back">‹</a>
+    <div class="navbar-title">答疑员</div>
+    <div style="width:32px"></div>
+  </div>
+
+  <!-- 详情视图导航 -->
+  <div class="navbar view-detail">
+    <button class="navbar-back" onclick="showList()">‹</button>
+    <div class="navbar-title" id="detailNavTitle">李同学</div>
+    <div style="width:32px"></div>
+  </div>
+
+  <!-- ===== 列表视图 ===== -->
+  <div class="view-list">
+    <!-- 搜索 -->
+    <div class="search-bar" style="margin: 10px 12px;">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="搜索学校/专业...">
+    </div>
+
+    <!-- 筛选 -->
+    <div class="filter-scroll" style="padding: 6px 12px 10px;">
+      <div class="chip active" onclick="filterChip(this)">全部</div>
+      <div class="chip" onclick="filterChip(this)">就读体验</div>
+      <div class="chip" onclick="filterChip(this)">学习规划</div>
+      <div class="chip" onclick="filterChip(this)">北京</div>
+      <div class="chip" onclick="filterChip(this)">上海</div>
+    </div>
+
+    <!-- 答疑员列表 -->
+    <div class="advisor-list-item" onclick="showDetail(0)">
+      <div class="avatar avatar-md">李</div>
+      <div class="ali-info">
+        <div class="ali-name">李同学</div>
+        <div class="ali-school">北京大学 · 计算机科学与技术 · 大四</div>
+        <div class="ali-tags">
+          <span class="tag tag-blue">计算机</span>
+          <span class="tag tag-green">学习规划</span>
+        </div>
+        <div class="ali-meta">
+          <span>⭐ 4.9</span><span>128次</span>
+        </div>
+      </div>
+      <div class="ali-right">
+        <div class="ali-price">¥39起</div>
+        <span class="tag tag-green" style="font-size:10px">可预约</span>
+      </div>
+    </div>
+
+    <div class="advisor-list-item" onclick="showDetail(1)">
+      <div class="avatar avatar-md" style="background:linear-gradient(135deg,#7c3aed,#FF6B35)">王</div>
+      <div class="ali-info">
+        <div class="ali-name">王同学</div>
+        <div class="ali-school">复旦大学 · 金融学 · 研究生</div>
+        <div class="ali-tags">
+          <span class="tag tag-blue">金融</span>
+          <span class="tag tag-orange">就读体验</span>
+        </div>
+        <div class="ali-meta">
+          <span>⭐ 4.8</span><span>96次</span>
+        </div>
+      </div>
+      <div class="ali-right">
+        <div class="ali-price">¥49起</div>
+        <span class="tag tag-green" style="font-size:10px">可预约</span>
+      </div>
+    </div>
+
+    <div class="advisor-list-item" onclick="showDetail(2)">
+      <div class="avatar avatar-md" style="background:linear-gradient(135deg,#10b981,#4F6EF7)">张</div>
+      <div class="ali-info">
+        <div class="ali-name">张同学</div>
+        <div class="ali-school">浙江大学 · 医学院 · 大三</div>
+        <div class="ali-tags">
+          <span class="tag tag-blue">医学</span>
+          <span class="tag tag-green">学习规划</span>
+        </div>
+        <div class="ali-meta">
+          <span>⭐ 5.0</span><span>74次</span>
+        </div>
+      </div>
+      <div class="ali-right">
+        <div class="ali-price">¥35起</div>
+        <span class="tag tag-green" style="font-size:10px">可预约</span>
+      </div>
+    </div>
+
+    <div class="advisor-list-item" onclick="showDetail(3)">
+      <div class="avatar avatar-md" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">陈</div>
+      <div class="ali-info">
+        <div class="ali-name">陈同学</div>
+        <div class="ali-school">清华大学 · 电子工程 · 大四</div>
+        <div class="ali-tags">
+          <span class="tag tag-blue">电子工程</span>
+        </div>
+        <div class="ali-meta">
+          <span>⭐ 4.7</span><span>55次</span>
+        </div>
+      </div>
+      <div class="ali-right">
+        <div class="ali-price">¥45起</div>
+        <span class="tag tag-gray" style="font-size:10px">今日约满</span>
+      </div>
+    </div>
+
+    <div class="advisor-list-item" onclick="showDetail(4)">
+      <div class="avatar avatar-md" style="background:linear-gradient(135deg,#06b6d4,#7c3aed)">赵</div>
+      <div class="ali-info">
+        <div class="ali-name">赵同学</div>
+        <div class="ali-school">南京大学 · 物理学 · 研究生</div>
+        <div class="ali-tags">
+          <span class="tag tag-blue">物理</span>
+          <span class="tag tag-green">学习规划</span>
+        </div>
+        <div class="ali-meta">
+          <span>⭐ 4.9</span><span>83次</span>
+        </div>
+      </div>
+      <div class="ali-right">
+        <div class="ali-price">¥42起</div>
+        <span class="tag tag-green" style="font-size:10px">可预约</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 详情视图 ===== -->
+  <div class="view-detail">
+    <!-- 头部 -->
+    <div class="detail-header">
+      <div class="detail-header-inner">
+        <div class="avatar avatar-lg" id="detailAvatar">李</div>
+        <div style="flex:1">
+          <div class="detail-name" id="detailName">李同学</div>
+          <div class="detail-school" id="detailSchool">北京大学 · 计算机科学与技术 · 大四 · 实名认证 ✓</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="detailTags">
+            <span style="background:rgba(255,255,255,.2);color:#fff;padding:2px 10px;border-radius:20px;font-size:12px">计算机</span>
+            <span style="background:rgba(255,255,255,.2);color:#fff;padding:2px 10px;border-radius:20px;font-size:12px">学习规划</span>
+          </div>
+          <div class="detail-stats">
+            <div class="detail-stat"><div class="num">4.9</div><div class="lbl">评分</div></div>
+            <div class="detail-stat"><div class="num" id="detailOrders">128</div><div class="lbl">接单</div></div>
+            <div class="detail-stat"><div class="num">98%</div><div class="lbl">好评率</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 简介 -->
+    <div class="card" style="margin: 12px 12px 0">
+      <div class="card-header" style="font-size:14px">个人简介</div>
+      <div class="card-body">
+        <p style="font-size:13px;line-height:1.8;color:#374151" id="detailBio">
+          北京大学计算机科学与技术专业大四学生，GPA 3.8/4.0。熟悉北大校园生活、计算机专业课程体系及学习节奏。擅长帮助高中生制定个性化学习规划，已累计服务 128 位家长/学生，好评率 98%。
+        </p>
+      </div>
+    </div>
+
+    <div class="section-gap" style="margin-top:12px"></div>
+
+    <!-- 服务项目 -->
+    <div style="padding: 12px 16px 8px; font-size:14px; font-weight:700; background:var(--bg)">服务项目</div>
+    <div style="background:var(--card);margin:0 12px;border-radius:var(--radius);overflow:hidden">
+      <div class="svc-item">
+        <div class="svc-item-header">
+          <div><span class="tag tag-blue" style="margin-right:6px">拼团</span><span class="svc-item-title">就读体验分享</span></div>
+          <div class="svc-item-price">¥19<span style="font-size:11px;font-weight:400;color:var(--text-muted)">/人</span></div>
+        </div>
+        <div class="svc-item-meta"><span>⏱ 45分钟</span><span>👥 最低5人成团</span><span>📅 3月15日</span></div>
+        <div class="progress-bar" style="margin-bottom:8px"><div class="progress-fill" style="width:50%"></div></div>
+        <a href="group-meeting.html" class="btn btn-primary btn-sm">参团 →</a>
+      </div>
+      <div class="svc-item">
+        <div class="svc-item-header">
+          <div><span class="tag tag-green" style="margin-right:6px">预约</span><span class="svc-item-title">图文咨询</span></div>
+          <div class="svc-item-price">¥39<span style="font-size:11px;font-weight:400;color:var(--text-muted)">/30分钟</span></div>
+        </div>
+        <div class="svc-item-meta"><span>💬 图文回复</span><span>⏰ 24小时内</span><span>🔒 仅付费可见</span></div>
+        <a href="appointment.html" class="btn btn-primary btn-sm">立即预约 →</a>
+      </div>
+      <div class="svc-item">
+        <div class="svc-item-header">
+          <div><span class="tag tag-green" style="margin-right:6px">预约</span><span class="svc-item-title">语音咨询</span></div>
+          <div class="svc-item-price">¥59<span style="font-size:11px;font-weight:400;color:var(--text-muted)">/30分钟</span></div>
+        </div>
+        <div class="svc-item-meta"><span>🎙️ 实时语音</span><span>📋 可输出规划表</span></div>
+        <a href="appointment.html" class="btn btn-primary btn-sm">立即预约 →</a>
+      </div>
+    </div>
+
+    <div class="section-gap" style="margin-top:12px"></div>
+
+    <!-- 认证 -->
+    <div style="padding: 12px 16px 8px; font-size:14px; font-weight:700; background:var(--bg)">认证信息</div>
+    <div style="background:var(--card);margin:0 12px;border-radius:var(--radius);padding:0 16px">
+      <div class="badge-item"><div class="badge-icon" style="background:#ecfdf5">✅</div><div class="badge-info"><div class="badge-name">实名认证</div><div class="badge-desc">身份证已验证</div></div></div>
+      <div class="badge-item"><div class="badge-icon" style="background:#eef1fe">🎓</div><div class="badge-info"><div class="badge-name">学生证认证</div><div class="badge-desc">北京大学在读</div></div></div>
+      <div class="badge-item"><div class="badge-icon" style="background:#fff0eb">🏆</div><div class="badge-info"><div class="badge-name">优质答疑员</div><div class="badge-desc">好评率 98%</div></div></div>
+      <div class="badge-item"><div class="badge-icon" style="background:#fffbeb">📋</div><div class="badge-info"><div class="badge-name">平台培训认证</div><div class="badge-desc">已完成服务规范培训</div></div></div>
+    </div>
+
+    <div class="section-gap" style="margin-top:12px"></div>
+
+    <!-- 评价 -->
+    <div style="padding: 12px 16px 8px; font-size:14px; font-weight:700; background:var(--bg); display:flex;justify-content:space-between;align-items:center">
+      <span>用户评价</span><span style="font-size:12px;color:var(--text-muted)">⭐ 4.9 · 128条</span>
+    </div>
+    <div style="background:var(--card);margin:0 12px;border-radius:var(--radius)">
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer">
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">家</div>
+            <div><div class="reviewer-name">家长 王**</div><div class="stars" style="font-size:11px">★★★★★</div></div>
+          </div>
+          <div class="review-date">03-08</div>
+        </div>
+        <div class="review-text">非常专业！详细介绍了北大计算机的课程安排，回答很真实，让我们对这个专业有了清晰的认识。</div>
+        <div class="review-svc">语音咨询 · 30分钟</div>
+      </div>
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer">
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#10b981,#06b6d4)">学</div>
+            <div><div class="reviewer-name">学生 李**</div><div class="stars" style="font-size:11px">★★★★★</div></div>
+          </div>
+          <div class="review-date">03-05</div>
+        </div>
+        <div class="review-text">学习规划做得很细致，给了一份很实用的每周计划表，执行了两周效率提升了很多！</div>
+        <div class="review-svc">图文咨询 · 学习规划</div>
+      </div>
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer">
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7c3aed,#4F6EF7)">家</div>
+            <div><div class="reviewer-name">家长 张**</div><div class="stars" style="font-size:11px">★★★★☆</div></div>
+          </div>
+          <div class="review-date">02-28</div>
+        </div>
+        <div class="review-text">拼团会议很值，19块钱了解了很多真实情况，比网上查到的信息靠谱多了。</div>
+        <div class="review-svc">拼团会议 · 45分钟</div>
+      </div>
+    </div>
+
+    <div style="height:80px"></div>
+
+    <!-- 底部操作栏 -->
+    <div class="action-bar">
+      <a href="instant-order.html" class="btn btn-outline" style="flex:1">⚡ 发起抢单</a>
+      <a href="appointment.html" class="btn btn-accent" style="flex:2">📅 立即预约</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- TabBar -->
+<div class="tabbar">
+  <a href="index.html" class="tab-item"><span class="tab-icon">🏠</span><span class="tab-label">首页</span></a>
+  <a href="group-meeting.html" class="tab-item"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
+  <a href="instant-order.html" class="tab-item"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
+  <a href="advisor.html" class="tab-item active"><span class="tab-icon">🎓</span><span class="tab-label">答疑员</span></a>
+  <a href="#" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
+</div>
+
+<script>
+  const advisors = [
+    { name:'李同学', school:'北京大学 · 计算机科学与技术 · 大四 · 实名认证 ✓', orders:128, avatar:'李', bio:'北京大学计算机科学与技术专业大四学生，GPA 3.8/4.0。熟悉北大校园生活、计算机专业课程体系及学习节奏。擅长帮助高中生制定个性化学习规划，已累计服务 128 位家长/学生，好评率 98%。' },
+    { name:'王同学', school:'复旦大学 · 金融学 · 研究生 · 实名认证 ✓', orders:96, avatar:'王', bio:'复旦大学金融学研究生，本科就读于复旦经济学院。熟悉复旦校园环境、金融专业课程及就业方向，可分享真实的研究生备考经历和校园生活体验。' },
+    { name:'张同学', school:'浙江大学 · 医学院 · 大三 · 实名认证 ✓', orders:74, avatar:'张', bio:'浙江大学医学院大三学生，了解医学专业的学习强度和课程安排。可分享宿舍条件、食堂、周边配套等真实生活信息，以及医学生的日常学习节奏和心态管理经验。' },
+    { name:'陈同学', school:'清华大学 · 电子工程 · 大四 · 实名认证 ✓', orders:55, avatar:'陈', bio:'清华大学电子工程专业大四学生，熟悉清华校园生活和电子工程专业课程体系，了解保研流程和科研经历，可提供真实的就读体验分享。' },
+    { name:'赵同学', school:'南京大学 · 物理学 · 研究生 · 实名认证 ✓', orders:83, avatar:'赵', bio:'南京大学物理学研究生，本科期间成绩优异，熟悉南大校园环境和物理专业学习节奏。擅长帮助高中生制定理科学习规划，尤其是物理和数学提升策略。' },
+  ];
+
+  function showDetail(idx) {
+    const a = advisors[idx];
+    document.getElementById('detailNavTitle').textContent = a.name;
+    document.getElementById('detailAvatar').textContent = a.avatar;
+    document.getElementById('detailName').textContent = a.name;
+    document.getElementById('detailSchool').textContent = a.school;
+    document.getElementById('detailOrders').textContent = a.orders;
+    document.getElementById('detailBio').textContent = a.bio;
+    document.getElementById('mainPage').classList.add('showing-detail');
+    window.scrollTo(0, 0);
+  }
+
+  function showList() {
+    document.getElementById('mainPage').classList.remove('showing-detail');
+    window.scrollTo(0, 0);
+  }
+
+  function filterChip(el) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>
