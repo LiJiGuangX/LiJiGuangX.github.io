@@ -6,41 +6,35 @@
   <title>拼团会议 — 志愿通</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .meeting-card {
-      background: var(--card); border-radius: var(--radius);
-      margin: 0 12px 12px; overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,.06);
-    }
+    .meeting-card { background: var(--card); border-radius: var(--radius); margin: 0 12px 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
     .meeting-card-body { padding: 14px 16px; }
     .meeting-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
     .meeting-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
     .meeting-meta span { font-size: 12px; color: var(--text-muted); }
     .meeting-progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
     .meeting-progress-label .cur { color: var(--primary); font-weight: 700; }
-    .meeting-card-footer {
-      padding: 10px 16px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      background: #fafafa;
-    }
+    .meeting-card-footer { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: #fafafa; }
     .meeting-price { font-size: 20px; font-weight: 800; color: var(--accent); }
     .meeting-price span { font-size: 12px; font-weight: 400; color: var(--text-muted); }
-
     .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 3px; }
     .status-dot.open { background: var(--success); }
     .status-dot.full { background: var(--warning); }
     .status-dot.ended { background: #9ca3af; }
-
     .filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 10px 12px; scrollbar-width: none; }
     .filter-scroll::-webkit-scrollbar { display: none; }
-
-    .rules-card { background: #eef1fe; border-radius: var(--radius); margin: 0 12px 12px; padding: 14px 16px; }
-    .rules-card h4 { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
-    .rules-list { display: flex; flex-direction: column; gap: 6px; }
-    .rules-list li { font-size: 12px; color: #374151; display: flex; gap: 6px; }
-    .rules-list li::before { content: '•'; color: var(--primary); font-weight: 700; flex-shrink: 0; }
+    /* 导师端 */
+    .user-only { display: block; }
+    .advisor-only { display: none; }
+    body.advisor-mode .user-only { display: none; }
+    body.advisor-mode .advisor-only { display: block; }
+    /* 导师端我的拼团卡片 */
+    .my-meeting-card { background: var(--card); border-radius: var(--radius); margin: 0 12px 10px; padding: 14px 16px; border-left: 4px solid #7c3aed; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .my-meeting-card .mm-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .my-meeting-card .mm-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+    .my-meeting-card .mm-actions { display: flex; gap: 8px; }
   </style>
 </head>
-<body>
+<body id="mainBody">
 <div class="page">
 
   <div class="statusbar">
@@ -50,8 +44,14 @@
 
   <div class="navbar">
     <a href="index.html" class="navbar-back">‹</a>
-    <div class="navbar-title">拼团会议</div>
-    <div class="navbar-action" onclick="openCreate()">发起</div>
+    <div class="navbar-title" id="navTitle">拼团会议</div>
+    <div class="navbar-action" id="navRight" onclick="openCreate()">发起</div>
+  </div>
+
+  <!-- 角色切换 -->
+  <div class="role-bar">
+    <div class="role-btn active-user" id="btnUser" onclick="setRole('user')">👤 用户端</div>
+    <div class="role-btn" id="btnAdvisor" onclick="setRole('advisor')">🎓 导师端</div>
   </div>
 
   <!-- 筛选 -->
@@ -60,22 +60,40 @@
     <div class="chip" onclick="filterChip(this)">就读体验</div>
     <div class="chip" onclick="filterChip(this)">学习规划</div>
     <div class="chip" onclick="filterChip(this)">招募中</div>
-    <div class="chip" onclick="filterChip(this)">即将开始</div>
   </div>
 
-  <!-- 规则说明 -->
-  <div class="rules-card">
-    <h4>📋 拼团规则</h4>
-    <ul class="rules-list">
-      <li>达到最低成团人数，拼团生效，按时进入语音房间</li>
-      <li>未达到最低人数，自动取消，全额退款</li>
-      <li>每人最多提前提交 2 个问题，按顺序回答</li>
-      <li>不提供回放，防止白嫖和内容倒卖</li>
-    </ul>
+  <!-- ===== 用户端：规则说明 ===== -->
+  <div class="user-only">
+    <div style="background:#eef1fe;border-radius:var(--radius);margin:0 12px 10px;padding:12px 14px">
+      <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px">📋 拼团规则</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="font-size:12px;color:#374151;display:flex;gap:6px"><span>•</span><span>达到最低成团人数，拼团生效，按时进入语音房间</span></div>
+        <div style="font-size:12px;color:#374151;display:flex;gap:6px"><span>•</span><span>未达到最低人数，自动取消，全额退款</span></div>
+        <div style="font-size:12px;color:#374151;display:flex;gap:6px"><span>•</span><span>每人最多提前提交 2 个问题，按顺序回答</span></div>
+        <div style="font-size:12px;color:#374151;display:flex;gap:6px"><span>•</span><span>不提供回放，防止白嫖和内容倒卖</span></div>
+      </div>
+    </div>
   </div>
 
-  <!-- 会议列表 -->
+  <!-- ===== 导师端：我的拼团 ===== -->
+  <div class="advisor-only">
+    <div style="padding:10px 16px 6px;font-size:13px;font-weight:600;color:var(--text-muted)">我发起的拼团</div>
+    <div class="my-meeting-card">
+      <div class="mm-title">北京大学计算机专业就读体验分享</div>
+      <div class="mm-meta">
+        <span>📅 3月15日 19:00</span><span>⏱ 45分钟</span>
+        <span>👥 6/12人</span><span style="color:var(--success);font-weight:600">招募中</span>
+      </div>
+      <div class="progress-bar" style="margin-bottom:10px"><div class="progress-fill" style="width:50%"></div></div>
+      <div class="mm-actions">
+        <button class="btn btn-primary btn-sm" style="flex:2">管理会议</button>
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openCreate()">再发一场</button>
+      </div>
+    </div>
+    <div style="padding:4px 16px 6px;font-size:13px;font-weight:600;color:var(--text-muted)">全部拼团</div>
+  </div>
 
+  <!-- 会议列表（用户端和导师端都显示） -->
   <div class="meeting-card">
     <div class="meeting-card-body">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -83,19 +101,15 @@
         <span style="font-size:12px"><span class="status-dot open"></span><span style="color:var(--success)">招募中</span></span>
       </div>
       <div class="meeting-title">北京大学计算机专业就读体验分享</div>
-      <div class="meeting-meta">
-        <span>🏫 北京大学</span><span>⏱ 45分钟</span><span>📅 3月15日 19:00</span>
-      </div>
-      <div class="meeting-progress-label">
-        <span>已拼 <span class="cur">6</span> 人</span>
-        <span style="color:var(--text-muted)">最低5人 · 最多12人</span>
-      </div>
+      <div class="meeting-meta"><span>🏫 北京大学</span><span>⏱ 45分钟</span><span>📅 3月15日 19:00</span></div>
+      <div class="meeting-progress-label"><span>已拼 <span class="cur">6</span> 人</span><span style="color:var(--text-muted)">最低5人 · 最多12人</span></div>
       <div class="progress-bar" style="margin-bottom:10px"><div class="progress-fill" style="width:50%"></div></div>
       <div class="countdown">距开团：<span class="countdown-unit">02</span>天<span class="countdown-unit">14</span>时<span class="countdown-unit">32</span>分</div>
     </div>
     <div class="meeting-card-footer">
       <div class="meeting-price">¥19<span>/人</span></div>
-      <button class="btn btn-primary btn-sm" onclick="openJoin('北京大学计算机专业就读体验分享','¥19')">参团 →</button>
+      <button class="btn btn-primary btn-sm user-only" onclick="openJoin('北京大学计算机专业就读体验分享','¥19')">参团 →</button>
+      <button class="btn btn-ghost btn-sm advisor-only">查看报名</button>
     </div>
   </div>
 
@@ -106,19 +120,15 @@
         <span style="font-size:12px"><span class="status-dot open"></span><span style="color:var(--success)">招募中</span></span>
       </div>
       <div class="meeting-title">高中数学弱科提升规划思路分享</div>
-      <div class="meeting-meta">
-        <span>🎓 浙江大学</span><span>⏱ 30分钟</span><span>📅 3月16日 20:00</span>
-      </div>
-      <div class="meeting-progress-label">
-        <span>已拼 <span class="cur">3</span> 人</span>
-        <span style="color:var(--text-muted)">最低5人 · 最多10人</span>
-      </div>
+      <div class="meeting-meta"><span>🎓 浙江大学</span><span>⏱ 30分钟</span><span>📅 3月16日 20:00</span></div>
+      <div class="meeting-progress-label"><span>已拼 <span class="cur">3</span> 人</span><span style="color:var(--text-muted)">最低5人 · 最多10人</span></div>
       <div class="progress-bar" style="margin-bottom:10px"><div class="progress-fill" style="width:30%"></div></div>
       <div class="countdown">距开团：<span class="countdown-unit">03</span>天<span class="countdown-unit">08</span>时<span class="countdown-unit">15</span>分</div>
     </div>
     <div class="meeting-card-footer">
       <div class="meeting-price">¥15<span>/人</span></div>
-      <button class="btn btn-primary btn-sm" onclick="openJoin('高中数学弱科提升规划思路分享','¥15')">参团 →</button>
+      <button class="btn btn-primary btn-sm user-only" onclick="openJoin('高中数学弱科提升规划思路分享','¥15')">参团 →</button>
+      <button class="btn btn-ghost btn-sm advisor-only">查看报名</button>
     </div>
   </div>
 
@@ -129,42 +139,15 @@
         <span style="font-size:12px"><span class="status-dot full"></span><span style="color:var(--warning)">即将满员</span></span>
       </div>
       <div class="meeting-title">复旦大学金融学专业真实体验</div>
-      <div class="meeting-meta">
-        <span>🏫 复旦大学</span><span>⏱ 45分钟</span><span>📅 3月14日 19:30</span>
-      </div>
-      <div class="meeting-progress-label">
-        <span>已拼 <span class="cur">11</span> 人</span>
-        <span style="color:var(--text-muted)">最低5人 · 最多12人</span>
-      </div>
+      <div class="meeting-meta"><span>🏫 复旦大学</span><span>⏱ 45分钟</span><span>📅 3月14日 19:30</span></div>
+      <div class="meeting-progress-label"><span>已拼 <span class="cur">11</span> 人</span><span style="color:var(--text-muted)">最低5人 · 最多12人</span></div>
       <div class="progress-bar" style="margin-bottom:10px"><div class="progress-fill" style="width:92%"></div></div>
       <div class="countdown">距开团：<span class="countdown-unit">01</span>天<span class="countdown-unit">03</span>时<span class="countdown-unit">45</span>分</div>
     </div>
     <div class="meeting-card-footer">
       <div class="meeting-price">¥25<span>/人</span></div>
-      <button class="btn btn-accent btn-sm" onclick="openJoin('复旦大学金融学专业真实体验','¥25')">抢位参团 →</button>
-    </div>
-  </div>
-
-  <div class="meeting-card">
-    <div class="meeting-card-body">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span class="tag tag-green">学习规划</span>
-        <span style="font-size:12px"><span class="status-dot open"></span><span style="color:var(--success)">招募中</span></span>
-      </div>
-      <div class="meeting-title">高三冲刺阶段时间管理与心态调整</div>
-      <div class="meeting-meta">
-        <span>🎓 清华大学</span><span>⏱ 30分钟</span><span>📅 3月17日 20:30</span>
-      </div>
-      <div class="meeting-progress-label">
-        <span>已拼 <span class="cur">2</span> 人</span>
-        <span style="color:var(--text-muted)">最低4人 · 最多8人</span>
-      </div>
-      <div class="progress-bar" style="margin-bottom:10px"><div class="progress-fill" style="width:25%"></div></div>
-      <div class="countdown">距开团：<span class="countdown-unit">04</span>天<span class="countdown-unit">11</span>时<span class="countdown-unit">00</span>分</div>
-    </div>
-    <div class="meeting-card-footer">
-      <div class="meeting-price">¥12<span>/人</span></div>
-      <button class="btn btn-primary btn-sm" onclick="openJoin('高三冲刺阶段时间管理与心态调整','¥12')">参团 →</button>
+      <button class="btn btn-accent btn-sm user-only" onclick="openJoin('复旦大学金融学专业真实体验','¥25')">抢位参团 →</button>
+      <button class="btn btn-ghost btn-sm advisor-only">查看报名</button>
     </div>
   </div>
 
@@ -175,17 +158,17 @@
   <a href="index.html" class="tab-item"><span class="tab-icon">🏠</span><span class="tab-label">首页</span></a>
   <a href="group-meeting.html" class="tab-item active"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
   <a href="instant-order.html" class="tab-item"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
-  <a href="advisor.html" class="tab-item"><span class="tab-icon">🎓</span><span class="tab-label">答疑员</span></a>
+  <a href="advisor.html" class="tab-item"><span class="tab-icon">🎓</span><span class="tab-label">导师</span></a>
   <a href="#" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
 </div>
 
-<!-- 参团抽屉 -->
+<!-- 用户：参团抽屉 -->
 <div class="drawer-overlay" id="joinDrawer">
   <div class="drawer">
     <div class="drawer-handle"></div>
     <div class="drawer-header" id="joinTitle">参团确认</div>
     <div class="drawer-body">
-      <div class="alert alert-warning" style="margin-bottom:14px">
+      <div class="alert alert-warning" style="margin-bottom:14px;font-size:12px">
         <span>⚠️</span><span>每人最多提交 2 个问题，按顺序回答，不保证每个问题都能被解答。</span>
       </div>
       <div class="form-group">
@@ -208,7 +191,7 @@
   </div>
 </div>
 
-<!-- 发起拼团抽屉 -->
+<!-- 导师/用户：发起拼团抽屉 -->
 <div class="drawer-overlay" id="createDrawer">
   <div class="drawer">
     <div class="drawer-handle"></div>
@@ -219,27 +202,12 @@
         <input type="text" class="form-control" placeholder="如：XX大学计算机专业就读体验">
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="form-group">
-          <label class="form-label">单人价格（元）</label>
-          <input type="number" class="form-control" placeholder="如：19">
-        </div>
-        <div class="form-group">
-          <label class="form-label">服务时长</label>
-          <select class="form-control"><option>30分钟</option><option>45分钟</option></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">最低成团人数</label>
-          <input type="number" class="form-control" placeholder="如：5">
-        </div>
-        <div class="form-group">
-          <label class="form-label">最高人数</label>
-          <input type="number" class="form-control" placeholder="如：12">
-        </div>
+        <div class="form-group"><label class="form-label">单人价格（元）</label><input type="number" class="form-control" placeholder="如：19"></div>
+        <div class="form-group"><label class="form-label">服务时长</label><select class="form-control"><option>30分钟</option><option>45分钟</option></select></div>
+        <div class="form-group"><label class="form-label">最低成团人数</label><input type="number" class="form-control" placeholder="如：5"></div>
+        <div class="form-group"><label class="form-label">最高人数</label><input type="number" class="form-control" placeholder="如：12"></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">预约时间</label>
-        <input type="datetime-local" class="form-control">
-      </div>
+      <div class="form-group"><label class="form-label">预约时间</label><input type="datetime-local" class="form-control"></div>
     </div>
     <div class="drawer-footer">
       <button class="btn btn-ghost" style="flex:1" onclick="closeDrawer('createDrawer')">取消</button>
@@ -250,13 +218,12 @@
 
 <!-- 成功抽屉 -->
 <div class="drawer-overlay" id="successDrawer">
-  <div class="drawer">
-    <div class="drawer-handle"></div>
+  <div class="drawer"><div class="drawer-handle"></div>
     <div class="drawer-body">
       <div class="success-page" style="padding:32px 16px">
-        <div class="success-icon">🎉</div>
-        <div class="success-title">参团成功！</div>
-        <div class="success-desc">我们将在会议开始前提醒你。达到成团人数后即可进入语音房间。若未成团，费用将全额退还。</div>
+        <div class="success-icon" id="successIcon">🎉</div>
+        <div class="success-title" id="successTitle">参团成功！</div>
+        <div class="success-desc" id="successDesc">我们将在会议开始前提醒你。达到成团人数后即可进入语音房间。若未成团，费用将全额退还。</div>
         <button class="btn btn-primary btn-block" onclick="closeDrawer('successDrawer')">知道了</button>
       </div>
     </div>
@@ -264,6 +231,18 @@
 </div>
 
 <script>
+  function setRole(role) {
+    localStorage.setItem('role', role);
+    applyRole(role);
+  }
+  function applyRole(role) {
+    const body = document.getElementById('mainBody');
+    document.getElementById('btnUser').classList.toggle('active-user', role === 'user');
+    document.getElementById('btnAdvisor').classList.toggle('active-advisor', role === 'advisor');
+    body.classList.toggle('advisor-mode', role === 'advisor');
+    document.getElementById('navTitle').textContent = role === 'advisor' ? '我的拼团' : '拼团会议';
+    document.getElementById('navRight').textContent = role === 'advisor' ? '发起' : '发起';
+  }
   function filterChip(el) {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
@@ -274,18 +253,25 @@
     document.getElementById('joinDrawer').classList.add('active');
   }
   function openCreate() { document.getElementById('createDrawer').classList.add('active'); }
-  function closeDrawer(id) { document.getElementById(id).classList.remove('active'); }
   function confirmJoin() {
     closeDrawer('joinDrawer');
+    document.getElementById('successIcon').textContent = '🎉';
+    document.getElementById('successTitle').textContent = '参团成功！';
+    document.getElementById('successDesc').textContent = '我们将在会议开始前提醒你。达到成团人数后即可进入语音房间。若未成团，费用将全额退还。';
     document.getElementById('successDrawer').classList.add('active');
   }
   function confirmCreate() {
     closeDrawer('createDrawer');
-    alert('拼团会议发布成功！审核通过后将对外展示。');
+    document.getElementById('successIcon').textContent = '✅';
+    document.getElementById('successTitle').textContent = '发布成功！';
+    document.getElementById('successDesc').textContent = '拼团会议审核通过后将对外展示，达到最低成团人数后自动生效。';
+    document.getElementById('successDrawer').classList.add('active');
   }
+  function closeDrawer(id) { document.getElementById(id).classList.remove('active'); }
   document.querySelectorAll('.drawer-overlay').forEach(o => {
     o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
   });
+  applyRole(localStorage.getItem('role') || 'user');
 </script>
 </body>
 </html>

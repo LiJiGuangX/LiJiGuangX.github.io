@@ -1,4 +1,100 @@
 /* ===== 小程序风格移动端样式 ===== */
+
+/* ===== 角色切换栏 ===== */
+.role-bar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; padding: 8px 16px;
+  background: #fff; border-bottom: 1px solid var(--border);
+}
+.role-btn {
+  flex: 1; padding: 7px 0; text-align: center;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: 1.5px solid var(--border); background: #fff;
+  color: var(--text-muted); transition: all .15s;
+}
+.role-btn:first-child { border-radius: 8px 0 0 8px; border-right: none; }
+.role-btn:last-child { border-radius: 0 8px 8px 0; }
+.role-btn.active-user { background: var(--primary); color: #fff; border-color: var(--primary); }
+.role-btn.active-advisor { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+
+/* 导师端主色覆盖 */
+body.advisor-mode { --primary: #7c3aed; --primary-dark: #6d28d9; }
+body.advisor-mode .btn-primary { background: #7c3aed; }
+body.advisor-mode .btn-primary:active { background: #6d28d9; }
+body.advisor-mode .tab-item.active { color: #7c3aed; }
+body.advisor-mode .banner { background: linear-gradient(135deg, #7c3aed 0%, #4F6EF7 100%); }
+
+/* ===== 工作台卡片 ===== */
+.workbench-stats {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  background: var(--card); margin: 0 12px 12px;
+  border-radius: var(--radius); overflow: hidden;
+}
+.wb-stat { padding: 14px 8px; text-align: center; }
+.wb-stat + .wb-stat { border-left: 1px solid var(--border); }
+.wb-stat .num { font-size: 20px; font-weight: 800; color: #7c3aed; }
+.wb-stat .lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* ===== 标签统计评价 ===== */
+.tag-stats { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-stat-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 20px;
+  background: #f3f4f6; font-size: 12px; font-weight: 500;
+}
+.tag-stat-item .count { color: var(--primary); font-weight: 700; }
+
+/* ===== 自动抢单规则 ===== */
+.rule-card {
+  background: var(--card); border-radius: var(--radius);
+  margin: 0 12px 12px; overflow: hidden;
+}
+.rule-card-header {
+  padding: 12px 16px; display: flex; justify-content: space-between;
+  align-items: center; border-bottom: 1px solid var(--border);
+  font-size: 14px; font-weight: 700;
+}
+.rule-card-body { padding: 14px 16px; }
+.rule-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.rule-row:last-child { border-bottom: none; }
+.rule-row .rule-label { color: var(--text-muted); }
+.rule-row .rule-val { font-weight: 600; color: var(--text); }
+
+/* ===== 开关 ===== */
+.toggle {
+  width: 44px; height: 24px; border-radius: 12px;
+  background: #e5e7eb; position: relative; cursor: pointer;
+  transition: background .2s; flex-shrink: 0;
+}
+.toggle.on { background: #7c3aed; }
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 20px; height: 20px; border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2); transition: left .2s;
+}
+.toggle.on::after { left: 22px; }
+
+/* ===== 待处理订单 ===== */
+.pending-item {
+  background: var(--card); margin: 0 12px 10px;
+  border-radius: var(--radius); padding: 14px 16px;
+  border-left: 4px solid #7c3aed;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.pending-item .pi-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
+.pending-item .pi-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+.pending-item .pi-actions { display: flex; gap: 8px; }
+
+/* ===== 排期时段 ===== */
+.schedule-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.schedule-item:last-child { border-bottom: none; }
+.schedule-time { font-weight: 700; }
+.schedule-svc { color: var(--text-muted); }
+.schedule-status { font-size: 12px; font-weight: 600; }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {

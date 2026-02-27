@@ -8,59 +8,42 @@
   <style>
     .advisor-pick-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 10px 12px; scrollbar-width: none; }
     .advisor-pick-scroll::-webkit-scrollbar { display: none; }
-    .advisor-pick-item {
-      flex-shrink: 0; width: 100px; background: var(--card);
-      border-radius: var(--radius); padding: 12px 10px; text-align: center;
-      border: 2px solid var(--border); cursor: pointer; transition: all .15s;
-    }
+    .advisor-pick-item { flex-shrink: 0; width: 96px; background: var(--card); border-radius: var(--radius); padding: 12px 8px; text-align: center; border: 2px solid var(--border); cursor: pointer; transition: all .15s; }
     .advisor-pick-item.selected { border-color: var(--primary); background: #eef1fe; }
-    .advisor-pick-item:active { transform: scale(.97); }
     .advisor-pick-item .avatar { margin: 0 auto 6px; }
-    .advisor-pick-item .ap-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .advisor-pick-item .ap-name { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
     .advisor-pick-item .ap-school { font-size: 10px; color: var(--text-muted); }
-
-    /* 日历 */
     .cal-section { background: var(--card); margin: 0 12px 12px; border-radius: var(--radius); overflow: hidden; }
     .cal-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
     .cal-nav-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: #fff; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
     .cal-nav-title { font-size: 14px; font-weight: 700; }
-    .time-slots { padding: 12px 16px; }
-    .time-slots-title { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; }
-    .slots-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-    .time-slot {
-      padding: 8px 6px; border-radius: 8px; text-align: center;
-      font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s;
-      border: 1.5px solid var(--border);
-    }
+    .slots-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 12px 16px; }
+    .time-slot { padding: 8px 6px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; border: 1.5px solid var(--border); }
     .time-slot.available { background: #eef1fe; color: var(--primary); border-color: #c7d2fe; }
-    .time-slot.available:active { background: var(--primary); color: #fff; }
-    .time-slot.booked { background: #f3f4f6; color: #d1d5db; cursor: not-allowed; border-color: #e5e7eb; }
+    .time-slot.booked { background: #f3f4f6; color: #d1d5db; cursor: not-allowed; }
     .time-slot.selected { background: var(--primary); color: #fff; border-color: var(--primary-dark); }
-
-    /* 服务方式 */
     .svc-grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
-    .svc-card-sm {
-      border: 2px solid var(--border); border-radius: 10px;
-      padding: 12px 10px; text-align: center; cursor: pointer; transition: all .15s;
-    }
+    .svc-card-sm { border: 2px solid var(--border); border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all .15s; }
     .svc-card-sm.selected { border-color: var(--primary); background: #eef1fe; }
-    .svc-card-sm:active { transform: scale(.97); }
     .svc-card-sm .icon { font-size: 22px; margin-bottom: 4px; }
     .svc-card-sm .name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
     .svc-card-sm .price { font-size: 14px; font-weight: 800; color: var(--accent); }
-
-    /* 预约摘要 */
     .summary-card { background: var(--card); margin: 0 12px 12px; border-radius: var(--radius); padding: 14px 16px; }
     .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
     .summary-row:last-child { border-bottom: none; }
     .summary-row .lbl { color: var(--text-muted); }
     .summary-row .val { font-weight: 600; }
     .summary-row.total .val { font-size: 20px; color: var(--accent); font-weight: 800; }
-
-    .sticky-bottom { position: sticky; bottom: calc(var(--tabbar-h) + 8px); padding: 10px 12px; background: var(--bg); }
+    /* 导师端排期管理 */
+    .user-only { display: block; }
+    .advisor-only { display: none; }
+    body.advisor-mode .user-only { display: none; }
+    body.advisor-mode .advisor-only { display: block; }
+    .add-slot-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border: 2px dashed var(--border); border-radius: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; margin: 0 16px 12px; background: transparent; width: calc(100% - 32px); }
+    .add-slot-btn:active { border-color: var(--primary); color: var(--primary); }
   </style>
 </head>
-<body>
+<body id="mainBody">
 <div class="page">
 
   <div class="statusbar">
@@ -70,49 +53,43 @@
 
   <div class="navbar">
     <a href="index.html" class="navbar-back">‹</a>
-    <div class="navbar-title">预约1对1</div>
+    <div class="navbar-title" id="navTitle">预约1对1</div>
     <div style="width:32px"></div>
   </div>
 
-  <!-- 选择答疑员 -->
-  <div style="padding: 12px 16px 4px; font-size: 13px; font-weight: 600; color: var(--text-muted);">选择答疑员</div>
-  <div class="advisor-pick-scroll">
-    <div class="advisor-pick-item selected" onclick="pickAdvisor(this,'李同学','北大·计算机')">
-      <div class="avatar avatar-sm">李</div>
-      <div class="ap-name">李同学</div>
-      <div class="ap-school">北大·计算机</div>
-      <div class="stars" style="font-size:10px">★★★★★</div>
-    </div>
-    <div class="advisor-pick-item" onclick="pickAdvisor(this,'王同学','复旦·金融')">
-      <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7c3aed,#FF6B35)">王</div>
-      <div class="ap-name">王同学</div>
-      <div class="ap-school">复旦·金融</div>
-      <div class="stars" style="font-size:10px">★★★★★</div>
-    </div>
-    <div class="advisor-pick-item" onclick="pickAdvisor(this,'张同学','浙大·医学')">
-      <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#10b981,#4F6EF7)">张</div>
-      <div class="ap-name">张同学</div>
-      <div class="ap-school">浙大·医学</div>
-      <div class="stars" style="font-size:10px">★★★★★</div>
-    </div>
-    <div class="advisor-pick-item" onclick="pickAdvisor(this,'陈同学','清华·电子')">
-      <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">陈</div>
-      <div class="ap-name">陈同学</div>
-      <div class="ap-school">清华·电子</div>
-      <div class="stars" style="font-size:10px">★★★★☆</div>
-    </div>
+  <!-- 角色切换 -->
+  <div class="role-bar">
+    <div class="role-btn active-user" id="btnUser" onclick="setRole('user')">👤 用户端</div>
+    <div class="role-btn" id="btnAdvisor" onclick="setRole('advisor')">🎓 导师端</div>
   </div>
 
-  <div class="section-gap"></div>
+  <!-- ===== 用户端 ===== -->
+  <div class="user-only">
+    <div style="padding:10px 16px 4px;font-size:13px;font-weight:600;color:var(--text-muted)">选择导师</div>
+    <div class="advisor-pick-scroll">
+      <div class="advisor-pick-item selected" onclick="pickAdvisor(this,'李同学','北大·计算机')">
+        <div class="avatar avatar-sm">李</div><div class="ap-name">李同学</div><div class="ap-school">北大·计算机</div><div class="stars" style="font-size:10px">★★★★★</div>
+      </div>
+      <div class="advisor-pick-item" onclick="pickAdvisor(this,'王同学','复旦·金融')">
+        <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7c3aed,#FF6B35)">王</div><div class="ap-name">王同学</div><div class="ap-school">复旦·金融</div><div class="stars" style="font-size:10px">★★★★★</div>
+      </div>
+      <div class="advisor-pick-item" onclick="pickAdvisor(this,'张同学','浙大·医学')">
+        <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#10b981,#4F6EF7)">张</div><div class="ap-name">张同学</div><div class="ap-school">浙大·医学</div><div class="stars" style="font-size:10px">★★★★★</div>
+      </div>
+      <div class="advisor-pick-item" onclick="pickAdvisor(this,'陈同学','清华·电子')">
+        <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">陈</div><div class="ap-name">陈同学</div><div class="ap-school">清华·电子</div><div class="stars" style="font-size:10px">★★★★☆</div>
+      </div>
+    </div>
+    <div class="section-gap"></div>
+  </div>
 
-  <!-- 日历选时段 -->
+  <!-- 日历（用户端选时段，导师端管理排期） -->
   <div class="cal-section">
     <div class="cal-nav">
       <button class="cal-nav-btn" onclick="prevWeek()">‹</button>
       <span class="cal-nav-title" id="weekLabel">3月10日 — 3月16日</span>
       <button class="cal-nav-btn" onclick="nextWeek()">›</button>
     </div>
-    <!-- 日期行 -->
     <div style="display:grid;grid-template-columns:repeat(7,1fr);padding:10px 12px 4px;gap:4px">
       <div style="text-align:center;font-size:11px;color:var(--text-muted)">一<br><span style="font-size:12px;font-weight:600;color:var(--text)">10</span></div>
       <div style="text-align:center;font-size:11px;color:var(--primary);background:#eef1fe;border-radius:8px;padding:2px 0">二<br><span style="font-size:12px;font-weight:700">11</span></div>
@@ -122,79 +99,64 @@
       <div style="text-align:center;font-size:11px;color:var(--text-muted)">六<br><span style="font-size:12px;font-weight:600;color:var(--text)">15</span></div>
       <div style="text-align:center;font-size:11px;color:var(--text-muted)">日<br><span style="font-size:12px;font-weight:600;color:var(--text)">16</span></div>
     </div>
-    <div class="time-slots">
-      <div class="time-slots-title">可预约时段（30分钟/段）</div>
-      <div class="slots-grid">
-        <div class="time-slot booked">19:00 已约</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周二 19:00')">19:00</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周三 19:00')">19:00</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周一 19:30')">19:30</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周二 19:30')">19:30</div>
-        <div class="time-slot booked">19:30 已约</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周一 20:00')">20:00</div>
-        <div class="time-slot booked">20:00 已约</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周三 20:00')">20:00</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周一 20:30')">20:30</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周二 20:30')">20:30</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周三 20:30')">20:30</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周一 21:00')">21:00</div>
-        <div class="time-slot available" onclick="selectSlot(this,'周二 21:00')">21:00</div>
-        <div class="time-slot booked">21:00 已约</div>
-      </div>
+    <div class="slots-grid">
+      <div class="time-slot booked">19:00 已约</div>
+      <div class="time-slot available" onclick="selectSlot(this,'周二 19:00')">19:00</div>
+      <div class="time-slot available" onclick="selectSlot(this,'周三 19:00')">19:00</div>
+      <div class="time-slot available" onclick="selectSlot(this,'周一 19:30')">19:30</div>
+      <div class="time-slot available" onclick="selectSlot(this,'周二 19:30')">19:30</div>
+      <div class="time-slot booked">19:30 已约</div>
+      <div class="time-slot available" onclick="selectSlot(this,'周一 20:00')">20:00</div>
+      <div class="time-slot booked">20:00 已约</div>
+      <div class="time-slot available" onclick="selectSlot(this,'周三 20:00')">20:00</div>
+      <div class="time-slot available" onclick="selectSlot(this,'周一 20:30')">20:30</div>
+      <div class="time-slot available" onclick="selectSlot(this,'周二 20:30')">20:30</div>
+      <div class="time-slot available" onclick="selectSlot(this,'周三 20:30')">20:30</div>
+    </div>
+    <!-- 导师端：添加时段按钮 -->
+    <div class="advisor-only">
+      <button class="add-slot-btn" onclick="openAddSlot()">+ 添加可预约时段</button>
     </div>
   </div>
 
-  <div class="section-gap"></div>
-
-  <!-- 服务方式 -->
-  <div style="padding: 4px 16px 10px; font-size: 13px; font-weight: 600; color: var(--text-muted);">选择服务方式</div>
-  <div style="padding: 0 12px; margin-bottom: 12px;">
-    <div class="svc-grid-2">
-      <div class="svc-card-sm selected" onclick="selectSvc(this,'图文咨询',39)">
-        <div class="icon">💬</div>
-        <div class="name">图文咨询</div>
-        <div class="price">¥39</div>
-      </div>
-      <div class="svc-card-sm" onclick="selectSvc(this,'语音咨询',59)">
-        <div class="icon">🎙️</div>
-        <div class="name">语音咨询</div>
-        <div class="price">¥59</div>
-      </div>
-      <div class="svc-card-sm" onclick="selectSvc(this,'电话咨询',89)">
-        <div class="icon">📞</div>
-        <div class="name">电话咨询</div>
-        <div class="price">¥89</div>
-      </div>
-      <div class="svc-card-sm" onclick="selectSvc(this,'视频咨询',129)">
-        <div class="icon">📹</div>
-        <div class="name">视频咨询</div>
-        <div class="price">¥129</div>
+  <!-- 用户端：服务方式 -->
+  <div class="user-only">
+    <div style="padding:4px 16px 10px;font-size:13px;font-weight:600;color:var(--text-muted)">选择服务方式</div>
+    <div style="padding:0 12px;margin-bottom:12px">
+      <div class="svc-grid-2">
+        <div class="svc-card-sm selected" onclick="selectSvc(this,'图文咨询',39)"><div class="icon">💬</div><div class="name">图文咨询</div><div class="price">¥39</div></div>
+        <div class="svc-card-sm" onclick="selectSvc(this,'语音咨询',59)"><div class="icon">🎙️</div><div class="name">语音咨询</div><div class="price">¥59</div></div>
+        <div class="svc-card-sm" onclick="selectSvc(this,'电话咨询',89)"><div class="icon">📞</div><div class="name">电话咨询</div><div class="price">¥89</div></div>
+        <div class="svc-card-sm" onclick="selectSvc(this,'视频咨询',129)"><div class="icon">📹</div><div class="name">视频咨询</div><div class="price">¥129</div></div>
       </div>
     </div>
-    <div class="alert alert-info" style="margin-top:10px;font-size:12px">
-      <span>ℹ️</span><span>图文＜语音＜电话＜视频，电话/视频需答疑员自愿开启</span>
+    <div style="padding:4px 16px 10px;font-size:13px;font-weight:600;color:var(--text-muted)">预约摘要</div>
+    <div class="summary-card">
+      <div class="summary-row"><span class="lbl">导师</span><span class="val" id="sumAdvisor">李同学（北大·计算机）</span></div>
+      <div class="summary-row"><span class="lbl">时段</span><span class="val" id="sumSlot" style="color:var(--text-muted)">请选择时段</span></div>
+      <div class="summary-row"><span class="lbl">方式</span><span class="val" id="sumSvc">图文咨询</span></div>
+      <div class="summary-row total"><span class="lbl" style="font-weight:600">应付</span><span class="val" id="sumPrice">¥39</span></div>
+    </div>
+    <div class="alert alert-warning" style="margin:0 12px 12px;font-size:12px">
+      <span>⚠️</span><span>提前24小时取消全额退款；不足24小时扣少量手续费；未到场视为违约。</span>
+    </div>
+    <div style="padding:0 12px 16px">
+      <button class="btn btn-accent btn-block" id="bookBtn" onclick="openConfirm()" disabled>确认预约并支付</button>
     </div>
   </div>
 
-  <div class="section-gap"></div>
-
-  <!-- 预约摘要 -->
-  <div style="padding: 4px 16px 10px; font-size: 13px; font-weight: 600; color: var(--text-muted);">预约摘要</div>
-  <div class="summary-card">
-    <div class="summary-row"><span class="lbl">答疑员</span><span class="val" id="sumAdvisor">李同学（北大·计算机）</span></div>
-    <div class="summary-row"><span class="lbl">预约时段</span><span class="val" id="sumSlot" style="color:var(--text-muted)">请选择时段</span></div>
-    <div class="summary-row"><span class="lbl">服务方式</span><span class="val" id="sumSvc">图文咨询</span></div>
-    <div class="summary-row"><span class="lbl">时长</span><span class="val">30分钟</span></div>
-    <div class="summary-row total"><span class="lbl" style="font-weight:600">应付金额</span><span class="val" id="sumPrice">¥39</span></div>
-  </div>
-
-  <div class="alert alert-warning" style="margin: 0 12px 12px; font-size:12px">
-    <span>⚠️</span><span>提前24小时取消全额退款；不足24小时扣少量手续费；未到场视为违约。</span>
-  </div>
-
-  <!-- 底部按钮 -->
-  <div style="padding: 0 12px 16px">
-    <button class="btn btn-accent btn-block" id="bookBtn" onclick="openConfirm()" disabled>确认预约并支付</button>
+  <!-- 导师端：排期设置说明 -->
+  <div class="advisor-only">
+    <div style="padding:4px 16px 10px;font-size:13px;font-weight:600;color:var(--text-muted)">服务方式与定价</div>
+    <div style="background:var(--card);margin:0 12px 12px;border-radius:var(--radius);overflow:hidden">
+      <div class="schedule-item"><span class="schedule-time">图文咨询</span><span class="schedule-svc">¥39/30分钟</span><span class="schedule-status" style="color:var(--success)">已开启</span></div>
+      <div class="schedule-item"><span class="schedule-time">语音咨询</span><span class="schedule-svc">¥59/30分钟</span><span class="schedule-status" style="color:var(--success)">已开启</span></div>
+      <div class="schedule-item"><span class="schedule-time">电话咨询</span><span class="schedule-svc">¥89/30分钟</span><span class="schedule-status" style="color:var(--text-muted)">未开启</span></div>
+      <div class="schedule-item"><span class="schedule-time">视频咨询</span><span class="schedule-svc">¥129/30分钟</span><span class="schedule-status" style="color:var(--text-muted)">未开启</span></div>
+    </div>
+    <div style="padding:0 12px 16px">
+      <button class="btn btn-primary btn-block" onclick="openPriceEdit()">编辑服务方式与定价</button>
+    </div>
   </div>
 
 </div>
@@ -204,11 +166,11 @@
   <a href="index.html" class="tab-item"><span class="tab-icon">🏠</span><span class="tab-label">首页</span></a>
   <a href="group-meeting.html" class="tab-item"><span class="tab-icon">👥</span><span class="tab-label">拼团</span></a>
   <a href="instant-order.html" class="tab-item"><span class="tab-icon">⚡</span><span class="tab-label">抢单</span></a>
-  <a href="advisor.html" class="tab-item"><span class="tab-icon">🎓</span><span class="tab-label">答疑员</span></a>
+  <a href="advisor.html" class="tab-item"><span class="tab-icon">🎓</span><span class="tab-label">导师</span></a>
   <a href="#" class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">我的</span></a>
 </div>
 
-<!-- 确认抽屉 -->
+<!-- 用户：确认预约抽屉 -->
 <div class="drawer-overlay" id="confirmDrawer">
   <div class="drawer">
     <div class="drawer-handle"></div>
@@ -217,10 +179,7 @@
       <div style="background:#f7f8fc;border-radius:10px;padding:14px;margin-bottom:14px">
         <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
           <div class="avatar avatar-sm" id="confirmAvatar">李</div>
-          <div>
-            <div style="font-weight:700;font-size:14px" id="confirmName">李同学</div>
-            <div style="font-size:12px;color:var(--text-muted)" id="confirmSchool">北大·计算机</div>
-          </div>
+          <div><div style="font-weight:700;font-size:14px" id="confirmName">李同学</div><div style="font-size:12px;color:var(--text-muted)" id="confirmSchool">北大·计算机</div></div>
         </div>
         <div style="font-size:13px;display:flex;flex-direction:column;gap:5px">
           <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">时段</span><span id="confirmSlot" style="font-weight:600">—</span></div>
@@ -228,10 +187,7 @@
           <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">金额</span><span id="confirmPrice" style="font-weight:800;color:var(--accent);font-size:18px">¥39</span></div>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">备注（选填）</label>
-        <textarea class="form-control" placeholder="可提前说明你的具体需求..." rows="3"></textarea>
-      </div>
+      <div class="form-group"><label class="form-label">备注（选填）</label><textarea class="form-control" placeholder="可提前说明你的具体需求..." rows="3"></textarea></div>
     </div>
     <div class="drawer-footer">
       <button class="btn btn-ghost" style="flex:1" onclick="closeDrawer('confirmDrawer')">取消</button>
@@ -240,15 +196,41 @@
   </div>
 </div>
 
-<!-- 成功抽屉 -->
-<div class="drawer-overlay" id="successDrawer">
+<!-- 导师：添加时段抽屉 -->
+<div class="drawer-overlay" id="addSlotDrawer">
   <div class="drawer">
     <div class="drawer-handle"></div>
+    <div class="drawer-header">添加可预约时段</div>
+    <div class="drawer-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group"><label class="form-label">开始时间</label><input type="time" class="form-control" value="19:00"></div>
+        <div class="form-group"><label class="form-label">结束时间</label><input type="time" class="form-control" value="19:30"></div>
+      </div>
+      <div class="form-group"><label class="form-label">重复</label><select class="form-control"><option>仅此一次</option><option>每天</option><option>每周</option></select></div>
+      <div class="form-group"><label class="form-label">可提供服务方式</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <div class="chip active" onclick="this.classList.toggle('active')">💬 图文</div>
+          <div class="chip active" onclick="this.classList.toggle('active')">🎙️ 语音</div>
+          <div class="chip" onclick="this.classList.toggle('active')">📞 电话</div>
+          <div class="chip" onclick="this.classList.toggle('active')">📹 视频</div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeDrawer('addSlotDrawer')">取消</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveSlot()">保存时段</button>
+    </div>
+  </div>
+</div>
+
+<!-- 成功抽屉 -->
+<div class="drawer-overlay" id="successDrawer">
+  <div class="drawer"><div class="drawer-handle"></div>
     <div class="drawer-body">
       <div class="success-page" style="padding:32px 16px">
-        <div class="success-icon">✅</div>
-        <div class="success-title">预约成功！</div>
-        <div class="success-desc">平台将在预约时间前自动提醒你和答疑员。请按时发起沟通，如需取消请提前24小时操作。</div>
+        <div class="success-icon" id="successIcon">✅</div>
+        <div class="success-title" id="successTitle">预约成功！</div>
+        <div class="success-desc" id="successDesc">平台将在预约时间前自动提醒你和导师。请按时发起沟通，如需取消请提前24小时操作。</div>
         <button class="btn btn-primary btn-block" onclick="closeDrawer('successDrawer')">知道了</button>
       </div>
     </div>
@@ -257,12 +239,21 @@
 
 <script>
   let selectedSlot = null, selectedSvc = '图文咨询', selectedPrice = 39;
-  let selectedAdvisor = '李同学', selectedSchool = '北大·计算机';
 
+  function setRole(role) {
+    localStorage.setItem('role', role);
+    applyRole(role);
+  }
+  function applyRole(role) {
+    const body = document.getElementById('mainBody');
+    document.getElementById('btnUser').classList.toggle('active-user', role === 'user');
+    document.getElementById('btnAdvisor').classList.toggle('active-advisor', role === 'advisor');
+    body.classList.toggle('advisor-mode', role === 'advisor');
+    document.getElementById('navTitle').textContent = role === 'advisor' ? '我的排期' : '预约1对1';
+  }
   function pickAdvisor(el, name, school) {
     document.querySelectorAll('.advisor-pick-item').forEach(i => i.classList.remove('selected'));
     el.classList.add('selected');
-    selectedAdvisor = name; selectedSchool = school;
     document.getElementById('sumAdvisor').textContent = name + '（' + school + '）';
     document.getElementById('confirmName').textContent = name;
     document.getElementById('confirmSchool').textContent = school;
@@ -273,7 +264,6 @@
     document.querySelectorAll('.time-slot.selected').forEach(s => { s.classList.remove('selected'); s.classList.add('available'); });
     checkBtn();
   }
-
   function selectSlot(el, key) {
     document.querySelectorAll('.time-slot.selected').forEach(s => { s.classList.remove('selected'); s.classList.add('available'); });
     el.classList.remove('available'); el.classList.add('selected');
@@ -283,7 +273,6 @@
     document.getElementById('confirmSlot').textContent = key;
     checkBtn();
   }
-
   function selectSvc(el, name, price) {
     document.querySelectorAll('.svc-card-sm').forEach(s => s.classList.remove('selected'));
     el.classList.add('selected');
@@ -293,18 +282,31 @@
     document.getElementById('confirmSvc').textContent = name;
     document.getElementById('confirmPrice').textContent = '¥' + price;
   }
-
   function checkBtn() { document.getElementById('bookBtn').disabled = !selectedSlot; }
-
   function openConfirm() { if (selectedSlot) document.getElementById('confirmDrawer').classList.add('active'); }
-  function confirmBook() { closeDrawer('confirmDrawer'); document.getElementById('successDrawer').classList.add('active'); }
-  function closeDrawer(id) { document.getElementById(id).classList.remove('active'); }
+  function confirmBook() {
+    closeDrawer('confirmDrawer');
+    document.getElementById('successIcon').textContent = '✅';
+    document.getElementById('successTitle').textContent = '预约成功！';
+    document.getElementById('successDesc').textContent = '平台将在预约时间前自动提醒你和导师。请按时发起沟通，如需取消请提前24小时操作。';
+    document.getElementById('successDrawer').classList.add('active');
+  }
+  function openAddSlot() { document.getElementById('addSlotDrawer').classList.add('active'); }
+  function saveSlot() {
+    closeDrawer('addSlotDrawer');
+    document.getElementById('successIcon').textContent = '✅';
+    document.getElementById('successTitle').textContent = '时段已添加！';
+    document.getElementById('successDesc').textContent = '新的可预约时段已保存，用户可以在日历中看到并预约。';
+    document.getElementById('successDrawer').classList.add('active');
+  }
+  function openPriceEdit() { alert('价格编辑功能开发中'); }
   function prevWeek() { document.getElementById('weekLabel').textContent = '3月3日 — 3月9日'; }
   function nextWeek() { document.getElementById('weekLabel').textContent = '3月17日 — 3月23日'; }
-
+  function closeDrawer(id) { document.getElementById(id).classList.remove('active'); }
   document.querySelectorAll('.drawer-overlay').forEach(o => {
     o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
   });
+  applyRole(localStorage.getItem('role') || 'user');
 </script>
 </body>
 </html>
