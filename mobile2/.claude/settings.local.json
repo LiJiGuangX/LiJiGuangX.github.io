@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l d:/project/gaokao/LiJiGuangX.github.io2/mobile2/*.html d:/project/gaokao/LiJiGuangX.github.io2/mobile2/styles.css)"
+    ]
+  }
+}

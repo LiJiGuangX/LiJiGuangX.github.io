@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>高考志愿咨询师系统 · 演示</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;background:#f0f4ff;min-height:100vh}
+    .hero{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#7c3aed 100%);color:white;text-align:center;padding:56px 24px 44px}
+    .hero-logo{font-size:56px;margin-bottom:14px}
+    .hero h1{font-size:24px;font-weight:700;margin-bottom:10px;letter-spacing:.5px}
+    .hero p{font-size:13px;opacity:.88;line-height:1.8}
+    .subtitle{text-align:center;font-size:13px;color:#6b7280;padding:22px 20px 8px}
+    .cards{display:flex;gap:20px;padding:0 20px 40px;justify-content:center;flex-wrap:wrap}
+    .card{background:white;border-radius:24px;padding:30px 22px;flex:1;min-width:280px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.1);transition:transform .2s,box-shadow .2s}
+    .card:hover{transform:translateY(-5px);box-shadow:0 16px 48px rgba(0,0,0,.16)}
+    .card-icon{font-size:54px;text-align:center;margin-bottom:14px}
+    .card-badge{display:block;text-align:center;margin-bottom:10px}
+    .badge{display:inline-block;padding:3px 14px;border-radius:14px;font-size:11px;font-weight:700}
+    .bdg-t{background:#dbeafe;color:#1d4ed8}
+    .bdg-s{background:#fef3c7;color:#b45309}
+    .card h2{font-size:22px;font-weight:700;color:#111827;text-align:center;margin-bottom:10px}
+    .card p{font-size:13px;color:#6b7280;line-height:1.75;text-align:center;margin-bottom:20px}
+    .card-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:22px}
+    .ctag{background:#f3f4f6;color:#374151;font-size:11px;padding:4px 11px;border-radius:16px}
+    .divider{height:1px;background:#f3f4f6;margin:0 0 20px}
+    .pages-label{font-size:12px;color:#9ca3af;margin-bottom:8px;text-align:center}
+    .page-list{display:flex;flex-direction:column;gap:6px;margin-bottom:22px}
+    .page-item{display:flex;align-items:center;gap:8px;font-size:13px;color:#374151}
+    .page-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0}
+    .pn-blue{background:#1e40af}
+    .pn-orange{background:#d97706}
+    .btn{display:block;padding:14px;border-radius:14px;font-size:16px;font-weight:700;border:none;cursor:pointer;text-decoration:none;text-align:center;transition:opacity .15s,transform .15s}
+    .btn:hover{opacity:.92;transform:scale(1.01)}
+    .btn-t{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:white}
+    .btn-s{background:linear-gradient(135deg,#b45309,#f59e0b);color:white}
+    .footer{text-align:center;padding:24px 20px;font-size:12px;color:#9ca3af;border-top:1px solid #e5e7eb;background:white}
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="hero-logo">🎓</div>
+    <h1>高考志愿咨询师系统</h1>
+    <p>连接学生与专业咨询师<br>助力高考志愿精准填报</p>
+  </div>
+
+  <div class="subtitle">以下为两个独立小程序的移动端原型，点击按钮进入体验</div>
+
+  <div class="cards">
+    <!-- 导师端 -->
+    <div class="card">
+      <div class="card-icon">👨‍🏫</div>
+      <div class="card-badge"><span class="badge bdg-t">导师小程序</span></div>
+      <h2>导师端</h2>
+      <p>面向咨询师，覆盖从注册认证到日常运营的完整工作流</p>
+      <div class="divider"></div>
+      <div class="pages-label">包含 5 个核心页面</div>
+      <div class="page-list">
+        <div class="page-item"><span class="page-num pn-blue">1</span>咨询师注册认证</div>
+        <div class="page-item"><span class="page-num pn-blue">2</span>个人宣传设置</div>
+        <div class="page-item"><span class="page-num pn-blue">3</span>可预约时间设置</div>
+        <div class="page-item"><span class="page-num pn-blue">4</span>我的等级与成长</div>
+        <div class="page-item"><span class="page-num pn-blue">5</span>预约管理</div>
+      </div>
+      <a href="tutor.html" class="btn btn-t">进入导师端体验 →</a>
+    </div>
+
+    <!-- 学生端 -->
+    <div class="card">
+      <div class="card-icon">👨‍🎓</div>
+      <div class="card-badge"><span class="badge bdg-s">学生小程序</span></div>
+      <h2>学生端</h2>
+      <p>面向家长和学生，从检索导师到完成咨询的全流程体验</p>
+      <div class="divider"></div>
+      <div class="pages-label">包含 5 个核心页面</div>
+      <div class="page-list">
+        <div class="page-item"><span class="page-num pn-orange">1</span>首页 · 导师检索</div>
+        <div class="page-item"><span class="page-num pn-orange">2</span>导师详情 · 预约</div>
+        <div class="page-item"><span class="page-num pn-orange">3</span>预约成功页</div>
+        <div class="page-item"><span class="page-num pn-orange">4</span>视频会议页</div>
+        <div class="page-item"><span class="page-num pn-orange">5</span>我的预约</div>
+      </div>
+      <a href="student.html" class="btn btn-s">进入学生端体验 →</a>
+    </div>
+  </div>
+
+  <div class="footer">高考志愿咨询师系统 &nbsp;·&nbsp; 移动端原型演示 &nbsp;·&nbsp; 仅供 UI 设计参考</div>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>导师端 · 高考志愿咨询师</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .level-hero{text-align:center;padding:24px 16px 16px}
+    .level-name{font-size:34px;font-weight:700;color:#d97706;margin-bottom:6px}
+    .level-sub{font-size:13px;color:#9ca3af}
+    .time-slot-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  </style>
+</head>
+<body>
+<div class="mobile">
+  <!-- Topbar -->
+  <div class="topbar tb-blue">
+    <a href="index.html" class="back">←</a>
+    <span class="tb-title" id="tb">咨询师注册认证</span>
+  </div>
+
+  <div class="content">
+
+    <!-- ① 注册认证 -->
+    <div class="page active" id="p-reg">
+      <div class="sec-title c-blue">咨询师注册认证</div>
+      <div class="fg"><div class="fl">姓名 <span style="color:#ef4444;font-size:10px">必填</span></div><input class="fi" placeholder="请输入真实姓名"></div>
+      <div class="fg"><div class="fl">身份证号 <span style="color:#ef4444;font-size:10px">必填</span></div><input class="fi" placeholder="请输入18位身份证号"></div>
+      <div class="fg"><div class="fl">毕业/在读院校 <span style="color:#ef4444;font-size:10px">必填</span></div><input class="fi" placeholder="请输入或选择院校名称"></div>
+      <div class="fg"><div class="fl">所学专业 <span style="color:#ef4444;font-size:10px">必填</span></div><input class="fi" placeholder="请输入或选择专业名称"></div>
+      <div class="fg">
+        <div class="fl">学信网验证 <span style="color:#ef4444;font-size:10px">必填</span></div>
+        <div class="btn-row"><input class="fi flex-1" placeholder="请输入学信网验证码"><button class="btn-s bl">上传材料</button></div>
+      </div>
+      <button class="btn-p bg-blue" onclick="toast('提交成功，请等待平台审核')">提交认证</button>
+      <div class="fh tc mt8">认证信息将严格审核，审核通过后方可开通咨询权限</div>
+    </div>
+
+    <!-- ② 宣传设置 -->
+    <div class="page" id="p-profile">
+      <div class="sec-title c-blue">个人宣传设置</div>
+      <div class="fg">
+        <div class="fl">自我介绍 <span style="color:#9ca3af;font-size:11px">限500字</span></div>
+        <textarea class="fi" rows="3" placeholder="请简要介绍咨询优势、经历等"></textarea>
+      </div>
+      <div class="fg">
+        <div class="fl">咨询范围 <button class="btn-s bl" style="font-size:11px;padding:4px 10px" onclick="showModal()">查看协议</button></div>
+        <textarea class="fi" rows="2" placeholder="请填写可咨询的内容范围"></textarea>
+      </div>
+      <div class="fg">
+        <div class="fl">一级关键词（可多选）</div>
+        <div class="tags">
+          <span class="tag" onclick="togTag(this)">志愿填报</span>
+          <span class="tag" onclick="togTag(this)">保研规划</span>
+          <span class="tag" onclick="togTag(this)">专业选择</span>
+          <span class="tag" onclick="togTag(this)">就业分析</span>
+          <span class="tag sel" onclick="togTag(this)">计算机方向</span>
+          <span class="tag" onclick="togTag(this)">学业发展</span>
+        </div>
+        <div class="fh mt8">关键词用于用户检索，违规关键词将审核不通过</div>
+      </div>
+      <div class="fg">
+        <div class="fl">二级关键词 <span style="color:#9ca3af;font-size:11px">需审核·非必填</span></div>
+        <input class="fi" placeholder="多个关键词用逗号分隔，如：保研细节,竞赛经验">
+      </div>
+      <div class="fg">
+        <div class="fl">宣传材料</div>
+        <div class="btn-row"><button class="btn-s bl flex-1">📷 上传图片（最多5张）</button><button class="btn-s bl flex-1">🎬 上传视频（最多1个）</button></div>
+      </div>
+      <div class="fg">
+        <div class="fl">咨询单价 <span style="color:#9ca3af;font-size:11px">建议50-200元/30min</span></div>
+        <div class="btn-row"><input class="fi flex-1" type="number" placeholder="请输入金额"><span style="font-size:14px;color:#374151;white-space:nowrap;line-height:44px">元/30分钟</span></div>
+      </div>
+      <div class="preview">
+        <div class="preview-tip">📱 用户看到的导师卡片预览</div>
+        <div class="row">
+          <div class="av">👨‍🏫</div>
+          <div class="flex-1">
+            <div style="font-size:16px;font-weight:700;margin-bottom:4px">张XX</div>
+            <div><span class="bdg bdg-gold">🥇 黄金咨询师</span> <span class="bdg bdg-blue">在校生</span></div>
+            <div style="font-size:12px;color:#6b7280;margin-top:4px">北京大学 · 计算机科学</div>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#1e40af">100元<br><span style="font-size:11px;font-weight:400;color:#9ca3af">/30分钟</span></div>
+        </div>
+        <div class="tags mt8"><span class="tag">保研</span><span class="tag">计算机</span><span class="tag">志愿填报</span></div>
+      </div>
+      <button class="btn-p bg-blue mt16" onclick="toast('提交成功，等待平台审核')">保存并提交审核</button>
+    </div>
+
+    <!-- ③ 时间设置 -->
+    <div class="page" id="p-schedule">
+      <div class="sec-title c-blue">可预约时间设置</div>
+      <div class="fh tc" style="margin-bottom:14px">每次咨询30分钟，用户将按时间段预约</div>
+      <div class="card">
+        <div class="row-sb" style="margin-bottom:12px">
+          <span style="font-size:15px;font-weight:600">2026年 3月</span>
+          <div class="btn-row g8"><button class="btn-s">＜</button><button class="btn-s">＞</button></div>
+        </div>
+        <div class="cal">
+          <div class="cah">日</div><div class="cah">一</div><div class="cah">二</div><div class="cah">三</div><div class="cah">四</div><div class="cah">五</div><div class="cah">六</div>
+          <div class="cad">1</div><div class="cad">2</div><div class="cad">3</div><div class="cad">4</div><div class="cad av">5</div><div class="cad av">6</div><div class="cad">7</div>
+          <div class="cad">8</div><div class="cad">9</div><div class="cad av sel" id="sel-day" onclick="selDay(this)">10</div><div class="cad">11</div><div class="cad av">12</div><div class="cad">13</div><div class="cad">14</div>
+          <div class="cad">15</div><div class="cad">16</div><div class="cad">17</div><div class="cad av">18</div><div class="cad">19</div><div class="cad av">20</div><div class="cad">21</div>
+          <div class="cad">22</div><div class="cad">23</div><div class="cad av">24</div><div class="cad">25</div><div class="cad">26</div><div class="cad">27</div><div class="cad">28</div>
+          <div class="cad">29</div><div class="cad">30</div><div class="cad av">31</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">📅 3月10日 · 可预约时间段</div>
+        <div class="time-slot-wrap">
+          <button class="btn-s bl" style="background:#1e40af;color:white;border-color:#1e40af">✓ 09:00-09:30</button>
+          <button class="btn-s bl">09:30-10:00</button>
+          <button class="btn-s bl" style="background:#1e40af;color:white;border-color:#1e40af">✓ 19:00-19:30</button>
+          <button class="btn-s bl">19:30-20:00</button>
+          <button class="btn-s bl" style="background:#1e40af;color:white;border-color:#1e40af">✓ 20:00-20:30</button>
+          <button class="btn-s bl">20:30-21:00</button>
+        </div>
+      </div>
+      <button class="btn-s bl" style="width:100%;padding:11px;text-align:center;margin-bottom:10px">📋 批量设置每周固定时段</button>
+      <button class="btn-p bg-blue" onclick="toast('设置成功')">保存设置</button>
+    </div>
+
+    <!-- ④ 等级成长 -->
+    <div class="page" id="p-level">
+      <div class="level-hero">
+        <div class="level-name">🥇 黄金咨询师</div>
+        <div class="level-sub">后台等级：3级 &nbsp;·&nbsp; 距下一级还差 120 成长值</div>
+      </div>
+      <div class="card">
+        <div class="ct c-blue">升级至 💎 钻石咨询师 的条件</div>
+        <div class="sr"><span style="font-size:14px">咨询完成率 ≥ 95%</span><span class="pass">当前 98% ✓</span></div>
+        <div class="sr"><span style="font-size:14px">平台裁决好评率 ≥ 90%</span><span class="fail">当前 88% ✗</span></div>
+        <div class="sr"><span style="font-size:14px">无违规记录</span><span class="pass">无 ✓</span></div>
+        <div class="sr"><span style="font-size:14px">累计咨询时长 ≥ 100小时</span><span class="fail">当前 85h ✗</span></div>
+        <div class="pbar mt12"><div class="pfill" style="width:65%"></div></div>
+        <div class="fh" style="text-align:right;margin-top:4px">综合进度 65%，距达标还需提升</div>
+      </div>
+      <div class="alert">💡 等级提升可解锁专场直播申请权限，获得更多曝光和佣金加成</div>
+      <button class="btn-p ba-disabled mt12" disabled>申请专场直播（等级不足，暂不可申请）</button>
+    </div>
+
+    <!-- ⑤ 预约管理 -->
+    <div class="page" id="p-appts">
+      <div class="fbar">
+        <button class="fbtn ab">全部</button>
+        <button class="fbtn">待确认</button>
+        <button class="fbtn">已确认</button>
+        <button class="fbtn">已完成</button>
+        <button class="fbtn">已取消</button>
+      </div>
+      <input class="fi" style="margin-bottom:12px" placeholder="🔍 搜索用户姓名 / 预约日期">
+
+      <div class="li">
+        <div class="li-head"><span class="li-name">李**</span><span class="bdg bdg-blue">待确认</span></div>
+        <div class="li-sub">📅 2026-06-10 &nbsp; 19:00-19:30</div>
+        <div class="li-desc">💬 咨询计算机专业保研流程及相关注意事项</div>
+        <div class="btn-row"><button class="btn-a ba-blue" onclick="toast('已接受预约')">接受预约</button><button class="btn-a ba-gray" onclick="toast('请填写取消原因')">取消预约</button></div>
+      </div>
+
+      <div class="li">
+        <div class="li-head"><span class="li-name">王**</span><span class="bdg bdg-green">已确认</span></div>
+        <div class="li-sub">📅 2026-06-12 &nbsp; 20:00-20:30</div>
+        <div class="li-desc">💬 高考志愿冲稳保策略及院校选择建议</div>
+        <div class="btn-row"><button class="btn-a ba-blue" onclick="toast('发起会议中…')">发起会议</button><button class="btn-a ba-gray" onclick="toast('取消将承担违约处罚')">取消预约</button></div>
+      </div>
+
+      <div class="li">
+        <div class="li-head"><span class="li-name">赵**</span><span class="bdg bdg-gray">已完成</span></div>
+        <div class="li-sub">📅 2026-06-05 &nbsp; 19:00-19:30</div>
+        <div class="li-desc">💬 双非院校转专业难度及时间节点分析</div>
+        <div class="btn-row"><button class="btn-a ba-gray" onclick="toast('查看会议笔记')">查看会议笔记</button></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- Bottom Nav -->
+  <div class="bnav">
+    <button class="ni ab" onclick="go('reg',this,'咨询师注册认证')"><span class="ni-icon">📝</span>注册认证</button>
+    <button class="ni" onclick="go('profile',this,'个人宣传设置')"><span class="ni-icon">👤</span>宣传设置</button>
+    <button class="ni" onclick="go('schedule',this,'可预约时间设置')"><span class="ni-icon">📅</span>时间管理</button>
+    <button class="ni" onclick="go('level',this,'等级与成长')"><span class="ni-icon">🏆</span>等级成长</button>
+    <button class="ni" onclick="go('appts',this,'预约管理')"><span class="ni-icon">📋</span>预约管理</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- 协议弹窗 -->
+  <div class="overlay" id="overlay" onclick="hideModal(event)">
+    <div class="modal-box">
+      <div style="font-size:17px;font-weight:700;margin-bottom:14px">平台与咨询师协议</div>
+      <div style="font-size:13px;color:#374151;line-height:1.9">
+        <p>1. 咨询师不得虚假宣传，不得承诺任何具体录取结果；</p>
+        <p>2. 咨询师不得以任何形式泄露用户隐私及个人信息；</p>
+        <p>3. 禁止在平台外私自交易或引导用户转移至第三方；</p>
+        <p>4. 违规行为将受到警告、降级或封号等处罚；</p>
+        <p>5. 平台对裁决结果拥有最终解释权。</p>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;margin:16px 0;font-size:13px;cursor:pointer">
+        <input type="checkbox" id="agree-check">我已阅读并同意以上协议
+      </label>
+      <button class="btn-p bg-blue" onclick="hideModal()">确认同意</button>
+    </div>
+  </div>
+
+</div><!-- /mobile -->
+
+<script>
+  function go(id, el, title) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('p-' + id).classList.add('active');
+    document.querySelectorAll('.ni').forEach(n => n.classList.remove('ab'));
+    el.classList.add('ab');
+    document.getElementById('tb').textContent = title;
+  }
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.style.display = 'block';
+    clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 2200);
+  }
+  function showModal() { document.getElementById('overlay').style.display = 'flex'; }
+  function hideModal(e) {
+    if (!e || e.target === document.getElementById('overlay')) document.getElementById('overlay').style.display = 'none';
+  }
+  function togTag(el) {
+    el.classList.toggle('sel');
+  }
+  document.querySelectorAll('.fbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.fbar').querySelectorAll('.fbtn').forEach(b => b.classList.remove('ab'));
+      btn.classList.add('ab');
+    });
+  });
+  document.querySelectorAll('.cad').forEach(d => {
+    d.addEventListener('click', () => {
+      if (!d.textContent.trim()) return;
+      document.querySelectorAll('.cad').forEach(x => x.classList.remove('sel'));
+      d.classList.add('sel', 'av');
+    });
+  });
+</script>
+</body>
+</html>
