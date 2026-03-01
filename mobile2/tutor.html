@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>导师端 · 高考志愿咨询师</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
   <style>
     .level-hero{text-align:center;padding:24px 16px 16px}
     .level-name{font-size:34px;font-weight:700;color:#d97706;margin-bottom:6px}
@@ -98,11 +99,11 @@
     <!-- ③ 等级成长 -->
     <div class="page" id="p-level">
       <div class="level-hero">
-        <div class="level-name">📖 硕士咨询师</div>
-        <div class="level-sub">Lv3 · 成长值 680 / 800 &nbsp;·&nbsp; 距升级博士还差 120 分</div>
+        <div class="level-name" id="cur-level-display"></div>
+        <div class="level-sub" id="cur-level-sub"></div>
       </div>
       <div class="card">
-        <div class="ct c-blue">升级至 🔬 博士咨询师 的条件</div>
+        <div class="ct c-blue">升级至 <span id="next-level-display"></span> 的条件</div>
         <div class="sr"><span style="font-size:14px">10分钟响应率 ≥ 88%</span><span class="pass">当前 91% ✓</span></div>
         <div class="sr"><span style="font-size:14px">咨询完成率 ≥ 92%</span><span class="pass">当前 94% ✓</span></div>
         <div class="sr"><span style="font-size:14px">平台好评率 ≥ 85%</span><span class="fail">当前 82% ✗</span></div>
@@ -113,6 +114,7 @@
       </div>
       <div class="alert">💡 等级提升可解锁专场直播申请权限，获得更多曝光和佣金加成</div>
       <button class="btn-p ba-disabled mt12" disabled>申请专场直播（等级不足，暂不可申请）</button>
+      <div class="card" id="level-overview" style="margin-top:12px"></div>
     </div>
 
     <!-- ④ 宣传设置 -->
@@ -159,7 +161,7 @@
           <div class="av">👨‍🏫</div>
           <div class="flex-1">
             <div style="font-size:16px;font-weight:700;margin-bottom:4px">张XX</div>
-            <div><span class="bdg bdg-blue">📖 硕士咨询师</span> <span class="bdg bdg-blue">在校生</span></div>
+            <div><span class="bdg" id="preview-badge"></span> <span class="bdg bdg-blue">在校生</span></div>
             <div style="font-size:12px;color:#6b7280;margin-top:4px">北京大学 · 计算机科学</div>
           </div>
           <div style="font-size:15px;font-weight:700;color:#1e40af">100元<br><span style="font-size:11px;font-weight:400;color:#9ca3af">/30分钟</span></div>
@@ -176,7 +178,7 @@
           <div class="av av-lg">👨‍🏫</div>
           <div class="flex-1">
             <div class="mine-name">张XX</div>
-            <div class="mine-meta">北京大学 · 计算机科学 &nbsp;·&nbsp; <span class="bdg bdg-blue" style="font-size:10px">📖 硕士</span></div>
+            <div class="mine-meta">北京大学 · 计算机科学 &nbsp;·&nbsp; <span class="bdg" id="mine-badge" style="font-size:10px"></span></div>
           </div>
           <button class="btn-s" style="background:rgba(255,255,255,.2);color:white;border-color:rgba(255,255,255,.3)" data-goto="reg" data-ttl="咨询师注册认证">认证资料</button>
         </div>
@@ -403,6 +405,47 @@
   if (phoneToggle) phoneToggle.addEventListener('change', () => {
     phoneInput.style.display = phoneToggle.checked ? 'block' : 'none';
   });
+
+  // 初始化等级显示（演示当前等级 Lv3，修改 CUR_LV 即可切换）
+  function initLevels() {
+    const CUR_LV = 3;
+    const cur  = TUTOR_LEVELS[CUR_LV - 1];
+    const next = TUTOR_LEVELS[CUR_LV]; // lv CUR_LV+1
+    const $ = id => document.getElementById(id);
+
+    if ($('cur-level-display')) $('cur-level-display').textContent = cur.icon + ' ' + cur.name;
+    if ($('cur-level-sub'))     $('cur-level-sub').innerHTML =
+      `Lv${cur.lv} · 成长值 680 / 800 &nbsp;·&nbsp; 距升级${next.name}还差 120 分`;
+    if ($('next-level-display')) $('next-level-display').textContent = next.icon + ' ' + next.name;
+
+    ['preview-badge', 'mine-badge'].forEach(id => {
+      const el = $(id);
+      if (!el) return;
+      el.className = 'bdg ' + cur.badge;
+      if (id === 'mine-badge') el.style.fontSize = '10px';
+      el.textContent = cur.icon + ' ' + cur.name;
+    });
+
+    // 等级体系总览
+    const ov = $('level-overview');
+    if (ov) {
+      ov.innerHTML = '<div class="ct c-blue">等级体系总览</div>' +
+        TUTOR_LEVELS.map((lv, i) => {
+          const isCur = lv.lv === CUR_LV;
+          const isLast = i === TUTOR_LEVELS.length - 1;
+          const rowStyle = isCur
+            ? 'background:#eff6ff;border-radius:8px;padding:6px 8px;margin:2px -8px'
+            : `padding:6px 0;${isLast ? '' : 'border-bottom:1px solid #f3f4f6'}`;
+          return `<div style="display:flex;align-items:center;gap:10px;${rowStyle}">
+            <span class="bdg ${lv.badge}" style="white-space:nowrap;font-size:11px">${lv.icon} ${lv.name}</span>
+            <span style="flex:1;font-size:12px;color:#6b7280">${lv.desc}</span>
+            ${isCur ? '<span style="font-size:11px;color:#1e40af;font-weight:600;white-space:nowrap">◀ 当前</span>' : ''}
+          </div>`;
+        }).join('') +
+        '<div style="font-size:11px;color:#9ca3af;margin-top:10px">* 升级需同时满足以上指标，且近3个月无违规记录</div>';
+    }
+  }
+  initLevels();
 </script>
 </body>
 </html>
