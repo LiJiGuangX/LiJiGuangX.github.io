@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台 · 高考志愿咨询师</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;background:#f3f4f6;min-height:100vh}
+    .adm-hd{background:linear-gradient(135deg,#1e3a8a,#1e40af);color:white;padding:14px 20px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
+    .adm-title{font-size:16px;font-weight:700;flex:1}
+    .adm-nav{background:white;border-bottom:2px solid #e5e7eb;display:flex;overflow-x:auto;position:sticky;top:52px;z-index:90}
+    .adm-nav::-webkit-scrollbar{display:none}
+    .atab{padding:12px 16px;border:none;background:none;cursor:pointer;font-size:13px;color:#9ca3af;font-family:inherit;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s}
+    .atab.on{color:#1e40af;border-bottom-color:#1e40af;font-weight:600}
+    .wrap{padding:16px;max-width:720px;margin:0 auto}
+    .asec{display:none}.asec.on{display:block}
+    /* Stat cards */
+    .sg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+    .sg3{grid-template-columns:repeat(3,1fr)}
+    .sc{background:white;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .sv{font-size:22px;font-weight:700;margin-bottom:3px}
+    .sl{font-size:12px;color:#9ca3af}
+    .ss{font-size:11px;color:#6b7280;margin-top:2px}
+    .cv-blue{color:#1e40af}.cv-green{color:#059669}.cv-red{color:#dc2626}.cv-orange{color:#d97706}.cv-purple{color:#7c3aed}
+    /* Quick action */
+    .qa{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+    .qa-c{background:white;border-radius:12px;padding:14px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:box-shadow .15s}
+    .qa-c:hover{box-shadow:0 4px 12px rgba(0,0,0,.12)}
+    .qa-ico{font-size:26px;flex-shrink:0}
+    .qa-lbl{font-size:13px;font-weight:600;color:#374151}
+    .qa-n{font-size:20px;font-weight:700;color:#dc2626}
+    /* Section header */
+    .sh{font-size:15px;font-weight:700;color:#111827;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+    /* Filter */
+    .fb{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto}
+    .fb::-webkit-scrollbar{display:none}
+    .fbn{padding:6px 14px;border-radius:20px;font-size:13px;white-space:nowrap;border:1.5px solid #e5e7eb;background:white;cursor:pointer;font-family:inherit;color:#374151}
+    .fbn.on{background:#1e40af;color:white;border-color:#1e40af}
+    /* Review item */
+    .ri{background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .ri-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+    .ri-name{font-size:15px;font-weight:700}
+    .ri-meta{font-size:12px;color:#6b7280;margin-bottom:8px}
+    .ri-body{font-size:13px;color:#374151;background:#f9fafb;padding:10px;border-radius:8px;margin-bottom:10px;line-height:1.65}
+    .ra{display:flex;gap:8px}
+    .rb{flex:1;padding:9px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+    .rb-ok{background:#059669;color:white}
+    .rb-mod{background:#d97706;color:white}
+    .rb-no{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
+    .rb-gray{background:#f3f4f6;color:#374151}
+    /* Badges */
+    .b{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+    .b-warn{background:#fef9c3;color:#92400e}
+    .b-ok{background:#d1fae5;color:#065f46}
+    .b-err{background:#fee2e2;color:#b91c1c}
+    .b-gray{background:#f3f4f6;color:#6b7280}
+    .b-blue{background:#dbeafe;color:#1d4ed8}
+    /* AI tag */
+    .ai{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;margin-right:6px}
+    .ai-mid{background:#fef9c3;color:#d97706}
+    .ai-low{background:#d1fae5;color:#059669}
+    .ai-high{background:#fee2e2;color:#dc2626}
+    /* Risk word */
+    .risk{background:#fee2e2;border-radius:3px;padding:1px 4px;color:#b91c1c;font-weight:600}
+    /* Image row */
+    .imgr{display:flex;gap:8px;margin-bottom:8px}
+    .imgt{width:70px;height:70px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:2px solid transparent;flex-shrink:0}
+    .imgt.warn{border-color:#fca5a5;background:#fee2e2}
+    /* Violation item */
+    .vi{border-left:4px solid #dc2626}
+    .vi-o{border-left:4px solid #d97706}
+    /* Dispute resolution */
+    .dr{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .drb{padding:9px 14px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+    /* Toast */
+    .toast{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);color:white;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap}
+  </style>
+</head>
+<body>
+  <div class="adm-hd">
+    <span style="font-size:22px">🛡️</span>
+    <span class="adm-title">高考志愿咨询 · 管理后台</span>
+    <span style="font-size:13px;opacity:.8">超级管理员</span>
+  </div>
+
+  <div class="adm-nav">
+    <button class="atab on" data-sec="s-dash">数据总览</button>
+    <button class="atab" data-sec="s-cert">资质审核</button>
+    <button class="atab" data-sec="s-kw">关键词审核</button>
+    <button class="atab" data-sec="s-cont">内容合规</button>
+    <button class="atab" data-sec="s-disp">争议裁决</button>
+    <button class="atab" data-sec="s-vio">违规处理</button>
+  </div>
+
+  <div class="wrap">
+
+    <!-- ① 数据总览 -->
+    <div class="asec on" id="s-dash">
+      <div class="sh">今日概览 · 2026-03-01</div>
+      <div class="sg">
+        <div class="sc"><div class="sv cv-blue">1,204</div><div class="sl">在册咨询师</div><div class="ss">↑12 本周新增</div></div>
+        <div class="sc"><div class="sv cv-green">86</div><div class="sl">今日预约</div><div class="ss">完成率 92%</div></div>
+        <div class="sc"><div class="sv cv-orange">51</div><div class="sl">待处理事项</div><div class="ss">审核37·裁决3·违规11</div></div>
+        <div class="sc"><div class="sv cv-red">3</div><div class="sl">今日超时未确认</div><div class="ss">10分钟内未响应</div></div>
+      </div>
+
+      <div class="sh">咨询师等级分布（方案A）</div>
+      <div class="sg sg3">
+        <div class="sc"><div class="sv" style="color:#9ca3af">423</div><div class="sl">📝 预科</div></div>
+        <div class="sc"><div class="sv" style="color:#3b82f6">389</div><div class="sl">🎓 学士</div></div>
+        <div class="sc"><div class="sv cv-blue">268</div><div class="sl">📖 硕士</div></div>
+        <div class="sc"><div class="sv cv-orange">98</div><div class="sl">🔬 博士</div></div>
+        <div class="sc"><div class="sv cv-purple">22</div><div class="sl">🏛️ 博士后</div></div>
+        <div class="sc"><div class="sv cv-red">4</div><div class="sl">👑 院士</div></div>
+      </div>
+
+      <div class="sh">待处理快速入口</div>
+      <div class="qa">
+        <div class="qa-c" onclick="sw('s-cert')"><span class="qa-ico">📝</span><div><div class="qa-lbl">导师资质审核</div><div class="qa-n">12</div></div></div>
+        <div class="qa-c" onclick="sw('s-kw')"><span class="qa-ico">🔑</span><div><div class="qa-lbl">关键词审核</div><div class="qa-n">36</div></div></div>
+        <div class="qa-c" onclick="sw('s-cont')"><span class="qa-ico">🖼️</span><div><div class="qa-lbl">内容合规审核</div><div class="qa-n">3</div></div></div>
+        <div class="qa-c" onclick="sw('s-disp')"><span class="qa-ico">⚖️</span><div><div class="qa-lbl">争议裁决</div><div class="qa-n">3</div></div></div>
+      </div>
+    </div>
+
+    <!-- ② 导师资质审核 -->
+    <div class="asec" id="s-cert">
+      <div class="fb">
+        <button class="fbn on">待审核 (12)</button>
+        <button class="fbn">已通过</button>
+        <button class="fbn">已驳回</button>
+        <button class="fbn">待补材料</button>
+      </div>
+
+      <div class="ri">
+        <div class="ri-hd"><div><div class="ri-name">张小明</div><div class="ri-meta">北京大学 · 计算机科学 · 在校生 · 提交：2026-03-01 09:15</div></div><span class="b b-warn">待审核</span></div>
+        <div class="ri-body">身份证：110101****2318 &nbsp;|&nbsp; 学信网：<span style="color:#059669;font-weight:600">系统已比对 ✓</span><br>院校：北京大学 &nbsp;|&nbsp; 专业：计算机科学 &nbsp;|&nbsp; 年级：2023级</div>
+        <div class="ra">
+          <button class="rb rb-ok" data-toast="已通过张小明的认证申请">✅ 通过</button>
+          <button class="rb rb-mod" data-toast="已发送补材通知">📋 要求补材</button>
+          <button class="rb rb-no" data-toast="请填写驳回原因">❌ 驳回</button>
+        </div>
+      </div>
+
+      <div class="ri">
+        <div class="ri-hd"><div><div class="ri-name">李思雨</div><div class="ri-meta">清华大学 · 电子工程 · 毕业2年 · 提交：2026-03-01 08:42</div></div><span class="b b-warn">待审核</span></div>
+        <div class="ri-body">身份证：110105****1821 &nbsp;|&nbsp; 学信网：<span style="color:#dc2626;font-weight:600">需人工核对 ⚠️</span><br>院校：清华大学 &nbsp;|&nbsp; 专业：电子信息工程 &nbsp;|&nbsp; 状态：2024届毕业</div>
+        <div class="ra">
+          <button class="rb rb-ok" data-toast="已通过李思雨的认证申请">✅ 通过</button>
+          <button class="rb rb-mod" data-toast="已发送补材通知">📋 要求补材</button>
+          <button class="rb rb-no" data-toast="请选择驳回原因">❌ 驳回</button>
+        </div>
+      </div>
+
+      <button style="width:100%;padding:12px;background:#f3f4f6;border:none;border-radius:10px;font-size:14px;font-weight:600;color:#374151;cursor:pointer;font-family:inherit;margin-top:4px" data-toast="已批量通过学信网已验证的9条申请">⚡ 批量通过（仅学信网已自动验证）</button>
+    </div>
+
+    <!-- ③ 关键词审核 -->
+    <div class="asec" id="s-kw">
+      <div class="fb">
+        <button class="fbn on">待审核 (36)</button>
+        <button class="fbn">已通过</button>
+        <button class="fbn">已驳回</button>
+      </div>
+
+      <div class="ri">
+        <div class="ri-hd"><div><div class="ri-name">「北大计算机内部资料」</div><div class="ri-meta">申请人：张XX（📖 硕士 · 北京大学）· 2026-03-01</div></div><span class="ai ai-mid">🤖 风险：中</span></div>
+        <div class="ri-body">「内部资料」可能引发虚假宣传联想<br>建议修改为：<strong>「北大计算机保研经验分享」</strong></div>
+        <div class="ra">
+          <button class="rb rb-ok" data-toast="关键词已通过">✅ 通过</button>
+          <button class="rb rb-mod" data-toast="已发送修改建议">✏️ 建议修改</button>
+          <button class="rb rb-no" data-toast="关键词已驳回">❌ 驳回</button>
+        </div>
+      </div>
+
+      <div class="ri">
+        <div class="ri-hd"><div><div class="ri-name">「竞赛获奖经历」</div><div class="ri-meta">申请人：王XX（🎓 学士 · 复旦大学）· 2026-03-01</div></div><span class="ai ai-low">🤖 风险：低</span></div>
+        <div class="ri-body">与申请人资质（竞赛获奖证书已上传）匹配，无风险词汇，建议直接通过。</div>
+        <div class="ra">
+          <button class="rb rb-ok" data-toast="关键词已通过">✅ 通过</button>
+          <button class="rb rb-no" data-toast="关键词已驳回">❌ 驳回</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ 内容合规审核 -->
+    <div class="asec" id="s-cont">
+      <div class="sh">内容待审核（3项）</div>
+
+      <div class="ri">
+        <div class="ri-hd"><div><div class="ri-name">赵天宇 · 宣传资料更新</div><div class="ri-meta">复旦大学 · 金融学 · 提交：2026-03-01 10:20</div></div><span class="b b-warn">待审核</span></div>
+
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">📝 自我介绍文本</div>
+        <div class="ri-body">复旦金融学在读，<span class="risk">保证帮您</span>进入理想学校，四年<span class="risk">内部名额</span>保研/就业规划全包...<br><span style="font-size:11px;color:#dc2626">⚠️ AI已标注2处风险词，含承诺性表达</span></div>
+
+        <div style="font-size:13px;font-weight:600;margin:10px 0 6px">🖼️ 宣传图片</div>
+        <div class="imgr">
+          <div class="imgt">🏆</div>
+          <div class="imgt">📜</div>
+          <div class="imgt warn">⚠️</div>
+        </div>
+        <div style="font-size:12px;color:#dc2626;margin-bottom:10px">第3张图含联系方式（微信号），需驳回</div>
+
+        <div class="ra">
+          <button class="rb rb-mod" data-toast="已部分驳回：文本+第3张图，其余内容通过">🔧 部分驳回</button>
+          <button class="rb rb-no" data-toast="全部内容已驳回，已通知修改">❌ 全部驳回</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ 争议裁决 -->
+    <div class="asec" id="s-disp">
+      <div class="fb">
+        <button class="fbn on">待裁决 (3)</button>
+        <button class="fbn">已裁决</button>
+      </div>
+
+      <div class="ri">
+        <div class="ri-hd"><div><div class="ri-name">争议 #20260310-001</div><div class="ri-meta">导师张XX（📖 硕士）↔ 学生李** · 2026-06-10 19:00 · 费用100元</div></div><span class="b b-warn">待裁决</span></div>
+        <div class="ri-body">
+          <strong>学生反馈：</strong>「全程照本宣科，未针对具体情况分析，要求退款」<br>
+          <strong>🤖 AI笔记摘要：</strong>会议时长28分钟，涵盖保研条件、院校推荐、时间节点3项。<br>
+          <strong>🤖 AI评估：</strong>服务内容基本达标，未见明显失职，建议部分退款安抚用户。
+        </div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px">裁决操作（需填写裁决理由）</div>
+        <div class="dr">
+          <button class="drb rb-ok" data-toast="已裁决：维持结果，费用归导师，已通知双方">✅ 维持结果</button>
+          <button class="drb rb-mod" data-toast="已裁决：退款30%（30元），已通知双方">💸 退款30%</button>
+          <button class="drb rb-mod" style="background:#7c3aed" data-toast="已裁决：退款50%（50元），已通知双方">💸 退款50%</button>
+          <button class="drb rb-no" data-toast="已裁决：全额退款，已通知双方">🔄 全额退款</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑥ 违规处理 -->
+    <div class="asec" id="s-vio">
+      <div class="fb">
+        <button class="fbn on">待处理 (11)</button>
+        <button class="fbn">已处理</button>
+      </div>
+
+      <div class="ri vi">
+        <div class="ri-hd"><div><div class="ri-name">孙XX · 会议中引导私下交易</div><div class="ri-meta">📖 硕士咨询师 · 举报时间：2026-03-01 11:30</div></div><span class="b b-err">高风险</span></div>
+        <div class="ri-body">用户举报：导师多次在会议中引导添加微信，提示平台外低价咨询。AI会议笔记含多处关键片段。</div>
+        <div class="ra">
+          <button class="rb rb-mod" data-toast="已发出书面警告，记录在案">⚠️ 警告</button>
+          <button class="rb rb-mod" style="background:#7c3aed" data-toast="已强制降级：硕士→学士">⬇️ 强制降级</button>
+          <button class="rb rb-no" data-toast="账号已封禁，用户已通知">🚫 封禁</button>
+        </div>
+      </div>
+
+      <div class="ri vi-o">
+        <div class="ri-hd"><div><div class="ri-name">周XX · 10分钟响应超时 ×3</div><div class="ri-meta">🎓 学士咨询师 · 本周累计3次超时</div></div><span class="b b-warn">中风险</span></div>
+        <div class="ri-body">本周超时率12%，已触发响应预警（阈值10%），成长值扣分机制自动触发，建议同步发送预警通知。</div>
+        <div class="ra">
+          <button class="rb rb-gray" data-toast="预警通知已发送">📩 发预警通知</button>
+          <button class="rb rb-mod" data-toast="已扣除成长值5分，日志已记录">📉 扣成长值</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /wrap -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    function sw(id) {
+      document.querySelectorAll('.asec').forEach(s => s.classList.remove('on'));
+      document.querySelectorAll('.atab').forEach(t => t.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      document.querySelector(`.atab[data-sec="${id}"]`).classList.add('on');
+    }
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.style.display = 'block';
+      clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 2600);
+    }
+    document.querySelectorAll('.atab').forEach(t => t.addEventListener('click', () => sw(t.dataset.sec)));
+    document.querySelectorAll('.fbn').forEach(b => b.addEventListener('click', () => {
+      b.closest('.fb').querySelectorAll('.fbn').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+    }));
+    document.addEventListener('click', e => {
+      const el = e.target.closest('[data-toast]');
+      if (el) toast(el.dataset.toast);
+    });
+  </script>
+</body>
+</html>
