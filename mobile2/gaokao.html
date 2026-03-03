@@ -1,1340 +1,1031 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>高考志愿填报 · 厚浪</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    /* === Wave Header === */
-    .wave-header {
-      position: relative;
-      background: linear-gradient(135deg, #1e3a8a, #1d4ed8, #3b82f6);
-      padding: 20px 16px 44px;
-      color: white;
-      overflow: hidden;
-    }
-    .wave-header svg {
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      width: 100%;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>高考志愿填报 · 厚浪</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ── 去掉数字箭头 ── */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
 
-    /* === Input Hero === */
-    .input-hero {
-      background: linear-gradient(135deg, #1e3a8a, #1d4ed8, #3b82f6);
-      padding: 28px 20px 52px;
-      color: white;
-      position: relative;
-      overflow: hidden;
-      margin: -16px -16px 0;
-    }
-    .input-hero::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 28px;
-      background: #f5f7fa;
-      border-radius: 28px 28px 0 0;
-    }
-    .input-hero .wave-bg {
-      position: absolute;
-      bottom: 20px; left: 0; right: 0;
-      opacity: 0.15;
-      height: 60px;
-    }
-    .ih-brand { font-size: 12px; opacity: 0.7; margin-bottom: 4px; letter-spacing: 1px; }
-    .ih-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-    .ih-sub { font-size: 13px; opacity: 0.8; }
+/* ── Topbar ── */
+.gk-bar{background:linear-gradient(90deg,#1e3a8a,#1d4ed8);padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;color:white}
+.gk-bar-title{font-size:17px;font-weight:700;flex:1;text-align:center}
 
-    /* === Progress Steps === */
-    .progress-steps {
-      display: flex;
-      align-items: flex-start;
-      padding: 14px 20px 10px;
-      background: white;
-      border-bottom: 1px solid #f3f4f6;
-    }
-    .ps-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex: 1;
-      gap: 4px;
-      font-size: 10px;
-      color: #9ca3af;
-    }
-    .ps-item.active { color: #1e40af; font-weight: 600; }
-    .ps-item.done { color: #059669; }
-    .ps-dot {
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700;
-      background: #e5e7eb; color: #9ca3af;
-      flex-shrink: 0;
-    }
-    .ps-dot.done { background: #059669; color: white; }
-    .ps-dot.active { background: #1e40af; color: white; box-shadow: 0 0 0 3px #dbeafe; }
-    .ps-connector {
-      flex: 1;
-      height: 2px;
-      background: #e5e7eb;
-      margin-top: 11px;
-      align-self: flex-start;
-    }
-    .ps-connector.done { background: #059669; }
+/* ── Hero ── */
+.hero{background:linear-gradient(135deg,#1e3a8a,#1d4ed8,#3b82f6);padding:24px 20px 50px;color:white;position:relative;overflow:hidden;margin:-16px -16px 0}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:28px;background:#f5f7fa;border-radius:28px 28px 0 0}
+.hero-brand{font-size:12px;opacity:.65;margin-bottom:6px;letter-spacing:.5px}
+.hero-title{font-size:21px;font-weight:700;margin-bottom:4px}
+.hero-sub{font-size:13px;opacity:.8}
 
-    /* === Province Grid === */
-    .province-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      max-height: 148px;
-      overflow-y: auto;
-    }
-    .prov-btn {
-      padding: 7px 4px;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 12px;
-      background: white;
-      cursor: pointer;
-      font-family: inherit;
-      text-align: center;
-      color: #374151;
-    }
-    .prov-btn.on { background: #1e40af; color: white; border-color: #1e40af; }
+/* ── 选科 ── */
+.seg{display:flex;background:#f3f4f6;border-radius:10px;padding:3px}
+.seg-btn{flex:1;padding:10px;border:none;background:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;color:#6b7280;transition:all .2s}
+.seg-btn.on{background:white;color:#1e40af;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.1)}
 
-    /* === Segmented Control === */
-    .seg-ctrl {
-      display: flex;
-      background: #f3f4f6;
-      border-radius: 10px;
-      padding: 3px;
-    }
-    .seg-btn {
-      flex: 1; padding: 10px;
-      border: none; background: none;
-      border-radius: 8px;
-      font-size: 14px; font-weight: 500;
-      cursor: pointer; font-family: inherit; color: #6b7280;
-      transition: all .2s;
-    }
-    .seg-btn.on {
-      background: white; color: #1e40af; font-weight: 700;
-      box-shadow: 0 1px 4px rgba(0,0,0,.1);
-    }
+/* ── 各科成绩 ── */
+.subj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.subj-box{background:#f9fafb;border-radius:10px;padding:8px;text-align:center}
+.subj-name{font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:2px}
+.subj-max{font-size:10px;color:#9ca3af;display:block;margin-bottom:5px}
+.subj-inp{width:100%;border:1.5px solid #e5e7eb;border-radius:8px;padding:6px 4px;font-size:18px;font-weight:700;text-align:center;font-family:inherit;background:white;color:#1d4ed8}
+.subj-inp:focus{outline:none;border-color:#1d4ed8}
+.subj-sel{width:100%;border:none;background:none;font-size:12px;font-weight:600;color:#374151;font-family:inherit;cursor:pointer;text-align:center;margin-bottom:2px}
+.total-display{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 12px;background:linear-gradient(90deg,#eff6ff,#dbeafe);border-radius:10px}
+.total-label{font-size:13px;color:#374151}
+.total-num{font-size:22px;font-weight:700;color:#1e40af}
 
-    /* === Pool Count === */
-    .pool-count-row {
-      display: flex; align-items: center; gap: 10px;
-      margin-top: 10px;
-    }
-    .pool-count-input {
-      width: 72px; padding: 8px 10px;
-      border: 1.5px solid #e5e7eb; border-radius: 8px;
-      font-size: 18px; font-weight: 700;
-      text-align: center; font-family: inherit;
-    }
-    .pool-count-input:focus { outline: none; border-color: #1d4ed8; }
-    .distribution-bar {
-      display: flex; gap: 8px; margin-top: 12px;
-    }
-    .db-item {
-      flex: 1; text-align: center; padding: 8px 4px; border-radius: 10px;
-    }
-    .db-rush { background: #fee2e2; }
-    .db-stable { background: #fef3c7; }
-    .db-safe { background: #d1fae5; }
-    .db-num { font-size: 20px; font-weight: 700; }
-    .db-lbl { font-size: 11px; margin-top: 2px; }
-    .db-rush .db-num { color: #b91c1c; }
-    .db-stable .db-num { color: #d97706; }
-    .db-safe .db-num { color: #065f46; }
+/* ── 意向专业（内联） ── */
+.major-cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px}
+.major-cats::-webkit-scrollbar{display:none}
+.mc-btn{padding:6px 14px;border-radius:20px;font-size:13px;white-space:nowrap;border:1.5px solid #e5e7eb;background:white;cursor:pointer;color:#374151;font-family:inherit;flex-shrink:0;transition:all .15s}
+.mc-btn.on{background:#1e40af;color:white;border-color:#1e40af}
+.major-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.major-chip{padding:9px 10px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:13px;cursor:pointer;background:white;color:#374151;font-family:inherit;text-align:left;transition:all .15s;line-height:1.3}
+.major-chip.on{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;font-weight:600}
+.selected-majors{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.sel-m-chip{padding:4px 10px;background:#eff6ff;color:#1d4ed8;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px}
+.sel-m-del{cursor:pointer;color:#9ca3af;font-size:14px;line-height:1}
 
-    /* === Info Strip (pool top) === */
-    .info-strip {
-      background: white; border-radius: 12px;
-      padding: 12px 14px; margin-bottom: 10px;
-      box-shadow: 0 1px 6px rgba(0,0,0,.06);
-    }
-    .info-params {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
-    }
-    .ip-chip {
-      padding: 4px 10px; border-radius: 8px;
-      font-size: 12px; font-weight: 600;
-    }
-    .ip-blue { background: #eff6ff; color: #1d4ed8; }
-    .ip-green { background: #f0fdf4; color: #065f46; }
-    .ip-gray { background: #f3f4f6; color: #6b7280; }
-    .ip-purple { background: #f5f3ff; color: #7c3aed; }
-    .sort-pills {
-      display: flex; gap: 6px;
-    }
-    .pill {
-      flex: 1; padding: 7px 0;
-      border-radius: 20px; font-size: 12px; font-weight: 600;
-      border: 1.5px solid #e5e7eb; background: white; color: #6b7280;
-      cursor: pointer; font-family: inherit; text-align: center;
-      transition: all .15s;
-    }
-    .pill.on { background: #1e3a8a; color: white; border-color: #1e3a8a; }
+/* ── 行业 ── */
+.ind-wrap{display:flex;flex-wrap:wrap;gap:7px}
+.ind-chip{padding:7px 12px;border:1.5px solid #e5e7eb;border-radius:20px;font-size:13px;cursor:pointer;background:white;color:#374151;font-family:inherit;transition:all .15s}
+.ind-chip.on{background:#1e40af;color:white;border-color:#1e40af}
 
-    /* === Float Sort Button === */
-    .float-sort {
-      position: sticky; top: 0; z-index: 90;
-      display: flex; justify-content: flex-end;
-      margin-bottom: 8px; pointer-events: none;
-    }
-    .fsort-btn {
-      background: #1e3a8a; color: white;
-      border: none; border-radius: 20px;
-      padding: 7px 14px; font-size: 12px; font-weight: 600;
-      cursor: pointer; font-family: inherit;
-      box-shadow: 0 2px 10px rgba(30,58,138,.35);
-      pointer-events: all;
-      transition: background .2s;
-    }
-    .fsort-btn.active { background: #059669; }
+/* ── 志愿池 ── */
+.pool-filter{display:flex;gap:6px;margin-bottom:12px}
+.pf-btn{flex:1;padding:8px 0;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid #e5e7eb;background:white;color:#6b7280;cursor:pointer;font-family:inherit;text-align:center;transition:all .15s}
+.pf-btn.all.on{background:#1e3a8a;color:white;border-color:#1e3a8a}
+.pf-btn.rush.on{background:#dc2626;color:white;border-color:#dc2626}
+.pf-btn.stable.on{background:#d97706;color:white;border-color:#d97706}
+.pf-btn.safe.on{background:#059669;color:white;border-color:#059669}
 
-    /* === University Card === */
-    .uni-card {
-      background: white; border-radius: 14px;
-      padding: 14px; margin-bottom: 10px;
-      box-shadow: 0 1px 6px rgba(0,0,0,.06);
-      border-left: 3px solid transparent;
-      transition: border-color .2s;
-    }
-    .uni-card.rush { border-left-color: #dc2626; }
-    .uni-card.stable { border-left-color: #d97706; }
-    .uni-card.safe { border-left-color: #059669; }
+/* ── 院校卡片 ── */
+.uni-card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-left:3px solid transparent}
+.uni-card.rush{border-left-color:#dc2626}
+.uni-card.stable{border-left-color:#d97706}
+.uni-card.safe{border-left-color:#059669}
+.uni-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.uni-logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.uni-info{flex:1;min-width:0}
+.uni-name{font-size:15px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uni-loc{font-size:12px;color:#9ca3af;margin-top:2px}
+.prob-badge{padding:5px 10px;border-radius:8px;font-size:13px;font-weight:700;flex-shrink:0}
+.pb-rush{background:#fee2e2;color:#b91c1c}
+.pb-stable{background:#fef3c7;color:#d97706}
+.pb-safe{background:#d1fae5;color:#065f46}
+.uni-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:9px}
+.uni-tag{padding:2px 7px;border-radius:6px;font-size:11px;font-weight:600}
+.ut-985{background:#7c3aed;color:white}.ut-211{background:#1d4ed8;color:white}
+.ut-double{background:#0f766e;color:white}.ut-pub{background:#f3f4f6;color:#374151}
+.rank-strip{display:flex;justify-content:space-between;background:#f9fafb;border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.ri{text-align:center}
+.ri-lbl{font-size:10px;color:#9ca3af;margin-bottom:3px}
+.ri-val{font-size:14px;font-weight:700;color:#111827}
+.ri-val.mine{color:#1d4ed8}.ri-val.pos{color:#059669}.ri-val.neg{color:#dc2626}
+.ri-div{width:1px;background:#e5e7eb;align-self:stretch}
+.ann-row{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.ann-lbl{font-size:12px;color:#9ca3af;flex-shrink:0}
+.ann-group{display:flex;gap:5px;flex:1}
+.ann-btn{flex:1;padding:6px 0;border-radius:8px;font-size:12px;font-weight:600;border:1.5px solid #e5e7eb;background:white;color:#9ca3af;cursor:pointer;font-family:inherit;text-align:center;transition:all .15s}
+.ann-btn.high{background:#1e40af;color:white;border-color:#1e40af}
+.ann-btn.mid{background:#d97706;color:white;border-color:#d97706}
+.ann-btn.low{background:#6b7280;color:white;border-color:#6b7280}
+.ann-btn.drop{background:#dc2626;color:white;border-color:#dc2626}
+.card-btns{display:flex;gap:6px}
+.cb{flex:1;padding:7px 0;border-radius:8px;font-size:11px;font-weight:600;border:1.5px solid #e5e7eb;background:white;color:#374151;cursor:pointer;font-family:inherit;text-align:center;white-space:nowrap;transition:all .15s}
+.cb.blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+.cb.green{background:#f0fdf4;color:#065f46;border-color:#bbf7d0}
+.cb.active{background:#1e40af;color:white;border-color:#1e40af}
 
-    .uni-head {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
-    }
-    .uni-logo {
-      width: 44px; height: 44px; border-radius: 10px;
-      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
-    }
-    .uni-info { flex: 1; min-width: 0; }
-    .uni-name {
-      font-size: 15px; font-weight: 700; color: #111827;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .uni-meta { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+/* ── 悬浮按钮 ── */
+.fab{position:fixed;right:16px;bottom:80px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;z-index:150}
+.fab-blue{background:#1e3a8a;color:white;box-shadow:0 4px 16px rgba(30,58,138,.4)}
 
-    .prob-badge {
-      padding: 5px 10px; border-radius: 8px;
-      font-size: 13px; font-weight: 700; flex-shrink: 0;
-    }
-    .prob-rush { background: #fee2e2; color: #b91c1c; }
-    .prob-stable { background: #fef3c7; color: #d97706; }
-    .prob-safe { background: #d1fae5; color: #065f46; }
+/* ── 志愿清单概览 ── */
+.list-card{background:white;border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);cursor:pointer;transition:transform .1s}
+.list-card:active{transform:scale(.98)}
+.list-card-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.list-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.list-name{font-size:15px;font-weight:700;color:#111827;flex:1}
+.list-menu-btn{font-size:22px;color:#9ca3af;padding:4px;flex-shrink:0;line-height:1}
+.list-counts{display:flex;gap:8px}
+.lc{flex:1;text-align:center;padding:6px 4px;border-radius:8px}
+.lc-r{background:#fee2e2}.lc-s{background:#fef3c7}.lc-p{background:#d1fae5}
+.lc-n{font-size:16px;font-weight:700}
+.lc-r .lc-n{color:#b91c1c}.lc-s .lc-n{color:#d97706}.lc-p .lc-n{color:#065f46}
+.lc-l{font-size:10px;margin-top:2px}
+.lc-r .lc-l{color:#b91c1c}.lc-s .lc-l{color:#d97706}.lc-p .lc-l{color:#065f46}
 
-    .uni-tags {
-      display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 9px;
-    }
-    .uni-tag {
-      padding: 2px 7px; border-radius: 6px;
-      font-size: 11px; font-weight: 600;
-    }
-    .ut-985 { background: #7c3aed; color: white; }
-    .ut-211 { background: #1d4ed8; color: white; }
-    .ut-double { background: #0f766e; color: white; }
-    .ut-public { background: #f3f4f6; color: #374151; }
+/* ── 清单详情 ── */
+.detail-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #f3f4f6}
+.back-btn{font-size:24px;color:#1e40af;cursor:pointer;border:none;background:none;padding:0;line-height:1;flex-shrink:0}
+.detail-name{font-size:17px;font-weight:700;flex:1;color:#111827}
+.rename-btn{font-size:13px;color:#1d4ed8;cursor:pointer;border:none;background:#eff6ff;font-family:inherit;padding:5px 10px;border-radius:6px}
+.detail-stats{display:flex;gap:8px;margin-bottom:12px}
+.ds-item{flex:1;text-align:center;padding:8px 4px;border-radius:10px}
 
-    .rank-row {
-      display: flex; justify-content: space-between; align-items: center;
-      background: #f9fafb; border-radius: 10px;
-      padding: 10px 12px; margin-bottom: 10px;
-    }
-    .rank-item { text-align: center; }
-    .rank-lbl { font-size: 10px; color: #9ca3af; margin-bottom: 3px; }
-    .rank-val { font-size: 14px; font-weight: 700; color: #111827; }
-    .rank-val.mine { color: #1d4ed8; }
-    .rank-val.good { color: #059669; }
-    .rank-val.bad { color: #dc2626; }
-    .rank-divider { width: 1px; height: 28px; background: #e5e7eb; }
+/* ── 清单条目 ── */
+.list-item{background:white;border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.list-item.drag-over{outline:2px dashed #1d4ed8;outline-offset:-2px}
+.list-item.dragging{opacity:.4}
+.li-row{display:flex;align-items:center;gap:8px}
+.li-num{font-size:12px;font-weight:700;color:#9ca3af;width:18px;text-align:center;flex-shrink:0}
+.li-drag{font-size:18px;color:#d1d5db;cursor:grab;flex-shrink:0;user-select:none}
+.li-info{flex:1;min-width:0}
+.li-name{font-size:13px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-sub{font-size:11px;color:#9ca3af;margin-top:1px}
+.li-del{font-size:16px;color:#d1d5db;cursor:pointer;border:none;background:none;padding:4px;flex-shrink:0;transition:color .15s}
+.li-del:hover{color:#dc2626}
+.comply-row{display:flex;justify-content:space-between;align-items:center;margin-top:9px;padding-top:9px;border-top:1px solid #f9fafb}
+.comply-lbl{font-size:13px;color:#374151}
+.comply-tip{font-size:11px;color:#9ca3af;margin-top:1px}
+.list-sticky{position:fixed;bottom:58px;left:50%;transform:translateX(-50%);width:100%;max-width:390px;background:white;border-top:1px solid #e5e7eb;padding:10px 16px;display:flex;gap:8px;z-index:99}
+.ls-btn{flex:1;padding:11px;border-radius:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
+.ls-pdf{background:#1e3a8a;color:white}.ls-xlsx{background:#f0fdf4;color:#065f46}
 
-    /* === Annotation === */
-    .ann-row {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 9px;
-    }
-    .ann-lbl { font-size: 12px; color: #9ca3af; flex-shrink: 0; }
-    .ann-group { display: flex; gap: 5px; flex: 1; }
-    .ann-btn {
-      flex: 1; padding: 6px 0;
-      border-radius: 8px; font-size: 12px; font-weight: 600;
-      border: 1.5px solid #e5e7eb; background: white; color: #9ca3af;
-      cursor: pointer; font-family: inherit; text-align: center;
-      transition: all .15s;
-    }
-    .ann-btn.high { background: #1e40af; color: white; border-color: #1e40af; }
-    .ann-btn.mid  { background: #d97706; color: white; border-color: #d97706; }
-    .ann-btn.low  { background: #6b7280; color: white; border-color: #6b7280; }
-    .ann-btn.drop { background: #dc2626; color: white; border-color: #dc2626; }
+/* ── PK ── */
+.pk-table{background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.pk-row{display:flex;border-bottom:1px solid #f3f4f6}
+.pk-row:last-child{border-bottom:none}
+.pk-label{width:70px;flex-shrink:0;padding:10px 8px;font-size:11px;color:#9ca3af;background:#fafafa;border-right:1px solid #f3f4f6;display:flex;align-items:center}
+.pk-cell{flex:1;padding:10px 6px;font-size:12px;text-align:center;border-right:1px solid #f3f4f6;display:flex;align-items:center;justify-content:center}
+.pk-cell:last-child{border-right:none}
 
-    .card-actions { display: flex; gap: 6px; }
-    .ca-btn {
-      flex: 1; padding: 6px 0;
-      border-radius: 8px; font-size: 11px; font-weight: 600;
-      border: 1.5px solid #e5e7eb; background: white; color: #374151;
-      cursor: pointer; font-family: inherit; text-align: center;
-      white-space: nowrap; transition: all .15s;
-    }
-    .ca-blue { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-    .ca-green { background: #f0fdf4; color: #065f46; border-color: #bbf7d0; }
+/* ── 空状态 ── */
+.empty{text-align:center;padding:48px 20px;color:#9ca3af}
+.empty-ico{font-size:52px;margin-bottom:12px}
+.empty-title{font-size:15px;font-weight:600;color:#374151;margin-bottom:6px}
+.empty-sub{font-size:13px;line-height:1.7}
 
-    /* === Float Consult Button === */
-    .float-consult {
-      position: fixed; right: 16px; bottom: 90px;
-      background: #d97706; color: white;
-      width: 50px; height: 50px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 4px 16px rgba(217,119,6,.4);
-      cursor: pointer; z-index: 150;
-    }
+/* ── Modal ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end}
+.overlay.show{display:flex}
+.modal-box{background:white;border-radius:20px 20px 0 0;padding:20px 16px 36px;max-height:82vh;overflow-y:auto;width:100%;position:relative}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:16px;color:#111827;padding-right:36px}
+.modal-close{position:absolute;right:16px;top:16px;font-size:22px;cursor:pointer;color:#9ca3af;border:none;background:none;line-height:1}
 
-    /* === Draft Page === */
-    .draft-header {
-      background: white; border-radius: 12px;
-      padding: 14px; margin-bottom: 10px;
-      box-shadow: 0 1px 6px rgba(0,0,0,.06);
-    }
-    .draft-counts {
-      display: flex; gap: 8px; margin-top: 10px;
-    }
-    .draft-counts .db-item { cursor: default; }
+/* ── 添加学校搜索 ── */
+.school-search-wrap{position:relative}
+.school-suggestions{position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;max-height:160px;overflow-y:auto;z-index:10;display:none}
+.school-suggestions.show{display:block}
+.school-sugg-item{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid #f3f4f6;color:#111827}
+.school-sugg-item:last-child{border-bottom:none}
+.school-sugg-item:hover{background:#f9fafb}
 
-    .draft-item {
-      background: white; border-radius: 12px;
-      padding: 11px 12px; margin-bottom: 8px;
-      display: flex; align-items: center; gap: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,.05);
-      transition: opacity .15s;
-    }
-    .draft-item.dragging { opacity: 0.4; }
-    .draft-item.over { border: 2px dashed #1d4ed8; }
-    .di-num {
-      font-size: 12px; font-weight: 700;
-      color: #9ca3af; width: 18px; text-align: center; flex-shrink: 0;
-    }
-    .di-handle {
-      font-size: 18px; color: #d1d5db; cursor: grab;
-      flex-shrink: 0; padding: 2px;
-      line-height: 1; user-select: none;
-    }
-    .di-info { flex: 1; min-width: 0; }
-    .di-name {
-      font-size: 13px; font-weight: 600; color: #111827;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .di-sub { font-size: 11px; color: #9ca3af; margin-top: 1px; }
-    .di-del {
-      font-size: 16px; color: #d1d5db; cursor: pointer;
-      flex-shrink: 0; border: none; background: none;
-      padding: 4px; transition: color .15s;
-    }
-    .di-del:hover { color: #dc2626; }
+/* ── 分类 chips ── */
+.type-chips{display:flex;gap:6px;flex-wrap:wrap}
+.tc{padding:7px 16px;border:1.5px solid #e5e7eb;border-radius:20px;font-size:13px;cursor:pointer;background:white;color:#374151;font-family:inherit;transition:all .15s}
+.tc.on{background:#1e40af;color:white;border-color:#1e40af}
 
-    .draft-sticky {
-      position: fixed; bottom: 58px;
-      left: 50%; transform: translateX(-50%);
-      width: 100%; max-width: 390px;
-      background: white; border-top: 1px solid #e5e7eb;
-      padding: 10px 16px; display: flex; gap: 8px; z-index: 99;
-    }
-    .ds-btn {
-      flex: 1; padding: 11px;
-      border-radius: 10px; font-size: 13px; font-weight: 600;
-      border: none; cursor: pointer; font-family: inherit;
-    }
-    .ds-pk   { background: #eff6ff; color: #1d4ed8; }
-    .ds-pdf  { background: #1e3a8a; color: white; }
-    .ds-xlsx { background: #f0fdf4; color: #065f46; }
-
-    /* === PK Page === */
-    .pk-empty {
-      text-align: center; padding: 48px 24px; color: #9ca3af;
-    }
-    .pk-empty-icon { font-size: 52px; margin-bottom: 12px; }
-
-    .pk-table {
-      background: white; border-radius: 12px; overflow: hidden;
-      box-shadow: 0 1px 6px rgba(0,0,0,.06);
-    }
-    .pk-head-row { display: flex; }
-    .pk-body-row { display: flex; border-top: 1px solid #f3f4f6; }
-    .pk-label-cell {
-      width: 72px; flex-shrink: 0;
-      padding: 10px 8px; font-size: 11px; color: #9ca3af;
-      background: #fafafa; border-right: 1px solid #f3f4f6;
-      display: flex; align-items: center;
-    }
-    .pk-data-cell {
-      flex: 1; padding: 10px 8px;
-      font-size: 12px; color: #111827;
-      text-align: center;
-      border-right: 1px solid #f3f4f6;
-    }
-    .pk-data-cell:last-child { border-right: none; }
-    .pk-school-cell {
-      padding: 12px 8px; text-align: center;
-      font-size: 12px; font-weight: 700; color: #1e40af;
-    }
-    .pk-school-cell:last-child { border-right: none; }
-
-    /* === Consult Page === */
-    .live-banner {
-      background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
-      border-radius: 14px; padding: 16px; margin-bottom: 14px;
-      color: white; display: flex; align-items: center; gap: 12px;
-    }
-    .live-dot {
-      width: 8px; height: 8px; background: #ef4444;
-      border-radius: 50%; animation: blink 1s infinite; flex-shrink: 0;
-    }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
-    .live-info { flex: 1; }
-    .live-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
-    .live-meta { font-size: 12px; opacity: 0.8; }
-    .live-enter {
-      background: rgba(255,255,255,.2);
-      border: 1px solid rgba(255,255,255,.35);
-      color: white; padding: 7px 14px; border-radius: 20px;
-      font-size: 12px; font-weight: 600;
-      cursor: pointer; font-family: inherit; flex-shrink: 0;
-    }
-    .tutor-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 0; border-bottom: 1px solid #f3f4f6;
-    }
-    .tutor-item:last-child { border-bottom: none; }
-    .tutor-info { flex: 1; min-width: 0; }
-    .tutor-name { font-size: 14px; font-weight: 600; color: #111827; }
-    .tutor-meta { font-size: 12px; color: #9ca3af; margin-top: 2px; }
-    .tutor-rate { font-size: 12px; color: #d97706; font-weight: 600; }
-    .tutor-chat-btn {
-      padding: 7px 14px; border-radius: 20px;
-      background: #1e40af; color: white;
-      font-size: 12px; font-weight: 600;
-      border: none; cursor: pointer; font-family: inherit;
-    }
-
-    /* === Empty state === */
-    .empty-state {
-      text-align: center; padding: 48px 20px; color: #9ca3af;
-    }
-    .empty-icon { font-size: 52px; margin-bottom: 12px; }
-    .empty-title { font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 6px; }
-    .empty-sub { font-size: 13px; line-height: 1.7; }
-
-    /* === Topbar === */
-    .gk-topbar {
-      background: linear-gradient(90deg, #1e3a8a, #1d4ed8);
-      padding: 12px 16px;
-      display: flex; align-items: center; gap: 12px;
-      position: sticky; top: 0; z-index: 100; color: white;
-    }
-    .gk-topbar-title { font-size: 17px; font-weight: 700; flex: 1; text-align: center; }
-
-    /* Extra padding for draft page */
-    #page-draft .content-inner { padding-bottom: 110px; }
-  </style>
+/* ── 选清单 ── */
+.choose-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #f3f4f6;cursor:pointer}
+.choose-item:last-child{border-bottom:none}
+.choose-name{font-size:14px;font-weight:600;color:#111827;flex:1}
+.choose-cnt{font-size:12px;color:#9ca3af}
+</style>
 </head>
 <body>
 <div class="mobile">
 
-  <!-- ======== TOP BAR ======== -->
-  <div class="gk-topbar">
-    <span style="font-size:20px;">🌊</span>
-    <span class="gk-topbar-title">高考志愿填报</span>
-    <span style="font-size:20px;cursor:pointer;opacity:.85;" onclick="goPage('consult')" title="直播">📺</span>
+<!-- ======= TOPBAR ======= -->
+<div class="gk-bar">
+  <span style="font-size:20px;">🌊</span>
+  <span class="gk-bar-title">高考志愿填报</span>
+</div>
+
+<div class="content">
+
+<!-- =================== PAGE: 信息 =================== -->
+<div class="page active" id="page-profile">
+  <div class="hero">
+    <div class="hero-brand">厚浪科技 · 智能填报</div>
+    <div class="hero-title">填写你的信息</div>
+    <div class="hero-sub">精准匹配专属冲稳保方案</div>
+    <svg style="position:absolute;bottom:0;left:0;width:100%;opacity:.15;" viewBox="0 0 390 48" preserveAspectRatio="none">
+      <path d="M0,24 C80,44 160,4 240,24 C310,40 360,14 390,24 L390,48 L0,48 Z" fill="white"/>
+    </svg>
   </div>
 
-  <!-- ======== PROGRESS STEPS ======== -->
-  <div class="progress-steps" id="stepBar">
-    <div class="ps-item active" id="psi-1">
-      <div class="ps-dot active" id="psd-1">1</div>
-      <span>填报信息</span>
+  <!-- 基础信息：省份 + 选科 同一张卡 -->
+  <div class="card" style="margin-top:16px;">
+    <div class="ct">📍 基础信息</div>
+    <div class="fg">
+      <div class="fl">所在省份</div>
+      <select class="fi" id="inpProvince" onchange="pickProv(this.value)">
+        <!-- 由JS填充 -->
+      </select>
     </div>
-    <div class="ps-connector" id="psc-1"></div>
-    <div class="ps-item" id="psi-2">
-      <div class="ps-dot" id="psd-2">2</div>
-      <span>志愿池</span>
-    </div>
-    <div class="ps-connector" id="psc-2"></div>
-    <div class="ps-item" id="psi-3">
-      <div class="ps-dot" id="psd-3">3</div>
-      <span>草稿</span>
-    </div>
-    <div class="ps-connector" id="psc-3"></div>
-    <div class="ps-item" id="psi-4">
-      <div class="ps-dot" id="psd-4">4</div>
-      <span>导出</span>
+    <div class="fg" style="margin-bottom:0;">
+      <div class="fl">选科方向</div>
+      <div class="seg">
+        <button class="seg-btn on" id="seg-p" onclick="setSubject('物理','seg-p','seg-h')">⚗️ 物理（理工类）</button>
+        <button class="seg-btn" id="seg-h" onclick="setSubject('历史','seg-h','seg-p')">📜 历史（文史类）</button>
+      </div>
     </div>
   </div>
 
-  <div class="content">
-
-    <!-- ==================== PAGE 1: 填报信息 ==================== -->
-    <div class="page active" id="page-input">
-      <div class="input-hero">
-        <div class="ih-brand">厚浪科技 · 智能填报</div>
-        <div class="ih-title">告诉我你的成绩</div>
-        <div class="ih-sub">系统将按 3:4:3 精准匹配冲稳保方案</div>
-        <!-- decorative wave -->
-        <svg class="wave-bg" viewBox="0 0 390 60" preserveAspectRatio="none">
-          <path d="M0,30 C80,55 160,5 240,30 C310,50 360,20 390,30 L390,60 L0,60 Z" fill="white"/>
-        </svg>
-      </div>
-
-      <!-- 省份 -->
-      <div class="card" style="margin-top:16px;">
-        <div class="ct">📍 选择省份</div>
-        <div class="province-grid" id="provinceGrid"></div>
-      </div>
-
-      <!-- 选科 -->
-      <div class="card">
-        <div class="ct">📚 选科方向</div>
-        <div class="seg-ctrl">
-          <button class="seg-btn on" id="seg-physics" onclick="selectSubject('物理','seg-physics','seg-history')">⚗️ 物理（理工类）</button>
-          <button class="seg-btn" id="seg-history" onclick="selectSubject('历史','seg-history','seg-physics')">📜 历史（文史类）</button>
-        </div>
-        <div class="fh" style="margin-top:8px;">决定参与投档的院校专业组范围</div>
-      </div>
-
-      <!-- 分数与位次 -->
-      <div class="card">
-        <div class="ct">🎯 核心数据</div>
-        <div class="fg">
-          <div class="fl">
-            总分
-            <span style="font-size:11px;color:#9ca3af;">满分 750 分</span>
-          </div>
-          <input class="fi" type="number" id="inpScore" placeholder="例：612"
-            min="0" max="750" inputmode="numeric" oninput="syncPreview()">
-        </div>
-        <div class="fg" style="margin-bottom:0;">
-          <div class="fl">
-            全省位次
-            <span style="font-size:11px;color:#9ca3af;">一分一段表对应位次</span>
-          </div>
-          <input class="fi" type="number" id="inpRank" placeholder="例：15800"
-            min="1" inputmode="numeric" oninput="syncPreview()">
-        </div>
-      </div>
-
-      <!-- 意向专业 -->
-      <div class="card">
-        <div class="ct">💡 意向专业 <span style="font-size:12px;color:#9ca3af;font-weight:400;">（选填）</span></div>
-        <input class="fi" type="text" id="inpMajor" placeholder="例：计算机科学、医学" style="margin-bottom:10px;">
-        <div class="tags" id="majorHotTags">
-          <span class="tag" onclick="pickMajorTag(this)">计算机</span>
-          <span class="tag" onclick="pickMajorTag(this)">医学</span>
-          <span class="tag" onclick="pickMajorTag(this)">经济学</span>
-          <span class="tag" onclick="pickMajorTag(this)">法学</span>
-          <span class="tag" onclick="pickMajorTag(this)">建筑</span>
-          <span class="tag" onclick="pickMajorTag(this)">电子信息</span>
-          <span class="tag" onclick="pickMajorTag(this)">教育</span>
-          <span class="tag" onclick="pickMajorTag(this)">机械</span>
-        </div>
-      </div>
-
-      <!-- 志愿池数量 -->
-      <div class="card">
-        <div class="ct">📊 生成志愿数量</div>
-        <div class="pool-count-row">
-          <span style="font-size:14px;color:#374151;">系统生成</span>
-          <input class="pool-count-input" type="number" id="inpPoolCount"
-            value="150" min="30" max="500" inputmode="numeric"
-            oninput="syncDistribution()">
-          <span style="font-size:14px;color:#374151;">个志愿</span>
-        </div>
-        <div class="fh" style="margin-top:6px;">
-          按 <strong style="color:#1e40af;">3(冲) : 4(稳) : 3(保)</strong> 自动分配，建议 ≥ 本省可填数量
-        </div>
-        <div class="distribution-bar">
-          <div class="db-item db-rush">
-            <div class="db-num" id="distRush">45</div>
-            <div class="db-lbl" style="color:#b91c1c;">🔴 冲</div>
-          </div>
-          <div class="db-item db-stable">
-            <div class="db-num" id="distStable">60</div>
-            <div class="db-lbl" style="color:#d97706;">🟡 稳</div>
-          </div>
-          <div class="db-item db-safe">
-            <div class="db-num" id="distSafe">45</div>
-            <div class="db-lbl" style="color:#065f46;">🟢 保</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 信息确认预览 -->
-      <div class="card" id="confirmCard" style="display:none;">
-        <div class="ct">✅ 信息确认</div>
-        <div id="confirmBody"></div>
-      </div>
-
-      <button class="btn-p bg-blue" style="margin-top:8px;" onclick="handleGenerate()">
-        🚀 立即生成志愿方案
-      </button>
-      <div style="height:8px;"></div>
+  <!-- 各科成绩 -->
+  <div class="card">
+    <div class="ct">📝 各科成绩 <span style="font-size:12px;color:#9ca3af;font-weight:400;">（选填，自动求和）</span></div>
+    <div class="subj-grid" id="subjGrid">
+      <!-- 由JS填充 -->
     </div>
-
-    <!-- ==================== PAGE 2: 志愿池 ==================== -->
-    <div class="page" id="page-pool">
-
-      <!-- 参数汇总条 -->
-      <div class="info-strip">
-        <div class="info-params" id="poolInfoParams">
-          <span class="ip-chip ip-blue">山东</span>
-          <span class="ip-chip ip-blue">物理</span>
-          <span class="ip-chip ip-green">620分</span>
-          <span class="ip-chip ip-green">位次 15,800</span>
-          <span class="ip-chip ip-gray">共150个志愿</span>
-        </div>
-        <div class="sort-pills" id="sortPills">
-          <button class="pill on" onclick="setSortMode('school', this)">院校优先</button>
-          <button class="pill" onclick="setSortMode('major', this)">专业优先</button>
-          <button class="pill" onclick="setSortMode('career', this)">职业优先</button>
-        </div>
-      </div>
-
-      <!-- 标注排序浮动按钮 -->
-      <div class="float-sort">
-        <button class="fsort-btn" id="annSortBtn" onclick="toggleAnnSort()">按标注排序 ○</button>
-      </div>
-
-      <!-- 大学列表 -->
-      <div id="poolList"></div>
-
+    <div class="total-display" id="totalDisplay" style="display:none;">
+      <span class="total-label">自动计算总分</span>
+      <span class="total-num" id="totalNum">0 分</span>
     </div>
+  </div>
 
-    <!-- ==================== PAGE 3: 草稿 ==================== -->
-    <div class="page" id="page-draft">
-      <div class="content-inner">
-
-        <!-- 草稿统计头 -->
-        <div class="draft-header">
-          <div class="row-sb">
-            <span style="font-size:15px;font-weight:700;">我的志愿草稿</span>
-            <span class="bdg bdg-blue" id="draftTotalBadge">0 个</span>
-          </div>
-          <div class="draft-counts">
-            <div class="db-item db-rush" style="cursor:default;">
-              <div class="db-num" id="draftCntRush">0</div>
-              <div class="db-lbl" style="color:#b91c1c;">冲</div>
-            </div>
-            <div class="db-item db-stable" style="cursor:default;">
-              <div class="db-num" id="draftCntStable">0</div>
-              <div class="db-lbl" style="color:#d97706;">稳</div>
-            </div>
-            <div class="db-item db-safe" style="cursor:default;">
-              <div class="db-num" id="draftCntSafe">0</div>
-              <div class="db-lbl" style="color:#065f46;">保</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 超限警告 -->
-        <div class="alert" id="overLimitAlert" style="display:none;margin-bottom:12px;"></div>
-
-        <!-- 草稿列表 -->
-        <div id="draftList"></div>
-
-        <div style="height:110px;"></div>
+  <!-- 总分 + 位次（手动输入） -->
+  <div class="card">
+    <div class="ct">🎯 成绩与位次</div>
+    <div style="display:flex;gap:10px;">
+      <div class="fg" style="flex:1;margin-bottom:0;">
+        <div class="fl">高考总分</div>
+        <input class="fi" type="number" id="inpScore" placeholder="如：612" inputmode="numeric" oninput="syncConfirm()">
       </div>
+      <div class="fg" style="flex:1;margin-bottom:0;">
+        <div class="fl">全省位次</div>
+        <input class="fi" type="number" id="inpRank" placeholder="如：15800" inputmode="numeric" oninput="syncConfirm()">
+      </div>
+    </div>
+    <div class="fh" style="margin-top:6px;">全省位次来自一分一段表</div>
+  </div>
 
-      <!-- 底部操作栏 -->
-      <div class="draft-sticky">
-        <button class="ds-btn ds-pk" onclick="handleGoToPK()">
-          🆚 对比 (<span id="pkCountBadge">0</span>)
-        </button>
-        <button class="ds-btn ds-pdf" onclick="showToast('PDF导出即将上线，含小程序码及厚浪Logo')">
-          📄 导出PDF
-        </button>
-        <button class="ds-btn ds-xlsx" onclick="showToast('Excel导出即将上线')">
-          📊 Excel
-        </button>
+  <!-- 期望行业 -->
+  <div class="card">
+    <div class="ct">🏭 期望行业 <span style="font-size:12px;color:#9ca3af;font-weight:400;">（可多选）</span></div>
+    <div class="ind-wrap" id="industryGrid"></div>
+  </div>
+
+  <!-- 意向专业（内联展开） -->
+  <div class="card">
+    <div class="ct">📖 意向专业 <span style="font-size:12px;color:#9ca3af;font-weight:400;">（可多选）</span></div>
+    <div class="major-cats" id="majorCatBar"></div>
+    <div class="major-grid" id="majorChipGrid"></div>
+    <div class="selected-majors" id="selectedMajors"></div>
+  </div>
+
+  <!-- 确认预览 -->
+  <div class="card" id="confirmCard" style="display:none;">
+    <div class="ct">✅ 信息确认</div>
+    <div id="confirmBody"></div>
+  </div>
+
+  <button class="btn-p bg-blue" style="margin-top:8px;" onclick="handleStart()">🚀 开始智能匹配</button>
+  <div style="height:8px;"></div>
+</div>
+
+<!-- =================== PAGE: 志愿池 =================== -->
+<div class="page" id="page-pool">
+  <div style="background:white;border-radius:12px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;" id="poolParams">
+      <span class="tag" style="background:#eff6ff;color:#1d4ed8;">山东</span>
+      <span class="tag" style="background:#f0fdf4;color:#065f46;">620分</span>
+    </div>
+    <div class="pool-filter">
+      <button class="pf-btn all on" onclick="setFilter('all',this)">全部</button>
+      <button class="pf-btn rush" onclick="setFilter('rush',this)">🔴 冲</button>
+      <button class="pf-btn stable" onclick="setFilter('stable',this)">🟡 稳</button>
+      <button class="pf-btn safe" onclick="setFilter('safe',this)">🟢 保</button>
+    </div>
+  </div>
+  <div id="poolList"></div>
+</div>
+
+<!-- =================== PAGE: 志愿清单 =================== -->
+<div class="page" id="page-lists">
+
+  <!-- 概览 -->
+  <div id="listsOverview">
+    <div class="row-sb" style="margin-bottom:14px;">
+      <span style="font-size:17px;font-weight:700;">我的志愿清单</span>
+      <button class="btn-s bl" onclick="promptNewList()">＋ 新建清单</button>
+    </div>
+    <div id="listCards"></div>
+  </div>
+
+  <!-- 详情 -->
+  <div id="listsDetail" style="display:none;">
+    <div class="detail-top">
+      <button class="back-btn" onclick="backToOverview()">‹</button>
+      <span class="detail-name" id="detailName">方案一</span>
+      <button class="rename-btn" onclick="promptRename()">重命名</button>
+    </div>
+    <div class="detail-stats" id="detailStats"></div>
+    <div class="alert" id="limitAlert" style="display:none;margin-bottom:10px;"></div>
+    <div id="detailItems"></div>
+    <button class="btn-p" style="background:#f3f4f6;color:#374151;margin-top:4px;" onclick="openAddSchool()">＋ 手动添加学校</button>
+    <div style="height:110px;"></div>
+    <div class="list-sticky">
+      <button class="ls-btn ls-pdf" onclick="showToast('PDF 导出即将上线，含厚浪小程序码')">📄 导出 PDF</button>
+      <button class="ls-btn ls-xlsx" onclick="showToast('Excel 导出即将上线')">📊 导出 Excel</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- =================== PAGE: 对比 =================== -->
+<div class="page" id="page-pk">
+  <div id="pkContent"></div>
+</div>
+
+</div><!-- /content -->
+
+<!-- ======= BOTTOM NAV（4 项）======= -->
+<nav class="bnav">
+  <button class="ni ab" id="nav-profile" onclick="goPage('profile')"><span class="ni-icon">👤</span>信息</button>
+  <button class="ni" id="nav-pool"    onclick="goPage('pool')"><span class="ni-icon">🎯</span>志愿池</button>
+  <button class="ni" id="nav-lists"   onclick="goPage('lists')"><span class="ni-icon">📋</span>志愿清单</button>
+  <button class="ni" id="nav-pk"      onclick="goPage('pk')"><span class="ni-icon">🆚</span>对比</button>
+</nav>
+
+<!-- 悬浮：手动添加学校（志愿池页） -->
+<div class="fab fab-blue" id="fabAdd" style="display:none;" title="添加自定义学校" onclick="openAddSchool()">＋</div>
+
+<!-- ======= MODAL: 添加学校 ======= -->
+<div class="overlay" id="modalAddSchool" onclick="if(event.target===this)closeAddSchool()">
+  <div class="modal-box">
+    <div class="modal-title">添加学校</div>
+    <button class="modal-close" onclick="closeAddSchool()">✕</button>
+
+    <!-- 学校搜索 -->
+    <div class="fg">
+      <div class="fl">学校名称 <span style="color:#dc2626;">*</span></div>
+      <div class="school-search-wrap">
+        <input class="fi" id="asName" type="text" placeholder="输入名称搜索，或直接填写" autocomplete="off" oninput="filterSuggestions()">
+        <div class="school-suggestions" id="asSuggestions"></div>
       </div>
     </div>
 
-    <!-- ==================== PAGE 4: 志愿PK ==================== -->
-    <div class="page" id="page-pk">
-      <div id="pkContent"></div>
+    <!-- 意向专业 -->
+    <div class="fg">
+      <div class="fl">意向专业 <span style="color:#dc2626;">*</span></div>
+      <select class="fi" id="asMajor">
+        <!-- 由JS填充 optgroup -->
+      </select>
     </div>
 
-    <!-- ==================== PAGE 5: 咨询 ==================== -->
-    <div class="page" id="page-consult">
-
-      <!-- 直播横幅 -->
-      <div class="live-banner">
-        <div class="live-dot"></div>
-        <div class="live-info">
-          <div class="live-title">直播中：2025 志愿填报全攻略</div>
-          <div class="live-meta">李明老师 · 3,482 人在看</div>
-        </div>
-        <button class="live-enter" onclick="showToast('直播功能即将上线')">进入 →</button>
+    <!-- 冲/稳/保 -->
+    <div class="fg">
+      <div class="fl">分类 <span style="color:#dc2626;">*</span></div>
+      <div class="type-chips" id="asClassWrap">
+        <button class="tc" onclick="setSingleChip(this,'asClassWrap')">🔴 冲</button>
+        <button class="tc on" onclick="setSingleChip(this,'asClassWrap')">🟡 稳</button>
+        <button class="tc" onclick="setSingleChip(this,'asClassWrap')">🟢 保</button>
       </div>
-
-      <!-- 1v1 咨询 -->
-      <div class="card">
-        <div class="ct">💬 1v1 导师咨询</div>
-        <p style="font-size:13px;color:#6b7280;margin-bottom:14px;line-height:1.6;">
-          专业导师在线解答，点击志愿池中的「咨询导师」可自动发送院校信息
-        </p>
-
-        <div class="tutor-item">
-          <div class="av">👨‍🏫</div>
-          <div class="tutor-info">
-            <div class="tutor-name">张志远老师</div>
-            <div class="tutor-meta">985·计算机 | 从业8年</div>
-            <div class="tutor-rate">⭐ 4.9 &nbsp;·&nbsp; 好评率 98%</div>
-          </div>
-          <div>
-            <span class="bdg bdg-green" style="margin-bottom:6px;display:block;text-align:center;">在线</span>
-            <button class="tutor-chat-btn" onclick="showToast('咨询功能即将上线')">咨询</button>
-          </div>
-        </div>
-
-        <div class="tutor-item">
-          <div class="av" style="background:#fef3c7;">👩‍🏫</div>
-          <div class="tutor-info">
-            <div class="tutor-name">王雅琪老师</div>
-            <div class="tutor-meta">211·医学 | 从业5年</div>
-            <div class="tutor-rate">⭐ 4.8 &nbsp;·&nbsp; 好评率 96%</div>
-          </div>
-          <div>
-            <span class="bdg bdg-green" style="margin-bottom:6px;display:block;text-align:center;">在线</span>
-            <button class="tutor-chat-btn" onclick="showToast('咨询功能即将上线')">咨询</button>
-          </div>
-        </div>
-
-        <div class="tutor-item">
-          <div class="av">🧑‍🏫</div>
-          <div class="tutor-info">
-            <div class="tutor-name">陈博文老师</div>
-            <div class="tutor-meta">双一流·法学 | 从业6年</div>
-            <div class="tutor-rate">⭐ 4.7 &nbsp;·&nbsp; 好评率 94%</div>
-          </div>
-          <div>
-            <span class="bdg bdg-gray" style="margin-bottom:6px;display:block;text-align:center;">忙碌</span>
-            <button class="tutor-chat-btn" style="background:#e5e7eb;color:#6b7280;" onclick="showToast('当前导师忙碌，请稍后重试')">预约</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 往期直播 -->
-      <div class="card">
-        <div class="ct">📺 往期直播回放</div>
-        <div class="li" style="margin-bottom:10px;">
-          <div class="li-head">
-            <span class="li-name" style="font-size:13px;">如何判断大小年？位次解读核心技巧</span>
-            <span class="bdg bdg-gray">回放</span>
-          </div>
-          <div class="li-sub" style="margin-bottom:8px;">李明老师 · 14,820 次观看</div>
-          <div class="video-block" style="border-radius:10px;height:90px;" onclick="showToast('回放功能即将上线')">
-            <span class="play-btn" style="font-size:32px;">▶️</span>
-            <span class="video-lbl">点击播放</span>
-          </div>
-        </div>
-        <div class="li" style="margin-bottom:0;">
-          <div class="li-head">
-            <span class="li-name" style="font-size:13px;">冲稳保比例怎么选？3:4:3 实战案例</span>
-            <span class="bdg bdg-gray">回放</span>
-          </div>
-          <div class="li-sub" style="margin-bottom:8px;">王雅琪老师 · 9,204 次观看</div>
-          <div class="video-block" style="border-radius:10px;height:90px;" onclick="showToast('回放功能即将上线')">
-            <span class="play-btn" style="font-size:32px;">▶️</span>
-            <span class="video-lbl">点击播放</span>
-          </div>
-        </div>
-      </div>
-
     </div>
 
-  </div><!-- /content -->
+    <button class="btn-p bg-blue" onclick="confirmAddSchool()">确认添加</button>
+  </div>
+</div>
 
-  <!-- ======== BOTTOM NAV ======== -->
-  <nav class="bnav">
-    <button class="ni ab" id="nav-input" onclick="goPage('input')">
-      <span class="ni-icon">✏️</span>填报
-    </button>
-    <button class="ni" id="nav-pool" onclick="goPage('pool')">
-      <span class="ni-icon">🎯</span>志愿池
-    </button>
-    <button class="ni" id="nav-draft" onclick="goPage('draft')">
-      <span class="ni-icon">📝</span>草稿
-    </button>
-    <button class="ni" id="nav-pk" onclick="goPage('pk')">
-      <span class="ni-icon">🆚</span>对比
-    </button>
-    <button class="ni" id="nav-consult" onclick="goPage('consult')">
-      <span class="ni-icon">💬</span>咨询
-    </button>
-  </nav>
+<!-- ======= MODAL: 选择加入哪个清单 ======= -->
+<div class="overlay" id="modalChooseList" onclick="if(event.target===this)closeChooseList()">
+  <div class="modal-box">
+    <div class="modal-title">加入哪个清单？</div>
+    <button class="modal-close" onclick="closeChooseList()">✕</button>
+    <div id="chooseListBody"></div>
+    <button class="btn-p" style="background:#f3f4f6;color:#374151;margin-top:10px;" onclick="promptNewListThenAdd()">＋ 新建清单</button>
+  </div>
+</div>
 
-  <!-- 悬浮咨询按钮 -->
-  <div class="float-consult" id="floatConsult" onclick="goPage('consult')" title="导师咨询">💬</div>
+<!-- ======= MODAL: 新建/重命名清单 ======= -->
+<div class="overlay" id="modalListName" onclick="if(event.target===this)closeListName()">
+  <div class="modal-box">
+    <div class="modal-title" id="listNameTitle">新建志愿清单</div>
+    <button class="modal-close" onclick="closeListName()">✕</button>
+    <div class="fg">
+      <div class="fl">清单名称</div>
+      <input class="fi" id="listNameInput" type="text" placeholder="如：方案一（稳健型）" maxlength="20">
+    </div>
+    <button class="btn-p bg-blue" onclick="confirmListName()">确认</button>
+  </div>
+</div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
 </div><!-- /mobile -->
-
 <script>
-/* ==========================================================
-   MOCK DATA
-   ========================================================== */
-const PROVINCES = [
-  '北京','天津','河北','山西','内蒙古','辽宁','吉林','黑龙江',
-  '上海','江苏','浙江','安徽','福建','江西','山东','河南',
-  '湖北','湖南','广东','广西','海南','重庆','四川','贵州',
-  '云南','西藏','陕西','甘肃','青海','宁夏','新疆'
-];
+/* ================================================================
+   CONSTANTS
+================================================================ */
+const PROVINCES = ['北京','天津','河北','山西','内蒙古','辽宁','吉林','黑龙江','上海','江苏','浙江','安徽','福建','江西','山东','河南','湖北','湖南','广东','广西','海南','重庆','四川','贵州','云南','西藏','陕西','甘肃','青海','宁夏','新疆'];
 
-const UNIVERSITIES = [
-  { id:1,  name:'北京航空航天大学', logo:'✈️', city:'北京',    tags:['985','211','双一流'], type:'rush',  r24:9800,  r23:9400,  prob:52 },
-  { id:2,  name:'武汉大学',         logo:'🏛️', city:'湖北·武汉', tags:['985','211','双一流'], type:'rush',  r24:11200, r23:10800, prob:65 },
-  { id:3,  name:'华中科技大学',     logo:'⚙️', city:'湖北·武汉', tags:['985','211','双一流'], type:'rush',  r24:12500, r23:11900, prob:70 },
-  { id:4,  name:'中国海洋大学',     logo:'🌊', city:'山东·青岛', tags:['985','211','双一流'], type:'rush',  r24:13000, r23:12600, prob:73 },
-  { id:5,  name:'中南大学',         logo:'🔬', city:'湖南·长沙', tags:['985','211','双一流'], type:'rush',  r24:13800, r23:13200, prob:75 },
-  { id:6,  name:'华南理工大学',     logo:'🏗️', city:'广东·广州', tags:['985','211','双一流'], type:'stable',r24:15200, r23:14900, prob:86 },
-  { id:7,  name:'西北工业大学',     logo:'🚀', city:'陕西·西安', tags:['985','211','双一流'], type:'stable',r24:16200, r23:15800, prob:88 },
-  { id:8,  name:'湖南大学',         logo:'🏛️', city:'湖南·长沙', tags:['985','211','双一流'], type:'stable',r24:17500, r23:17100, prob:90 },
-  { id:9,  name:'西南大学',         logo:'🌾', city:'重庆',    tags:['211','双一流'],         type:'stable',r24:18500, r23:18100, prob:91 },
-  { id:10, name:'东北大学',         logo:'❄️', city:'辽宁·沈阳', tags:['985','211','双一流'], type:'stable',r24:19200, r23:18900, prob:92 },
-  { id:11, name:'南京农业大学',     logo:'🌱', city:'江苏·南京', tags:['211','双一流'],       type:'safe',  r24:21000, r23:20500, prob:96 },
-  { id:12, name:'华中农业大学',     logo:'🌿', city:'湖北·武汉', tags:['211','双一流'],       type:'safe',  r24:22500, r23:22000, prob:97 },
-  { id:13, name:'河海大学',         logo:'💧', city:'江苏·南京', tags:['211','双一流'],       type:'safe',  r24:23000, r23:22500, prob:97 },
-  { id:14, name:'中国地质大学',     logo:'⛰️', city:'湖北·武汉', tags:['211','双一流'],       type:'safe',  r24:24500, r23:24000, prob:98 },
-  { id:15, name:'河南大学',         logo:'📚', city:'河南·开封', tags:['双一流'],             type:'safe',  r24:26000, r23:25500, prob:99 },
-];
+const INDUSTRIES = ['互联网/科技','金融/银行','医疗/健康','教育/培训','政府/公务员','工业/制造','法律/法务','传媒/广告','能源/化工','建筑/房产','交通/物流','农业/食品'];
 
-const PROVINCE_LIMIT = { '山东':96, '默认':45 };
-
-/* ==========================================================
-   APP STATE
-   ========================================================== */
-const S = {
-  province: '山东',
-  subject: '物理',
-  score: 0,
-  rank: 0,
-  major: '',
-  poolCount: 150,
-  annotations: {},   // id -> 'high'|'mid'|'low'|'drop'
-  draft: [],         // [id, ...]
-  pkList: [],        // [id, ...]
-  annSort: false,
-  sortMode: 'school',
+const MAJOR_CATS = {
+  '工学':['计算机科学与技术','软件工程','人工智能','电子信息工程','机械工程','土木工程','电气工程','自动化','通信工程','化学工程与工艺'],
+  '理学':['数学','物理学','化学','生物学','统计学','信息与计算科学'],
+  '医学':['临床医学','口腔医学','药学','护理学','中医学','公共卫生'],
+  '经管':['经济学','金融学','会计学','工商管理','市场营销','国际贸易','财务管理'],
+  '文法':['汉语言文学','英语','法学','新闻学','广告学','政治学','社会学'],
+  '教育':['教育学','心理学','体育教育','学前教育'],
+  '艺术':['视觉传达设计','环境设计','动画','音乐表演','影视制作'],
 };
 
-/* ==========================================================
+const ELECTIVES = ['化学','生物','地理','政治'];
+
+const UNIVERSITIES = [
+  {id:1,  name:'北京航空航天大学',logo:'✈️',city:'北京',      tags:['985','211','双一流'],type:'rush',  r24:9800, r23:9400, prob:52},
+  {id:2,  name:'武汉大学',        logo:'🏛️',city:'湖北·武汉',tags:['985','211','双一流'],type:'rush',  r24:11200,r23:10800,prob:65},
+  {id:3,  name:'华中科技大学',    logo:'⚙️',city:'湖北·武汉',tags:['985','211','双一流'],type:'rush',  r24:12500,r23:11900,prob:70},
+  {id:4,  name:'中国海洋大学',    logo:'🌊',city:'山东·青岛',tags:['985','211','双一流'],type:'rush',  r24:13000,r23:12600,prob:73},
+  {id:5,  name:'中南大学',        logo:'🔬',city:'湖南·长沙',tags:['985','211','双一流'],type:'rush',  r24:13800,r23:13200,prob:75},
+  {id:6,  name:'华南理工大学',    logo:'🏗️',city:'广东·广州',tags:['985','211','双一流'],type:'stable',r24:15200,r23:14900,prob:86},
+  {id:7,  name:'西北工业大学',    logo:'🚀',city:'陕西·西安',tags:['985','211','双一流'],type:'stable',r24:16200,r23:15800,prob:88},
+  {id:8,  name:'湖南大学',        logo:'🏛️',city:'湖南·长沙',tags:['985','211','双一流'],type:'stable',r24:17500,r23:17100,prob:90},
+  {id:9,  name:'西南大学',        logo:'🌾',city:'重庆',      tags:['211','双一流'],       type:'stable',r24:18500,r23:18100,prob:91},
+  {id:10, name:'东北大学',        logo:'❄️',city:'辽宁·沈阳',tags:['985','211','双一流'],type:'stable',r24:19200,r23:18900,prob:92},
+  {id:11, name:'南京农业大学',    logo:'🌱',city:'江苏·南京',tags:['211','双一流'],       type:'safe',  r24:21000,r23:20500,prob:96},
+  {id:12, name:'华中农业大学',    logo:'🌿',city:'湖北·武汉',tags:['211','双一流'],       type:'safe',  r24:22500,r23:22000,prob:97},
+  {id:13, name:'河海大学',        logo:'💧',city:'江苏·南京',tags:['211','双一流'],       type:'safe',  r24:23000,r23:22500,prob:97},
+  {id:14, name:'中国地质大学',    logo:'⛰️',city:'湖北·武汉',tags:['211','双一流'],       type:'safe',  r24:24500,r23:24000,prob:98},
+  {id:15, name:'河南大学',        logo:'📚',city:'河南·开封',tags:['双一流'],             type:'safe',  r24:26000,r23:25500,prob:99},
+];
+
+const PROVINCE_LIMIT = {'山东':96,'江苏':40,'浙江':80,'河南':6,'默认':45};
+
+/* ================================================================
+   STATE
+================================================================ */
+const S = {
+  province:'山东', subject:'物理',
+  score:0, rank:0,
+  industries:[], majors:[],
+  pickerCat:'工学',
+  poolFilter:'all',
+  annotations:{}, pkList:[],
+  customSchools:[],
+  lists:[], currentListId:null,
+  listIdSeed:1, itemIdSeed:1,
+  pendingUniId:null,
+  addCtx:'pool',
+  listNameMode:'new',
+};
+
+/* ================================================================
    INIT
-   ========================================================== */
+================================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-  renderProvinces();
-  syncDistribution();
+  renderProvinceSelect();
+  renderSubjectGrid();
+  renderIndustries();
+  renderMajorCatBar();
+  renderMajorChipGrid();
+  renderAddMajorSelect();
   renderPool();
-  renderDraft();
+  renderListsOverview();
   renderPK();
-  setStep(1);
 });
 
-/* ==========================================================
-   PROVINCES
-   ========================================================== */
-function renderProvinces() {
-  document.getElementById('provinceGrid').innerHTML = PROVINCES.map(p =>
-    `<button class="prov-btn${p === S.province ? ' on' : ''}" onclick="pickProvince('${p}')">${p}</button>`
+/* ================================================================
+   PROVINCE SELECT
+================================================================ */
+function renderProvinceSelect() {
+  const sel = document.getElementById('inpProvince');
+  sel.innerHTML = PROVINCES.map(p =>
+    `<option value="${p}"${p===S.province?' selected':''}>${p}</option>`
   ).join('');
 }
+function pickProv(p) { S.province = p; }
 
-function pickProvince(p) {
-  S.province = p;
-  renderProvinces();
-  syncPreview();
-}
-
-/* ==========================================================
+/* ================================================================
    SUBJECT
-   ========================================================== */
-function selectSubject(val, onId, offId) {
+================================================================ */
+function setSubject(val, on, off) {
   S.subject = val;
-  document.getElementById(onId).classList.add('on');
-  document.getElementById(offId).classList.remove('on');
-  syncPreview();
+  document.getElementById(on).classList.add('on');
+  document.getElementById(off).classList.remove('on');
+  renderSubjectGrid();
 }
 
-/* ==========================================================
-   MAJOR TAGS
-   ========================================================== */
-function pickMajorTag(el) {
-  el.classList.toggle('sel');
-  const inp = document.getElementById('inpMajor');
-  const selected = [...document.querySelectorAll('#majorHotTags .tag.sel')].map(t => t.textContent);
-  inp.value = selected.join('、');
-  syncPreview();
+/* ================================================================
+   SUBJECT SCORE GRID
+================================================================ */
+function renderSubjectGrid() {
+  const firstLabel = S.subject === '物理' ? '物理' : '历史';
+  const grid = document.getElementById('subjGrid');
+  // 6 cells: 语文, 数学, 外语, 首选, 选科2, 选科3
+  grid.innerHTML = `
+    ${subjBox('sj0','语文','150')}
+    ${subjBox('sj1','数学','150')}
+    ${subjBox('sj2','外语','150')}
+    <div class="subj-box">
+      <span class="subj-name" id="sjlbl3">${firstLabel}</span>
+      <span class="subj-max">满分100</span>
+      <input class="subj-inp" type="number" id="sj3" max="100" inputmode="numeric" oninput="calcTotal()">
+    </div>
+    <div class="subj-box">
+      <select class="subj-sel" id="sjsel4">${ELECTIVES.map(e=>`<option>${e}</option>`).join('')}</select>
+      <span class="subj-max">满分100</span>
+      <input class="subj-inp" type="number" id="sj4" max="100" inputmode="numeric" oninput="calcTotal()">
+    </div>
+    <div class="subj-box">
+      <select class="subj-sel" id="sjsel5">${[...ELECTIVES].reverse().map(e=>`<option>${e}</option>`).join('')}</select>
+      <span class="subj-max">满分100</span>
+      <input class="subj-inp" type="number" id="sj5" max="100" inputmode="numeric" oninput="calcTotal()">
+    </div>`;
+}
+function subjBox(id, name, max) {
+  return `<div class="subj-box">
+    <span class="subj-name">${name}</span>
+    <span class="subj-max">满分${max}</span>
+    <input class="subj-inp" type="number" id="${id}" max="${max}" inputmode="numeric" oninput="calcTotal()">
+  </div>`;
+}
+function calcTotal() {
+  const ids = ['sj0','sj1','sj2','sj3','sj4','sj5'];
+  let sum = 0, filled = 0;
+  ids.forEach(id => {
+    const v = parseInt(document.getElementById(id)?.value)||0;
+    sum += v; if (v>0) filled++;
+  });
+  const disp = document.getElementById('totalDisplay');
+  if (filled > 0) {
+    disp.style.display = 'flex';
+    document.getElementById('totalNum').textContent = sum + ' 分';
+    document.getElementById('inpScore').value = sum;
+    syncConfirm();
+  } else {
+    disp.style.display = 'none';
+  }
 }
 
-/* ==========================================================
-   DISTRIBUTION PREVIEW
-   ========================================================== */
-function syncDistribution() {
-  const n = parseInt(document.getElementById('inpPoolCount').value) || 150;
-  const rush = Math.round(n * 0.3);
-  const safe = Math.round(n * 0.3);
-  const stable = n - rush - safe;
-  document.getElementById('distRush').textContent = rush;
-  document.getElementById('distStable').textContent = stable;
-  document.getElementById('distSafe').textContent = safe;
-  S.poolCount = n;
+/* ================================================================
+   INDUSTRIES
+================================================================ */
+function renderIndustries() {
+  document.getElementById('industryGrid').innerHTML = INDUSTRIES.map(ind =>
+    `<button class="ind-chip${S.industries.includes(ind)?' on':''}" onclick="toggleInd('${ind}')">${ind}</button>`
+  ).join('');
+}
+function toggleInd(ind) {
+  const i = S.industries.indexOf(ind);
+  i>=0 ? S.industries.splice(i,1) : S.industries.push(ind);
+  renderIndustries();
 }
 
-/* ==========================================================
+/* ================================================================
+   MAJOR (INLINE)
+================================================================ */
+function renderMajorCatBar() {
+  document.getElementById('majorCatBar').innerHTML = Object.keys(MAJOR_CATS).map(c =>
+    `<button class="mc-btn${c===S.pickerCat?' on':''}" onclick="setMajorCat('${c}')">${c}</button>`
+  ).join('');
+}
+function setMajorCat(cat) {
+  S.pickerCat = cat;
+  document.querySelectorAll('.mc-btn').forEach(b => b.classList.toggle('on', b.textContent===cat));
+  renderMajorChipGrid();
+}
+function renderMajorChipGrid() {
+  document.getElementById('majorChipGrid').innerHTML = (MAJOR_CATS[S.pickerCat]||[]).map(m =>
+    `<button class="major-chip${S.majors.includes(m)?' on':''}" onclick="toggleMajor('${m}')">${m}</button>`
+  ).join('');
+}
+function toggleMajor(m) {
+  const i = S.majors.indexOf(m);
+  i>=0 ? S.majors.splice(i,1) : S.majors.push(m);
+  renderMajorChipGrid();
+  renderSelectedMajors();
+}
+function renderSelectedMajors() {
+  document.getElementById('selectedMajors').innerHTML = S.majors.map(m =>
+    `<span class="sel-m-chip">${m}<span class="sel-m-del" onclick="removeMajor('${m}')">✕</span></span>`
+  ).join('');
+}
+function removeMajor(m) {
+  S.majors = S.majors.filter(x=>x!==m);
+  renderMajorChipGrid();
+  renderSelectedMajors();
+}
+
+/* ================================================================
    CONFIRM PREVIEW
-   ========================================================== */
-function syncPreview() {
-  S.score = parseInt(document.getElementById('inpScore').value) || 0;
-  S.rank  = parseInt(document.getElementById('inpRank').value) || 0;
-  S.major = document.getElementById('inpMajor').value.trim();
+================================================================ */
+function syncConfirm() {
+  S.score = parseInt(document.getElementById('inpScore').value)||0;
+  S.rank  = parseInt(document.getElementById('inpRank').value)||0;
   const card = document.getElementById('confirmCard');
-  if (!S.score && !S.rank) { card.style.display = 'none'; return; }
+  if (!S.score && !S.rank) { card.style.display='none'; return; }
   card.style.display = 'block';
   document.getElementById('confirmBody').innerHTML = `
-    <div class="sr"><span class="appt-label">省份</span><span class="appt-value">${S.province}</span></div>
+    <div class="sr"><span class="appt-label">省份</span><span class="appt-value">${document.getElementById('inpProvince').value||S.province}</span></div>
     <div class="sr"><span class="appt-label">选科</span><span class="appt-value">${S.subject}方向</span></div>
-    <div class="sr"><span class="appt-label">总分</span>
-      <span class="appt-value" style="color:#1d4ed8;font-size:16px;font-weight:700;">${S.score || '--'} 分</span></div>
-    <div class="sr"><span class="appt-label">全省位次</span>
-      <span class="appt-value" style="color:#1d4ed8;font-weight:700;">第 ${S.rank ? S.rank.toLocaleString() : '--'} 名</span></div>
-    ${S.major ? `<div class="sr"><span class="appt-label">意向专业</span><span class="appt-value">${S.major}</span></div>` : ''}
-    <div class="sr"><span class="appt-label">志愿数量</span><span class="appt-value">${S.poolCount} 个（冲稳保 3:4:3）</span></div>
+    <div class="sr"><span class="appt-label">总分</span><span class="appt-value" style="color:#1d4ed8;font-size:16px;font-weight:700;">${S.score||'--'} 分</span></div>
+    <div class="sr"><span class="appt-label">全省位次</span><span class="appt-value" style="color:#1d4ed8;font-weight:700;">${S.rank?'第 '+S.rank.toLocaleString()+' 名':'--'}</span></div>
+    ${S.industries.length?`<div class="sr"><span class="appt-label">期望行业</span><span class="appt-value">${S.industries.slice(0,3).join('、')}${S.industries.length>3?'…':''}</span></div>`:''}
+    ${S.majors.length?`<div class="sr"><span class="appt-label">意向专业</span><span class="appt-value">${S.majors.slice(0,2).join('、')}${S.majors.length>2?' 等'+S.majors.length+'个':''}</span></div>`:''}
   `;
 }
 
-/* ==========================================================
-   GENERATE → POOL
-   ========================================================== */
-function handleGenerate() {
-  const score = document.getElementById('inpScore').value;
-  const rank  = document.getElementById('inpRank').value;
-  if (!score || !rank) { showToast('请先填写总分和全省位次'); return; }
-  S.score = parseInt(score);
-  S.rank  = parseInt(rank);
-  S.poolCount = parseInt(document.getElementById('inpPoolCount').value) || 150;
-
-  // 更新志愿池顶部参数条
-  document.getElementById('poolInfoParams').innerHTML = `
-    <span class="ip-chip ip-blue">${S.province}</span>
-    <span class="ip-chip ip-blue">${S.subject}方向</span>
-    <span class="ip-chip ip-green">${S.score} 分</span>
-    <span class="ip-chip ip-green">位次 ${S.rank.toLocaleString()}</span>
-    <span class="ip-chip ip-gray">${S.poolCount} 个志愿</span>
-    ${S.major ? `<span class="ip-chip ip-purple">${S.major}</span>` : ''}
+/* ================================================================
+   START MATCH
+================================================================ */
+function handleStart() {
+  S.province = document.getElementById('inpProvince').value;
+  S.score = parseInt(document.getElementById('inpScore').value)||0;
+  S.rank  = parseInt(document.getElementById('inpRank').value)||0;
+  if (!S.score || !S.rank) { showToast('请填写总分和全省位次'); return; }
+  document.getElementById('poolParams').innerHTML = `
+    <span class="tag" style="background:#eff6ff;color:#1d4ed8;">${S.province} · ${S.subject}方向</span>
+    <span class="tag" style="background:#f0fdf4;color:#065f46;">${S.score} 分</span>
+    <span class="tag" style="background:#f0fdf4;color:#065f46;">位次 ${S.rank.toLocaleString()}</span>
+    ${S.majors.length?`<span class="tag" style="background:#f5f3ff;color:#7c3aed;">${S.majors[0]}${S.majors.length>1?' +'+(S.majors.length-1)+'个':''}</span>`:''}
   `;
-
   renderPool();
   goPage('pool');
 }
 
-/* ==========================================================
+/* ================================================================
    NAVIGATION
-   ========================================================== */
+================================================================ */
 function goPage(p) {
-  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.ni').forEach(el => el.classList.remove('ab'));
-  document.getElementById('page-' + p).classList.add('active');
-  const nav = document.getElementById('nav-' + p);
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(el=>el.classList.remove('ab'));
+  document.getElementById('page-'+p).classList.add('active');
+  const nav = document.getElementById('nav-'+p);
   if (nav) nav.classList.add('ab');
-  document.getElementById('floatConsult').style.display = (p === 'consult') ? 'none' : 'flex';
-
-  const stepMap = { input:1, pool:2, draft:3, pk:3, consult:3 };
-  setStep(stepMap[p] || 1);
-
-  if (p === 'draft') renderDraft();
-  if (p === 'pk')    renderPK();
+  document.getElementById('fabAdd').style.display = p==='pool'?'flex':'none';
+  if (p==='lists') renderListsOverview();
+  if (p==='pk')    renderPK();
 }
 
-function setStep(active) {
-  for (let i = 1; i <= 4; i++) {
-    const dot = document.getElementById('psd-' + i);
-    const item = document.getElementById('psi-' + i);
-    const conn = document.getElementById('psc-' + i);
-    if (!dot) continue;
+/* ================================================================
+   POOL
+================================================================ */
+function allUnis() { return [...UNIVERSITIES,...S.customSchools]; }
 
-    if (i < active) {
-      dot.className = 'ps-dot done'; dot.textContent = '✓';
-      item.className = 'ps-item done';
-    } else if (i === active) {
-      dot.className = 'ps-dot active'; dot.textContent = i;
-      item.className = 'ps-item active';
-    } else {
-      dot.className = 'ps-dot'; dot.textContent = i;
-      item.className = 'ps-item';
-    }
-    if (conn) conn.className = 'ps-connector' + (i < active ? ' done' : '');
-  }
+function setFilter(f, btn) {
+  S.poolFilter = f;
+  document.querySelectorAll('.pf-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPool();
 }
-
-/* ==========================================================
-   POOL RENDERING
-   ========================================================== */
 function renderPool() {
-  let list = [...UNIVERSITIES];
-
-  if (S.annSort) {
-    const order = { high:0, mid:1, low:2, drop:3 };
-    list.sort((a, b) => {
-      const oa = order[S.annotations[a.id]] ?? 4;
-      const ob = order[S.annotations[b.id]] ?? 4;
-      return oa - ob;
-    });
-  }
-
-  document.getElementById('poolList').innerHTML = list.map(u => buildUniCard(u)).join('');
+  let list = allUnis();
+  if (S.poolFilter!=='all') list = list.filter(u=>u.type===S.poolFilter);
+  document.getElementById('poolList').innerHTML = list.length
+    ? list.map(buildUniCard).join('')
+    : `<div class="empty"><div class="empty-ico">🔍</div><div class="empty-title">暂无院校</div><div class="empty-sub">切换筛选，或点击右下角 + 手动添加</div></div>`;
 }
-
 function buildUniCard(u) {
-  const typeLabel = { rush:'冲', stable:'稳', safe:'保' };
-  const probClass = { rush:'prob-rush', stable:'prob-stable', safe:'prob-safe' };
-  const cardClass = { rush:'rush', stable:'stable', safe:'safe' };
-
-  const diff = S.rank - u.r24;
-  const diffSign = diff > 0 ? '+' : '';
-  const diffClass = diff > 0 ? 'good' : 'bad';
-
-  const ann = S.annotations[u.id];
-  const annLabels = ['高','中','低','弃'];
-  const annKeys   = ['high','mid','low','drop'];
-
-  const inDraft = S.draft.includes(u.id);
-  const inPK    = S.pkList.includes(u.id);
-
+  const tl={rush:'冲',stable:'稳',safe:'保'};
+  const pc={rush:'pb-rush',stable:'pb-stable',safe:'pb-safe'};
+  const ann=S.annotations[u.id];
+  const diff = S.rank ? S.rank-u.r24 : null;
+  const ds = diff!==null ? (diff>0?'+':'')+diff.toLocaleString() : '--';
+  const dc = diff!==null&&diff>0 ? 'pos' : 'neg';
+  const inPK = S.pkList.includes(u.id);
+  const annKeys=['high','mid','low','drop'], annLbls=['高','中','低','弃'];
   return `
-  <div class="uni-card ${cardClass[u.type]}" id="ucard-${u.id}">
+  <div class="uni-card ${u.type}" id="uc-${u.id}">
     <div class="uni-head">
       <div class="uni-logo">${u.logo}</div>
       <div class="uni-info">
         <div class="uni-name">${u.name}</div>
-        <div class="uni-meta">📍 ${u.city}</div>
+        <div class="uni-loc">📍 ${u.city}</div>
       </div>
-      <div class="prob-badge ${probClass[u.type]}">${typeLabel[u.type]}</div>
+      <div class="prob-badge ${pc[u.type]}">${tl[u.type]}</div>
     </div>
-
     <div class="uni-tags">
-      ${u.tags.map(t => {
-        const cls = t==='985'?'ut-985' : t==='211'?'ut-211' : t==='双一流'?'ut-double' : 'ut-public';
-        return `<span class="uni-tag ${cls}">${t}</span>`;
-      }).join('')}
-      <span class="uni-tag ut-public">公办</span>
+      ${u.tags.map(t=>`<span class="uni-tag ${t==='985'?'ut-985':t==='211'?'ut-211':t==='双一流'?'ut-double':'ut-pub'}">${t}</span>`).join('')}
     </div>
-
-    <div class="rank-row">
-      <div class="rank-item">
-        <div class="rank-lbl">我的位次</div>
-        <div class="rank-val mine">${S.rank ? S.rank.toLocaleString() : '--'}</div>
-      </div>
-      <div class="rank-divider"></div>
-      <div class="rank-item">
-        <div class="rank-lbl">24年录取</div>
-        <div class="rank-val">${u.r24.toLocaleString()}</div>
-      </div>
-      <div class="rank-divider"></div>
-      <div class="rank-item">
-        <div class="rank-lbl">位次差</div>
-        <div class="rank-val ${diffClass}">${S.rank ? diffSign + diff.toLocaleString() : '--'}</div>
-      </div>
-      <div class="rank-divider"></div>
-      <div class="rank-item">
-        <div class="rank-lbl">录取概率</div>
-        <div class="rank-val" style="color:${u.type==='rush'?'#dc2626':u.type==='stable'?'#d97706':'#059669'};">
-          ${u.prob}%
-        </div>
-      </div>
+    <div class="rank-strip">
+      <div class="ri"><div class="ri-lbl">我的位次</div><div class="ri-val mine">${S.rank?S.rank.toLocaleString():'--'}</div></div>
+      <div class="ri-div"></div>
+      <div class="ri"><div class="ri-lbl">24年录取</div><div class="ri-val">${u.r24.toLocaleString()}</div></div>
+      <div class="ri-div"></div>
+      <div class="ri"><div class="ri-lbl">位次差</div><div class="ri-val ${dc}">${ds}</div></div>
+      <div class="ri-div"></div>
+      <div class="ri"><div class="ri-lbl">概率</div><div class="ri-val" style="color:${u.type==='rush'?'#dc2626':u.type==='stable'?'#d97706':'#059669'}">${u.prob}%</div></div>
     </div>
-
     <div class="ann-row">
       <span class="ann-lbl">标注</span>
       <div class="ann-group">
-        ${annKeys.map((k, i) =>
-          `<button class="ann-btn${ann===k?' '+k:''}" onclick="toggleAnn(${u.id},'${k}',this)">${annLabels[i]}</button>`
-        ).join('')}
+        ${annKeys.map((k,i)=>`<button class="ann-btn${ann===k?' '+k:''}" onclick="toggleAnn(${u.id},'${k}',this)">${annLbls[i]}</button>`).join('')}
       </div>
     </div>
-
-    <div class="card-actions">
-      <button class="ca-btn" onclick="showToast('院校详情即将上线')">详情</button>
-      <button class="ca-btn ca-blue" onclick="showToast('咨询功能即将上线')">💬 咨询</button>
-      <button class="ca-btn${inPK?' ca-blue':''}" id="pkbtn-${u.id}" onclick="togglePK(${u.id})">
-        ${inPK ? '✓ 已对比' : '加入对比'}
-      </button>
-      <button class="ca-btn${inDraft?' ca-green':''}" id="draftbtn-${u.id}" onclick="toggleDraft(${u.id})">
-        ${inDraft ? '✓ 草稿' : '加入草稿'}
-      </button>
+    <div class="card-btns">
+      <button class="cb" onclick="showToast('院校详情即将上线')">详情</button>
+      <button class="cb${inPK?' active':''}" id="pkb-${u.id}" onclick="togglePK(${u.id})">${inPK?'✓ 已对比':'加入对比'}</button>
+      <button class="cb green" onclick="openChooseList(${u.id})">＋ 加入清单</button>
     </div>
   </div>`;
 }
-
-/* ==========================================================
-   ANNOTATION
-   ========================================================== */
-function toggleAnn(id, key, btn) {
-  const card = btn.closest('.uni-card');
-  const btns = card.querySelectorAll('.ann-btn');
-  const keys = ['high','mid','low','drop'];
-
-  if (S.annotations[id] === key) {
-    delete S.annotations[id];
-    btns.forEach(b => b.className = 'ann-btn');
-  } else {
-    S.annotations[id] = key;
-    btns.forEach((b, i) => b.className = 'ann-btn' + (keys[i] === key ? ' ' + key : ''));
-  }
-  if (S.annSort) renderPool();
+function toggleAnn(id,key,btn) {
+  const g=btn.closest('.ann-group'), btns=g.querySelectorAll('.ann-btn'), keys=['high','mid','low','drop'];
+  if(S.annotations[id]===key){delete S.annotations[id];btns.forEach(b=>b.className='ann-btn');}
+  else{S.annotations[id]=key;btns.forEach((b,i)=>b.className='ann-btn'+(keys[i]===key?' '+key:''));}
 }
 
-/* ==========================================================
-   SORT
-   ========================================================== */
-function setSortMode(mode, btn) {
-  S.sortMode = mode;
-  document.querySelectorAll('#sortPills .pill').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  showToast('已切换为' + { school:'院校优先', major:'专业优先', career:'职业优先' }[mode]);
-}
-
-function toggleAnnSort() {
-  S.annSort = !S.annSort;
-  const btn = document.getElementById('annSortBtn');
-  btn.textContent = '按标注排序 ' + (S.annSort ? '●' : '○');
-  btn.classList.toggle('active', S.annSort);
-  renderPool();
-}
-
-/* ==========================================================
+/* ================================================================
    PK
-   ========================================================== */
+================================================================ */
 function togglePK(id) {
-  const btn = document.getElementById('pkbtn-' + id);
-  const idx = S.pkList.indexOf(id);
-  if (idx >= 0) {
-    S.pkList.splice(idx, 1);
-    if (btn) { btn.className = 'ca-btn'; btn.textContent = '加入对比'; }
-  } else {
-    S.pkList.push(id);
-    if (btn) { btn.className = 'ca-btn ca-blue'; btn.textContent = '✓ 已对比'; }
-  }
-  document.getElementById('pkCountBadge').textContent = S.pkList.length;
+  const btn=document.getElementById('pkb-'+id), i=S.pkList.indexOf(id);
+  if(i>=0){S.pkList.splice(i,1);btn&&(btn.className='cb',btn.textContent='加入对比');}
+  else{S.pkList.push(id);btn&&(btn.className='cb active',btn.textContent='✓ 已对比');}
 }
-
-function handleGoToPK() {
-  if (S.pkList.length < 2) { showToast('请在志愿池中选择至少 2 所院校进行对比'); return; }
-  goPage('pk');
-}
-
 function renderPK() {
-  const el = document.getElementById('pkContent');
-  if (S.pkList.length < 2) {
-    el.innerHTML = `
-      <div class="pk-empty">
-        <div class="pk-empty-icon">🆚</div>
-        <div class="empty-title">暂无对比院校</div>
-        <div class="empty-sub">在志愿池中点击"加入对比"<br>可同时对比多所院校核心指标</div>
-      </div>`;
-    return;
+  const el=document.getElementById('pkContent');
+  if(S.pkList.length<2){
+    el.innerHTML=`<div class="empty"><div class="empty-ico">🆚</div><div class="empty-title">暂无对比院校</div><div class="empty-sub">在志愿池中点击「加入对比」<br>可同时对比多所院校指标</div></div>`;return;
   }
-
-  const unis = S.pkList.map(id => UNIVERSITIES.find(u => u.id === id)).filter(Boolean);
-  const typeMap = { rush:'🔴 冲', stable:'🟡 稳', safe:'🟢 保' };
-  const colW = 100 / (unis.length + 1);
-  const gridCols = `${colW}% ` + unis.map(() => `${colW}%`).join(' ');
-
-  const rows = [
-    ['城市',       unis.map(u => u.city)],
-    ['院校类型',   unis.map(u => u.tags.join(' '))],
-    ['冲稳保',     unis.map(u => typeMap[u.type])],
-    ['24年位次',   unis.map(u => u.r24.toLocaleString())],
-    ['23年位次',   unis.map(u => u.r23.toLocaleString())],
-    ['位次差',     unis.map(u => {
-      if (!S.rank) return '--';
-      const d = S.rank - u.r24;
-      return `<span style="color:${d>0?'#059669':'#dc2626'};font-weight:600;">${d>0?'+':''}${d.toLocaleString()}</span>`;
-    })],
-    ['录取概率',   unis.map(u => `<strong style="color:${u.type==='rush'?'#dc2626':u.type==='stable'?'#d97706':'#059669'}">${u.prob}%</strong>`)],
+  const unis=S.pkList.map(id=>allUnis().find(u=>u.id===id)).filter(Boolean);
+  const tm={rush:'🔴 冲',stable:'🟡 稳',safe:'🟢 保'};
+  const cw=100/(unis.length+1);
+  const rows=[
+    ['城市',unis.map(u=>u.city)],['类型',unis.map(u=>u.tags.join(' '))],['分类',unis.map(u=>tm[u.type])],
+    ['24年位次',unis.map(u=>u.r24.toLocaleString())],['23年位次',unis.map(u=>u.r23.toLocaleString())],
+    ['位次差',unis.map(u=>{if(!S.rank)return'--';const d=S.rank-u.r24;return`<span style="color:${d>0?'#059669':'#dc2626'};font-weight:600;">${d>0?'+':''}${d.toLocaleString()}</span>`;})],
+    ['概率',unis.map(u=>`<strong style="color:${u.type==='rush'?'#dc2626':u.type==='stable'?'#d97706':'#059669'}">${u.prob}%</strong>`)],
   ];
-
-  el.innerHTML = `
+  el.innerHTML=`
     <div class="pk-table">
-      <div class="pk-head-row" style="display:grid;grid-template-columns:${gridCols};">
-        <div class="pk-label-cell" style="background:#f9fafb;font-weight:700;color:#374151;">维度</div>
-        ${unis.map(u => `<div class="pk-school-cell" style="border-right:1px solid #f3f4f6;">${u.logo} ${u.name}</div>`).join('')}
+      <div class="pk-row" style="background:#f9fafb;">
+        <div class="pk-label" style="font-weight:700;color:#374151;">维度</div>
+        ${unis.map(u=>`<div class="pk-cell" style="font-weight:700;color:#1e40af;font-size:12px;">${u.logo} ${u.name}</div>`).join('')}
       </div>
-      ${rows.map(([label, vals]) => `
-        <div class="pk-body-row" style="display:grid;grid-template-columns:${gridCols};">
-          <div class="pk-label-cell">${label}</div>
-          ${vals.map(v => `<div class="pk-data-cell">${v}</div>`).join('')}
-        </div>`).join('')}
+      ${rows.map(([l,vs])=>`<div class="pk-row"><div class="pk-label">${l}</div>${vs.map(v=>`<div class="pk-cell">${v}</div>`).join('')}</div>`).join('')}
     </div>
-    <button class="btn-p" style="background:#eff6ff;color:#1d4ed8;margin-top:12px;"
-      onclick="showToast('对比PDF导出即将上线，含厚浪小程序码')">
-      📄 导出对比 PDF
-    </button>
-    <button class="btn-p" style="background:#f3f4f6;color:#374151;margin-top:8px;"
-      onclick="clearPK()">
-      清空对比列表
-    </button>`;
+    <button class="btn-p" style="background:#eff6ff;color:#1d4ed8;margin-top:12px;" onclick="showToast('PDF 导出即将上线')">📄 导出对比 PDF</button>
+    <button class="btn-p" style="background:#f3f4f6;color:#374151;margin-top:8px;" onclick="clearPK()">清空对比</button>`;
 }
-
 function clearPK() {
-  S.pkList.forEach(id => {
-    const btn = document.getElementById('pkbtn-' + id);
-    if (btn) { btn.className = 'ca-btn'; btn.textContent = '加入对比'; }
-  });
-  S.pkList = [];
-  document.getElementById('pkCountBadge').textContent = 0;
-  renderPK();
+  S.pkList.forEach(id=>{const b=document.getElementById('pkb-'+id);if(b){b.className='cb';b.textContent='加入对比';}});
+  S.pkList=[]; renderPK();
 }
 
-/* ==========================================================
-   DRAFT
-   ========================================================== */
-function toggleDraft(id) {
-  const btn = document.getElementById('draftbtn-' + id);
-  const idx = S.draft.indexOf(id);
-  if (idx >= 0) {
-    S.draft.splice(idx, 1);
-    if (btn) { btn.className = 'ca-btn'; btn.textContent = '加入草稿'; }
-    showToast('已从草稿移除');
+/* ================================================================
+   ADD SCHOOL MODAL
+================================================================ */
+function renderAddMajorSelect() {
+  const sel = document.getElementById('asMajor');
+  sel.innerHTML = Object.entries(MAJOR_CATS).map(([cat, majors]) =>
+    `<optgroup label="${cat}">${majors.map(m=>`<option>${m}</option>`).join('')}</optgroup>`
+  ).join('');
+}
+
+function filterSuggestions() {
+  const q = document.getElementById('asName').value.trim().toLowerCase();
+  const box = document.getElementById('asSuggestions');
+  if (!q) { box.classList.remove('show'); return; }
+  const matches = allUnis().filter(u => u.name.includes(q) || u.city.toLowerCase().includes(q)).slice(0,6);
+  if (!matches.length) { box.classList.remove('show'); return; }
+  box.innerHTML = matches.map(u =>
+    `<div class="school-sugg-item" onclick="pickSuggestion('${u.name.replace(/'/g,"\\'")}')">
+      ${u.logo} ${u.name} <span style="color:#9ca3af;font-size:11px;">· ${u.city}</span>
+    </div>`
+  ).join('');
+  box.classList.add('show');
+}
+function pickSuggestion(name) {
+  document.getElementById('asName').value = name;
+  document.getElementById('asSuggestions').classList.remove('show');
+}
+
+function openAddSchool(ctx) {
+  S.addCtx = ctx||'pool';
+  document.getElementById('asName').value = '';
+  document.getElementById('asSuggestions').classList.remove('show');
+  document.getElementById('asMajor').selectedIndex = 0;
+  document.querySelectorAll('#asClassWrap .tc').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('#asClassWrap .tc')[1].classList.add('on');
+  document.getElementById('modalAddSchool').classList.add('show');
+}
+function closeAddSchool() { document.getElementById('modalAddSchool').classList.remove('show'); }
+function setSingleChip(btn, wrapId) {
+  document.querySelectorAll('#'+wrapId+' .tc').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function confirmAddSchool() {
+  const name = document.getElementById('asName').value.trim();
+  const major = document.getElementById('asMajor').value;
+  if (!name) { showToast('请填写学校名称'); return; }
+  if (!major) { showToast('请选择意向专业'); return; }
+  const classBtn = document.querySelector('#asClassWrap .tc.on');
+  const classMap = {'🔴 冲':'rush','🟡 稳':'stable','🟢 保':'safe'};
+  const type = classBtn ? classMap[classBtn.textContent]||'stable' : 'stable';
+
+  // 优先从库中匹配
+  const existing = allUnis().find(u=>u.name===name);
+  let newU;
+  if (existing) {
+    newU = {...existing, id:10000+S.customSchools.length, type, custom:true, selectedMajor:major};
   } else {
-    S.draft.push(id);
-    if (btn) { btn.className = 'ca-btn ca-green'; btn.textContent = '✓ 草稿'; }
-    showToast('✅ 已加入草稿');
+    newU = {id:10000+S.customSchools.length, name, city:'--', logo:'🏫',
+      tags:[], type, r24:0, r23:0, prob:type==='rush'?60:type==='stable'?85:95,
+      custom:true, selectedMajor:major};
   }
-  updateDraftStats();
+  S.customSchools.push(newU);
+  closeAddSchool();
+  showToast('✅ 学校已添加');
+  if (S.addCtx==='list' && S.currentListId!=null) {
+    addUniToList(newU.id, S.currentListId); renderListDetail();
+  } else { renderPool(); }
 }
 
-function removeDraftItem(id) {
-  S.draft = S.draft.filter(i => i !== id);
-  renderDraft();
-  const btn = document.getElementById('draftbtn-' + id);
-  if (btn) { btn.className = 'ca-btn'; btn.textContent = '加入草稿'; }
-}
-
-function renderDraft() {
-  updateDraftStats();
-  const list = document.getElementById('draftList');
-  if (S.draft.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">📝</div>
-        <div class="empty-title">草稿箱是空的</div>
-        <div class="empty-sub">在志愿池中点击「加入草稿」<br>把心仪院校加入草稿箱</div>
-        <button class="btn-p bg-blue" style="margin-top:16px;padding:12px;" onclick="goPage('pool')">
-          去志愿池选择
-        </button>
-      </div>`;
+/* ================================================================
+   CHOOSE LIST
+================================================================ */
+function openChooseList(uniId) {
+  S.pendingUniId = uniId;
+  if (S.lists.length===0) { showToast('请先在「志愿清单」中新建一个清单'); return; }
+  if (S.lists.length===1) {
+    const ok = addUniToList(uniId, S.lists[0].id);
+    if (ok) showToast(`✅ 已加入「${S.lists[0].name}」`);
     return;
   }
+  document.getElementById('chooseListBody').innerHTML = S.lists.map(l=>
+    `<div class="choose-item" onclick="pickList(${l.id})">
+      <span class="choose-name">📋 ${l.name}</span>
+      <span class="choose-cnt">${l.items.length} 个志愿</span>
+    </div>`
+  ).join('');
+  document.getElementById('modalChooseList').classList.add('show');
+}
+function closeChooseList() { document.getElementById('modalChooseList').classList.remove('show'); }
+function pickList(listId) {
+  closeChooseList();
+  const ok = addUniToList(S.pendingUniId, listId);
+  if (ok) showToast(`✅ 已加入「${S.lists.find(x=>x.id===listId)?.name}」`);
+  S.pendingUniId = null;
+}
+function promptNewListThenAdd() { closeChooseList(); promptNewList(); }
 
-  // 超限检测
-  const limit = PROVINCE_LIMIT[S.province] || PROVINCE_LIMIT['默认'];
-  const alertEl = document.getElementById('overLimitAlert');
-  if (S.draft.length > limit) {
-    alertEl.style.display = 'block';
-    alertEl.innerHTML = `⚠️ 当前已选 <strong>${S.draft.length}</strong> 个，超出 ${S.province} 省 ${limit} 个限制，请删减 <strong>${S.draft.length - limit}</strong> 个`;
+/* ================================================================
+   LISTS
+================================================================ */
+function promptNewList() {
+  S.listNameMode='new';
+  document.getElementById('listNameTitle').textContent='新建志愿清单';
+  document.getElementById('listNameInput').value=`方案${S.lists.length+1}`;
+  document.getElementById('modalListName').classList.add('show');
+  setTimeout(()=>document.getElementById('listNameInput').select(),100);
+}
+function promptRename() {
+  S.listNameMode='rename';
+  document.getElementById('listNameTitle').textContent='重命名清单';
+  const l=S.lists.find(x=>x.id===S.currentListId);
+  document.getElementById('listNameInput').value=l?l.name:'';
+  document.getElementById('modalListName').classList.add('show');
+  setTimeout(()=>document.getElementById('listNameInput').select(),100);
+}
+function closeListName() { document.getElementById('modalListName').classList.remove('show'); }
+function confirmListName() {
+  const name=document.getElementById('listNameInput').value.trim();
+  if(!name){showToast('请输入清单名称');return;}
+  if(S.listNameMode==='new'){
+    const nl={id:S.listIdSeed++,name,items:[]};
+    S.lists.push(nl); closeListName();
+    if(S.pendingUniId!=null){addUniToList(S.pendingUniId,nl.id);S.pendingUniId=null;showToast(`✅ 已加入新清单「${name}」`);}
+    else showToast(`✅ 清单「${name}」已创建`);
+    renderListsOverview();
   } else {
-    alertEl.style.display = 'none';
+    const l=S.lists.find(x=>x.id===S.currentListId);
+    if(l){l.name=name;document.getElementById('detailName').textContent=name;}
+    closeListName(); renderListsOverview();
   }
+}
 
-  const typeLabel = { rush:'冲', stable:'稳', safe:'保' };
-  const typeBdg   = { rush:'bdg-red', stable:'bdg-gold', safe:'bdg-green' };
+function addUniToList(uniId, listId) {
+  const list=S.lists.find(l=>l.id===listId); if(!list) return false;
+  if(list.items.find(it=>it.uniId===uniId)){showToast('该学校已在清单中');return false;}
+  const u=allUnis().find(x=>x.id===uniId);
+  list.items.push({id:S.itemIdSeed++,uniId,comply:false,type:u?.type||'stable'});
+  return true;
+}
 
-  list.innerHTML = S.draft.map((id, idx) => {
-    const u = UNIVERSITIES.find(u => u.id === id);
-    if (!u) return '';
+function renderListsOverview() {
+  document.getElementById('listsOverview').style.display='block';
+  document.getElementById('listsDetail').style.display='none';
+  const el=document.getElementById('listCards');
+  if(!S.lists.length){
+    el.innerHTML=`<div class="empty"><div class="empty-ico">📋</div><div class="empty-title">还没有志愿清单</div><div class="empty-sub">点击「新建清单」创建你的志愿方案<br>每个清单独立包含一套冲稳保组合</div></div>`;return;
+  }
+  el.innerHTML=S.lists.map(l=>{
+    const r=l.items.filter(it=>it.type==='rush').length;
+    const s=l.items.filter(it=>it.type==='stable').length;
+    const p=l.items.filter(it=>it.type==='safe').length;
     return `
-    <div class="draft-item" draggable="true"
-      data-idx="${idx}"
-      ondragstart="draftDragStart(event,${idx})"
-      ondragover="draftDragOver(event)"
-      ondrop="draftDrop(event,${idx})"
-      ondragleave="draftDragLeave(event)">
-      <span class="di-num">${idx + 1}</span>
-      <span class="di-handle" title="拖拽排序">≡</span>
-      <div class="di-info">
-        <div class="di-name">${u.logo} ${u.name}</div>
-        <div class="di-sub">${u.city}</div>
+    <div class="list-card" onclick="openListDetail(${l.id})">
+      <div class="list-card-hd">
+        <div class="list-icon">📋</div>
+        <span class="list-name">${l.name}</span>
+        <span class="list-menu-btn" onclick="event.stopPropagation();listMenu(${l.id})">⋯</span>
       </div>
-      <span class="bdg ${typeBdg[u.type]}">${typeLabel[u.type]}</span>
-      <button class="di-del" onclick="removeDraftItem(${id})" title="移除">✕</button>
+      <div class="list-counts">
+        <div class="lc lc-r"><div class="lc-n">${r}</div><div class="lc-l">冲</div></div>
+        <div class="lc lc-s"><div class="lc-n">${s}</div><div class="lc-l">稳</div></div>
+        <div class="lc lc-p"><div class="lc-n">${p}</div><div class="lc-l">保</div></div>
+      </div>
+      <div style="font-size:12px;color:#9ca3af;margin-top:8px;">${l.items.length} 个志愿 · 点击查看 / 排序</div>
     </div>`;
   }).join('');
 }
 
-function updateDraftStats() {
-  const total = S.draft.length;
-  const rush   = S.draft.filter(id => UNIVERSITIES.find(u=>u.id===id)?.type==='rush').length;
-  const stable = S.draft.filter(id => UNIVERSITIES.find(u=>u.id===id)?.type==='stable').length;
-  const safe   = S.draft.filter(id => UNIVERSITIES.find(u=>u.id===id)?.type==='safe').length;
-  document.getElementById('draftTotalBadge').textContent = total + ' 个';
-  document.getElementById('draftCntRush').textContent   = rush;
-  document.getElementById('draftCntStable').textContent = stable;
-  document.getElementById('draftCntSafe').textContent   = safe;
-  document.getElementById('pkCountBadge').textContent   = S.pkList.length;
+function listMenu(listId) {
+  const l=S.lists.find(x=>x.id===listId); if(!l) return;
+  if(confirm(`删除清单「${l.name}」吗？`)){
+    S.lists=S.lists.filter(x=>x.id!==listId);
+    renderListsOverview(); showToast(`已删除「${l.name}」`);
+  }
 }
 
-/* ==========================================================
-   DRAG & DROP (DRAFT)
-   ========================================================== */
-let dragFrom = null;
-
-function draftDragStart(e, idx) {
-  dragFrom = idx;
-  e.dataTransfer.effectAllowed = 'move';
-  setTimeout(() => e.target.classList.add('dragging'), 0);
+function openListDetail(listId) {
+  S.currentListId=listId;
+  const l=S.lists.find(x=>x.id===listId); if(!l) return;
+  document.getElementById('detailName').textContent=l.name;
+  document.getElementById('listsOverview').style.display='none';
+  document.getElementById('listsDetail').style.display='block';
+  renderListDetail();
+}
+function backToOverview() {
+  S.currentListId=null;
+  document.getElementById('listsOverview').style.display='block';
+  document.getElementById('listsDetail').style.display='none';
+  renderListsOverview();
 }
 
-function draftDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  e.currentTarget.classList.add('over');
+function renderListDetail() {
+  const l=S.lists.find(x=>x.id===S.currentListId); if(!l) return;
+  const r=l.items.filter(it=>it.type==='rush').length;
+  const s=l.items.filter(it=>it.type==='stable').length;
+  const p=l.items.filter(it=>it.type==='safe').length;
+  document.getElementById('detailStats').innerHTML=`
+    <div class="ds-item" style="background:#fee2e2;flex:1;text-align:center;padding:8px;border-radius:10px;">
+      <div style="font-size:18px;font-weight:700;color:#b91c1c;">${r}</div><div style="font-size:11px;color:#b91c1c;margin-top:2px;">冲</div></div>
+    <div class="ds-item" style="background:#fef3c7;flex:1;text-align:center;padding:8px;border-radius:10px;">
+      <div style="font-size:18px;font-weight:700;color:#d97706;">${s}</div><div style="font-size:11px;color:#d97706;margin-top:2px;">稳</div></div>
+    <div class="ds-item" style="background:#d1fae5;flex:1;text-align:center;padding:8px;border-radius:10px;">
+      <div style="font-size:18px;font-weight:700;color:#065f46;">${p}</div><div style="font-size:11px;color:#065f46;margin-top:2px;">保</div></div>`;
+  const limit=PROVINCE_LIMIT[S.province]||PROVINCE_LIMIT['默认'];
+  const la=document.getElementById('limitAlert');
+  if(l.items.length>limit){la.style.display='block';la.innerHTML=`⚠️ 当前已选 <strong>${l.items.length}</strong> 个，超出 ${S.province} 省上限 ${limit} 个，请删减 <strong>${l.items.length-limit}</strong> 个`;}
+  else la.style.display='none';
+  const tl={rush:'冲',stable:'稳',safe:'保'}, tb={rush:'bdg-red',stable:'bdg-gold',safe:'bdg-green'};
+  const el=document.getElementById('detailItems');
+  if(!l.items.length){
+    el.innerHTML=`<div class="empty" style="padding:24px 20px;"><div class="empty-ico">🏫</div><div class="empty-title">还没有院校</div><div class="empty-sub">从志愿池添加，或手动添加</div></div>`;return;
+  }
+  el.innerHTML=l.items.map((it,idx)=>{
+    const u=allUnis().find(x=>x.id===it.uniId)||{name:'自定义学校',city:'--',logo:'🏫'};
+    const major = u.selectedMajor||'';
+    return `
+    <div class="list-item" draggable="true" data-idx="${idx}"
+      ondragstart="liStart(event,${idx})" ondragover="liOver(event)" ondragleave="liLeave(event)" ondrop="liDrop(event,${idx})">
+      <div class="li-row">
+        <span class="li-num">${idx+1}</span>
+        <span class="li-drag">≡</span>
+        <div class="li-info">
+          <div class="li-name">${u.logo} ${u.name}</div>
+          <div class="li-sub">${major?'📖 '+major+' · ':''}📍 ${u.city}</div>
+        </div>
+        <span class="bdg ${tb[it.type]}">${tl[it.type]}</span>
+        <button class="li-del" onclick="removeItem(${it.id})">✕</button>
+      </div>
+      <div class="comply-row">
+        <div>
+          <div class="comply-lbl">服从调配</div>
+          <div class="comply-tip">愿意被调剂至该校其他专业</div>
+        </div>
+        <label class="sw-lbl">
+          <input type="checkbox" ${it.comply?'checked':''} onchange="setComply(${it.id},this.checked)">
+          <span class="sw"></span>
+        </label>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function draftDragLeave(e) {
-  e.currentTarget.classList.remove('over');
+function removeItem(itemId){const l=S.lists.find(x=>x.id===S.currentListId);if(!l)return;l.items=l.items.filter(it=>it.id!==itemId);renderListDetail();}
+function setComply(itemId,val){const l=S.lists.find(x=>x.id===S.currentListId);if(!l)return;const it=l.items.find(x=>x.id===itemId);if(it)it.comply=val;}
+
+/* ── LIST DRAG ── */
+let liFrom=null;
+function liStart(e,idx){liFrom=idx;e.dataTransfer.effectAllowed='move';setTimeout(()=>e.currentTarget.classList.add('dragging'),0);}
+function liOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+function liLeave(e){e.currentTarget.classList.remove('drag-over');}
+function liDrop(e,toIdx){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(liFrom===null||liFrom===toIdx){liFrom=null;return;}
+  const l=S.lists.find(x=>x.id===S.currentListId);if(!l)return;
+  const item=l.items.splice(liFrom,1)[0];l.items.splice(toIdx,0,item);
+  liFrom=null;renderListDetail();
 }
 
-function draftDrop(e, toIdx) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('over');
-  if (dragFrom === null || dragFrom === toIdx) { dragFrom = null; return; }
-  const item = S.draft.splice(dragFrom, 1)[0];
-  S.draft.splice(toIdx, 0, item);
-  dragFrom = null;
-  renderDraft();
-}
-
-/* ==========================================================
+/* ================================================================
    TOAST
-   ========================================================== */
-let toastTimer = null;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.style.display = 'block';
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2600);
-}
+================================================================ */
+let _t=null;
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';clearTimeout(_t);_t=setTimeout(()=>el.style.display='none',2600);}
 </script>
 </body>
 </html>
