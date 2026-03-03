@@ -73,6 +73,44 @@
     /* Dispute resolution */
     .dr{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     .drb{padding:9px 14px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+    /* Tutor management */
+    .tm-search{width:100%;padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:10px;outline:none;box-sizing:border-box}
+    .tm-search:focus{border-color:#1d4ed8}
+    .tm-card{background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .tm-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .tm-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:#dbeafe}
+    .tm-name{font-size:15px;font-weight:700;color:#111827}
+    .tm-school{font-size:12px;color:#9ca3af;margin-top:2px}
+    .tm-info{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;margin-bottom:10px;font-size:12px;color:#374151}
+    .tm-il{color:#9ca3af}
+    .tm-stats{display:flex;gap:0;margin-bottom:10px;background:#f9fafb;border-radius:8px;overflow:hidden}
+    .tm-stat{flex:1;text-align:center;padding:8px 4px;border-right:1px solid #e5e7eb}
+    .tm-stat:last-child{border-right:none}
+    .tm-stat-num{font-size:14px;font-weight:700;color:#1e40af}
+    .tm-stat-lbl{font-size:10px;color:#9ca3af;margin-top:1px}
+    .tm-acts{display:flex;gap:6px;flex-wrap:wrap}
+    .tab{padding:6px 11px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
+    .tab-detail{background:#eff6ff;color:#1d4ed8}
+    .tab-level{background:#fef3c7;color:#b45309}
+    .tab-pwd{background:#f3f4f6;color:#374151}
+    .tab-ban{background:#fee2e2;color:#dc2626}
+    .tab-unban{background:#d1fae5;color:#065f46}
+    /* Detail overlay */
+    .adm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
+    .adm-overlay.show{display:flex}
+    .adm-modal{background:white;border-radius:20px 20px 0 0;padding:20px 16px 36px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto;position:relative}
+    .adm-modal-title{font-size:17px;font-weight:700;margin-bottom:4px}
+    .adm-modal-sub{font-size:12px;color:#9ca3af;margin-bottom:16px}
+    .adm-modal-close{position:absolute;right:16px;top:16px;font-size:22px;cursor:pointer;border:none;background:none;color:#9ca3af;line-height:1}
+    .dm-sec{font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:.5px;text-transform:uppercase;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #f3f4f6}
+    .dm-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f9fafb}
+    .dm-row:last-child{border-bottom:none}
+    .dm-label{font-size:13px;color:#9ca3af}
+    .dm-value{font-size:13px;font-weight:600;color:#111827;text-align:right;max-width:60%}
+    .dm-pwd{font-size:13px;font-weight:600;color:#111827;letter-spacing:2px}
+    .dm-eye{background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:2px 4px;margin-left:4px}
+    .adm-modal-acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+    .adm-modal-acts .rb{flex:1}
     /* Toast */
     .toast{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);color:white;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap}
   </style>
@@ -91,6 +129,7 @@
     <button class="atab" data-sec="s-cont">内容合规</button>
     <button class="atab" data-sec="s-disp">争议裁决</button>
     <button class="atab" data-sec="s-vio">违规处理</button>
+    <button class="atab" data-sec="s-tutors">导师管理</button>
   </div>
 
   <div class="wrap">
@@ -259,7 +298,72 @@
       </div>
     </div>
 
+    <!-- ⑦ 导师管理 -->
+    <div class="asec" id="s-tutors">
+      <div class="sh">导师管理 <span style="font-size:13px;font-weight:400;color:#9ca3af;">共 1,204 位</span></div>
+
+      <!-- 搜索 -->
+      <input class="tm-search" id="tmSearch" placeholder="🔍 搜索姓名 / 用户名 / 邮箱 / 院校" oninput="renderTutors()">
+
+      <!-- 等级筛选 -->
+      <div class="fb" id="tmLevelFilter">
+        <button class="fbn on" data-lv="0">全部</button>
+        <button class="fbn" data-lv="1">🌱 初级</button>
+        <button class="fbn" data-lv="2">⭐ 中级</button>
+        <button class="fbn" data-lv="3">🎯 高级</button>
+        <button class="fbn" data-lv="4">🏅 资深</button>
+        <button class="fbn" data-lv="5">🏆 金牌</button>
+      </div>
+
+      <!-- 状态筛选 -->
+      <div class="fb" id="tmStatusFilter">
+        <button class="fbn on" data-st="all">全部状态</button>
+        <button class="fbn" data-st="normal">正常</button>
+        <button class="fbn" data-st="banned">已封禁</button>
+        <button class="fbn" data-st="pending">待审核</button>
+      </div>
+
+      <div id="tmList"></div>
+    </div>
+
   </div><!-- /wrap -->
+
+  <!-- 导师详情弹窗 -->
+  <div class="adm-overlay" id="tutorDetailOverlay" onclick="if(event.target===this)closeTutorDetail()">
+    <div class="adm-modal">
+      <div class="adm-modal-title" id="detailName">-</div>
+      <div class="adm-modal-sub" id="detailSub">-</div>
+      <button class="adm-modal-close" onclick="closeTutorDetail()">✕</button>
+
+      <div class="dm-sec">账号信息</div>
+      <div class="dm-row"><span class="dm-label">用户名</span><span class="dm-value" id="detailUname">-</span></div>
+      <div class="dm-row">
+        <span class="dm-label">登录密码</span>
+        <div style="display:flex;align-items:center;">
+          <span class="dm-pwd" id="detailPwd">••••••••</span>
+          <button class="dm-eye" onclick="togglePwd()" id="eyeBtn">👁</button>
+        </div>
+      </div>
+      <div class="dm-row"><span class="dm-label">邮箱</span><span class="dm-value" id="detailEmail">-</span></div>
+      <div class="dm-row"><span class="dm-label">手机号</span><span class="dm-value" id="detailPhone">-</span></div>
+      <div class="dm-row"><span class="dm-label">注册时间</span><span class="dm-value" id="detailJoined">-</span></div>
+
+      <div class="dm-sec">等级与状态</div>
+      <div class="dm-row"><span class="dm-label">当前等级</span><span class="dm-value" id="detailLevel">-</span></div>
+      <div class="dm-row"><span class="dm-label">账号状态</span><span class="dm-value" id="detailStatus">-</span></div>
+
+      <div class="dm-sec">服务数据</div>
+      <div class="dm-row"><span class="dm-label">累计咨询次数</span><span class="dm-value" id="detailSessions">-</span></div>
+      <div class="dm-row"><span class="dm-label">好评率</span><span class="dm-value" id="detailRating">-</span></div>
+
+      <div class="adm-modal-acts">
+        <button class="rb rb-mod tab-level" id="detailLevelBtn" onclick="adjLevel()">调整等级</button>
+        <button class="rb tab-pwd" onclick="toast('密码重置邮件已发送至导师邮箱')">重置密码</button>
+        <button class="rb rb-no tab-ban" id="detailBanBtn" onclick="toggleBan()">封禁账号</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
@@ -283,6 +387,145 @@
       const el = e.target.closest('[data-toast]');
       if (el) toast(el.dataset.toast);
     });
+
+    /* ─────── 导师管理 ─────── */
+    const LEVEL_NAMES = ['','🌱 初级','⭐ 中级','🎯 高级','🏅 资深','🏆 金牌'];
+    const STATUS_MAP  = {normal:'正常', banned:'已封禁', pending:'待审核'};
+    const STATUS_CLR  = {normal:'b-ok', banned:'b-err', pending:'b-warn'};
+
+    const TUTORS_DATA = [
+      {id:1, name:'张小明', emoji:'👨‍💼', school:'北京大学', major:'计算机科学', type:'在校生',
+       lv:3, status:'normal', phone:'138****1234', email:'zhang_xm@pku.edu.cn',
+       uname:'zhang_xiaoming', pwd:'Aa@123456', joined:'2025-09-01', sessions:45, rating:97},
+      {id:2, name:'李思雨', emoji:'👩‍🎓', school:'清华大学', major:'电子信息工程', type:'毕业2年',
+       lv:4, status:'normal', phone:'139****5678', email:'li_siyu@tsinghua.edu.cn',
+       uname:'li_siyu_thu', pwd:'Bb@789012', joined:'2025-08-15', sessions:82, rating:99},
+      {id:3, name:'王建国', emoji:'👨‍💻', school:'复旦大学', major:'金融学', type:'在校生',
+       lv:2, status:'banned', phone:'137****9012', email:'wjg@fudan.edu.cn',
+       uname:'wang_jianguo', pwd:'Cc@345678', joined:'2025-10-20', sessions:18, rating:85},
+      {id:4, name:'陈思远', emoji:'👩‍🏫', school:'浙江大学', major:'软件工程', type:'毕业1年',
+       lv:5, status:'normal', phone:'136****3456', email:'csyfar@zju.edu.cn',
+       uname:'chen_siyuan', pwd:'Dd@901234', joined:'2025-07-01', sessions:156, rating:98},
+      {id:5, name:'刘晓燕', emoji:'👩‍🔬', school:'中国人民大学', major:'法学', type:'在校生',
+       lv:1, status:'pending', phone:'135****7890', email:'lxy@ruc.edu.cn',
+       uname:'liu_xiaoyan', pwd:'Ee@567890', joined:'2026-02-10', sessions:3, rating:95},
+      {id:6, name:'赵天宇', emoji:'👨‍🏫', school:'武汉大学', major:'经济学', type:'毕业3年',
+       lv:3, status:'normal', phone:'134****2345', email:'zty@whu.edu.cn',
+       uname:'zhao_tianyu', pwd:'Ff@123789', joined:'2025-06-12', sessions:67, rating:93},
+    ];
+
+    let tmLvFilter = 0, tmStFilter = 'all', currentTutor = null, pwdVisible = false;
+
+    function renderTutors() {
+      const q = (document.getElementById('tmSearch')?.value || '').toLowerCase();
+      let list = TUTORS_DATA.filter(t => {
+        if (tmLvFilter > 0 && t.lv !== tmLvFilter) return false;
+        if (tmStFilter !== 'all' && t.status !== tmStFilter) return false;
+        if (q && !t.name.includes(q) && !t.uname.includes(q) &&
+            !t.email.includes(q) && !t.school.includes(q)) return false;
+        return true;
+      });
+      const el = document.getElementById('tmList');
+      if (!el) return;
+      if (!list.length) {
+        el.innerHTML = '<div style="text-align:center;padding:32px;color:#9ca3af;font-size:14px;">无匹配导师</div>';
+        return;
+      }
+      el.innerHTML = list.map(t => `
+        <div class="tm-card">
+          <div class="tm-hd">
+            <div class="tm-av" style="background:${t.status==='banned'?'#fee2e2':t.status==='pending'?'#fef9c3':'#dbeafe'}">${t.emoji}</div>
+            <div style="flex:1;min-width:0;">
+              <div class="tm-name">${t.name} &nbsp;<span class="b ${STATUS_CLR[t.status]}" style="font-size:10px;">${STATUS_MAP[t.status]}</span></div>
+              <div class="tm-school">${t.school} · ${t.major} · ${t.type}</div>
+            </div>
+            <span class="b b-blue" style="font-size:11px;white-space:nowrap;">${LEVEL_NAMES[t.lv]}</span>
+          </div>
+          <div class="tm-info">
+            <div><span class="tm-il">📱 </span>${t.phone}</div>
+            <div><span class="tm-il">📧 </span>${t.email}</div>
+            <div><span class="tm-il">👤 </span>${t.uname}</div>
+            <div><span class="tm-il">📅 </span>注册 ${t.joined}</div>
+          </div>
+          <div class="tm-stats">
+            <div class="tm-stat"><div class="tm-stat-num">${t.sessions}</div><div class="tm-stat-lbl">咨询次数</div></div>
+            <div class="tm-stat"><div class="tm-stat-num">${t.rating}%</div><div class="tm-stat-lbl">好评率</div></div>
+            <div class="tm-stat"><div class="tm-stat-num">${LEVEL_NAMES[t.lv]}</div><div class="tm-stat-lbl">当前等级</div></div>
+          </div>
+          <div class="tm-acts">
+            <button class="tab tab-detail" onclick="openTutorDetail(${t.id})">查看详情</button>
+            <button class="tab tab-level" onclick="toast('等级已调整（演示）')">调整等级</button>
+            <button class="tab tab-pwd" onclick="toast('密码重置邮件已发送至 ${t.email}')">重置密码</button>
+            <button class="tab ${t.status==='banned'?'tab-unban':'tab-ban'}"
+              onclick="toast('${t.status==='banned'?'账号已解封':'账号已封禁'}（演示）')">
+              ${t.status==='banned'?'解封':'封禁'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Level filter
+    document.getElementById('tmLevelFilter')?.querySelectorAll('.fbn').forEach(b => {
+      b.addEventListener('click', () => {
+        document.getElementById('tmLevelFilter').querySelectorAll('.fbn').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        tmLvFilter = parseInt(b.dataset.lv);
+        renderTutors();
+      });
+    });
+    // Status filter
+    document.getElementById('tmStatusFilter')?.querySelectorAll('.fbn').forEach(b => {
+      b.addEventListener('click', () => {
+        document.getElementById('tmStatusFilter').querySelectorAll('.fbn').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        tmStFilter = b.dataset.st;
+        renderTutors();
+      });
+    });
+
+    function openTutorDetail(id) {
+      const t = TUTORS_DATA.find(x => x.id === id);
+      if (!t) return;
+      currentTutor = t; pwdVisible = false;
+      document.getElementById('detailName').textContent = t.emoji + ' ' + t.name;
+      document.getElementById('detailSub').textContent = t.school + ' · ' + t.major + ' · ' + t.type;
+      document.getElementById('detailUname').textContent = t.uname;
+      document.getElementById('detailPwd').textContent = '••••••••';
+      document.getElementById('eyeBtn').textContent = '👁';
+      document.getElementById('detailEmail').textContent = t.email;
+      document.getElementById('detailPhone').textContent = t.phone;
+      document.getElementById('detailJoined').textContent = t.joined;
+      document.getElementById('detailLevel').textContent = LEVEL_NAMES[t.lv];
+      document.getElementById('detailStatus').innerHTML = `<span class="b ${STATUS_CLR[t.status]}">${STATUS_MAP[t.status]}</span>`;
+      document.getElementById('detailSessions').textContent = t.sessions + ' 次';
+      document.getElementById('detailRating').textContent = t.rating + '%';
+      document.getElementById('detailBanBtn').textContent = t.status === 'banned' ? '解封账号' : '封禁账号';
+      document.getElementById('detailBanBtn').className = 'rb ' + (t.status === 'banned' ? 'tab-unban' : 'tab-ban');
+      document.getElementById('tutorDetailOverlay').classList.add('show');
+    }
+    function closeTutorDetail() {
+      document.getElementById('tutorDetailOverlay').classList.remove('show');
+      currentTutor = null;
+    }
+    function togglePwd() {
+      if (!currentTutor) return;
+      pwdVisible = !pwdVisible;
+      document.getElementById('detailPwd').textContent = pwdVisible ? currentTutor.pwd : '••••••••';
+      document.getElementById('eyeBtn').textContent = pwdVisible ? '🙈' : '👁';
+    }
+    function adjLevel() {
+      if (!currentTutor) return;
+      toast(`等级已调整（演示）：${LEVEL_NAMES[currentTutor.lv]} → ${LEVEL_NAMES[Math.min(5, currentTutor.lv+1)]}`);
+    }
+    function toggleBan() {
+      if (!currentTutor) return;
+      const isBanned = currentTutor.status === 'banned';
+      toast(isBanned ? '账号已解封' : '账号已封禁');
+      closeTutorDetail();
+    }
+
+    renderTutors();
   </script>
 </body>
 </html>

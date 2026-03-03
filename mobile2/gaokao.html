@@ -217,6 +217,38 @@ input[type=number]{-moz-appearance:textfield}
 .ts-num{font-size:15px;font-weight:700;color:#1e40af}
 .ts-lbl{font-size:10px;color:#9ca3af;margin-top:2px}
 .tutor-consult-btn{width:100%;padding:11px;background:#1e3a8a;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+
+/* ── 专业匹配行 ── */
+.major-match-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:8px 10px;background:#f9fafb;border-radius:8px;cursor:pointer}
+.major-match-row:active{background:#eff6ff}
+.mm-counts{display:flex;gap:5px;flex:1;flex-wrap:wrap;align-items:center}
+.mm-item{padding:2px 8px;border-radius:6px;font-size:12px;font-weight:700}
+.mm-r{background:#fee2e2;color:#b91c1c}
+.mm-s{background:#fef3c7;color:#d97706}
+.mm-p{background:#d1fae5;color:#065f46}
+
+/* ── 院校详情覆盖页 ── */
+.uni-detail-overlay{display:none;position:fixed;inset:0;background:#f5f7fa;z-index:300;overflow-y:auto}
+.uni-detail-overlay.show{display:block}
+.unidet-bar{background:linear-gradient(90deg,#1e3a8a,#1d4ed8);padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;color:white}
+.unidet-back{font-size:26px;cursor:pointer;border:none;background:none;color:white;line-height:1;padding:0}
+.unidet-title{font-size:16px;font-weight:700;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.unidet-body{padding:14px 14px 32px}
+.unidet-info-card{background:white;border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.udf-row{display:flex;gap:6px;margin-bottom:12px}
+.udf-btn{flex:1;padding:8px 0;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid #e5e7eb;background:white;color:#6b7280;cursor:pointer;font-family:inherit;text-align:center;transition:all .15s}
+.udf-btn.all.on{background:#1e3a8a;color:white;border-color:#1e3a8a}
+.udf-btn.rush.on{background:#dc2626;color:white;border-color:#dc2626}
+.udf-btn.stable.on{background:#d97706;color:white;border-color:#d97706}
+.udf-btn.safe.on{background:#059669;color:white;border-color:#059669}
+.mj-card{background:white;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;align-items:flex-start;gap:10px;border-left:3px solid #e5e7eb}
+.mj-card.rush{border-left-color:#dc2626}
+.mj-card.stable{border-left-color:#d97706}
+.mj-card.safe{border-left-color:#059669}
+.mj-name{font-size:14px;font-weight:600;color:#111827}
+.mj-match-tag{font-size:10px;color:#1d4ed8;font-weight:600;background:#eff6ff;padding:1px 6px;border-radius:6px;margin-left:5px;vertical-align:middle}
+.mj-info{font-size:11px;color:#9ca3af;margin-top:3px}
+.mj-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -451,6 +483,29 @@ input[type=number]{-moz-appearance:textfield}
   </div>
 </div>
 
+<!-- ======= 院校详情覆盖页 ======= -->
+<div class="uni-detail-overlay" id="uniDetailOverlay">
+  <div class="unidet-bar">
+    <button class="unidet-back" onclick="closeUniDetail()">‹</button>
+    <span class="unidet-title" id="unidetTitle">院校详情</span>
+    <span style="width:26px;"></span>
+  </div>
+  <div class="unidet-body">
+    <div class="unidet-info-card" id="unidetInfo"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <span style="font-size:15px;font-weight:700;color:#111827;">可报专业</span>
+      <span id="unidetMajorCount" style="font-size:12px;color:#9ca3af;"></span>
+    </div>
+    <div class="udf-row">
+      <button class="udf-btn all on" onclick="setUniMajorFilter('all',this)">全部</button>
+      <button class="udf-btn rush" onclick="setUniMajorFilter('rush',this)">🔴 冲</button>
+      <button class="udf-btn stable" onclick="setUniMajorFilter('stable',this)">🟡 稳</button>
+      <button class="udf-btn safe" onclick="setUniMajorFilter('safe',this)">🟢 保</button>
+    </div>
+    <div id="unidetMajors"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 </div><!-- /mobile -->
@@ -501,6 +556,45 @@ const TUTORS = [
   {id:4, name:'陈思远', emoji:'👩‍🎓', bg:'#fef9c3', title:'综合型志愿规划师', tags:['经管','法学','稳保策略'], consult:445, good:96, desc:'从事志愿规划8年，擅长稳保策略制定与录取概率测算，帮助数百名学生稳入目标院校，零失误记录。'},
   {id:5, name:'刘晓燕', emoji:'👩‍🏫', bg:'#ede9fe', title:'文史类专业顾问', tags:['文法','新闻','师范'], consult:156, good:98, desc:'师范院校背景，专注文史类、教育类、法学类专业填报咨询，对省内报考规律研究深入，屡创佳绩。'},
 ];
+
+const UNI_MAJORS = {
+  1:  [{name:'人工智能',       type:'rush',   r24:8200,  prob:45},{name:'计算机科学与技术', type:'rush',   r24:8800,  prob:50},
+       {name:'软件工程',       type:'rush',   r24:9100,  prob:55},{name:'电子信息工程',   type:'stable', r24:10200, prob:78},
+       {name:'机械工程',       type:'stable', r24:11000, prob:85},{name:'通信工程',       type:'safe',   r24:12500, prob:96}],
+  2:  [{name:'计算机科学与技术', type:'rush',  r24:10000, prob:58},{name:'金融学',         type:'rush',   r24:10500, prob:62},
+       {name:'法学',           type:'stable', r24:11500, prob:80},{name:'汉语言文学',     type:'stable', r24:12000, prob:85},
+       {name:'新闻学',         type:'safe',   r24:13000, prob:95}],
+  3:  [{name:'人工智能',       type:'rush',   r24:11000, prob:60},{name:'软件工程',       type:'rush',   r24:11500, prob:65},
+       {name:'电气工程',       type:'stable', r24:13000, prob:82},{name:'机械工程',       type:'stable', r24:13500, prob:85},
+       {name:'土木工程',       type:'safe',   r24:15000, prob:95}],
+  4:  [{name:'计算机科学与技术', type:'rush',  r24:12000, prob:65},{name:'金融学',         type:'rush',   r24:12500, prob:70},
+       {name:'统计学',         type:'stable', r24:13500, prob:83},{name:'生物学',         type:'stable', r24:14000, prob:87},
+       {name:'化学工程与工艺', type:'safe',   r24:15500, prob:96}],
+  5:  [{name:'软件工程',       type:'rush',   r24:12500, prob:68},{name:'人工智能',       type:'rush',   r24:13000, prob:72},
+       {name:'机械工程',       type:'stable', r24:15500, prob:88},{name:'土木工程',       type:'safe',   r24:17000, prob:96}],
+  6:  [{name:'计算机科学与技术', type:'stable',r24:14000, prob:82},{name:'软件工程',       type:'stable', r24:14500, prob:85},
+       {name:'电子信息工程',   type:'stable', r24:15000, prob:88},{name:'化学工程与工艺', type:'safe',   r24:16500, prob:94},
+       {name:'土木工程',       type:'safe',   r24:17000, prob:96}],
+  7:  [{name:'人工智能',       type:'stable', r24:15000, prob:84},{name:'自动化',         type:'stable', r24:15500, prob:87},
+       {name:'机械工程',       type:'stable', r24:16000, prob:89},{name:'化学工程与工艺', type:'safe',   r24:18000, prob:97}],
+  8:  [{name:'计算机科学与技术', type:'stable',r24:16000, prob:86},{name:'金融学',         type:'stable', r24:16500, prob:88},
+       {name:'机械工程',       type:'stable', r24:17000, prob:90},{name:'土木工程',       type:'safe',   r24:18500, prob:95},
+       {name:'化学工程与工艺', type:'safe',   r24:19000, prob:97}],
+  9:  [{name:'计算机科学与技术', type:'stable',r24:17500, prob:88},{name:'经济学',         type:'stable', r24:18000, prob:90},
+       {name:'教育学',         type:'stable', r24:18500, prob:92},{name:'心理学',         type:'safe',   r24:20000, prob:96},
+       {name:'生物学',         type:'safe',   r24:20500, prob:97}],
+  10: [{name:'人工智能',       type:'stable', r24:18000, prob:89},{name:'软件工程',       type:'stable', r24:18500, prob:91},
+       {name:'自动化',         type:'stable', r24:19000, prob:92},{name:'化学工程与工艺', type:'safe',   r24:21000, prob:97}],
+  11: [{name:'计算机科学与技术', type:'safe',  r24:20000, prob:94},{name:'生物学',         type:'safe',   r24:20500, prob:95},
+       {name:'统计学',         type:'safe',   r24:21000, prob:96},{name:'食品科学与工程', type:'safe',   r24:21500, prob:97}],
+  12: [{name:'生物学',         type:'safe',   r24:21500, prob:94},{name:'食品科学与工程', type:'safe',   r24:22000, prob:96},
+       {name:'统计学',         type:'safe',   r24:23000, prob:98}],
+  13: [{name:'土木工程',       type:'safe',   r24:22500, prob:96},{name:'环境工程',       type:'safe',   r24:23000, prob:97},
+       {name:'计算机科学与技术', type:'safe',  r24:23500, prob:97}],
+  14: [{name:'土木工程',       type:'safe',   r24:24500, prob:98},{name:'计算机科学与技术', type:'safe',  r24:25000, prob:98}],
+  15: [{name:'汉语言文学',     type:'safe',   r24:25000, prob:97},{name:'经济学',         type:'safe',   r24:26000, prob:99},
+       {name:'教育学',         type:'safe',   r24:26500, prob:99},{name:'法学',           type:'safe',   r24:27000, prob:99}],
+};
 
 /* ================================================================
    STATE
@@ -713,6 +807,35 @@ function goPage(p) {
 ================================================================ */
 function allUnis() { return [...UNIVERSITIES,...S.customSchools]; }
 
+function getMajorCounts(uniId) {
+  const majors = UNI_MAJORS[uniId] || [];
+  const list = S.majors.length > 0 ? majors.filter(m => S.majors.includes(m.name)) : majors;
+  return {
+    rush:   list.filter(m => m.type==='rush').length,
+    stable: list.filter(m => m.type==='stable').length,
+    safe:   list.filter(m => m.type==='safe').length,
+    total:  list.length,
+    filtered: S.majors.length > 0,
+  };
+}
+
+function buildMajorMatchRow(u) {
+  const mc = getMajorCounts(u.id);
+  if (!mc.total) return '';
+  const hint = mc.filtered
+    ? `<span style="font-size:11px;color:#1d4ed8;">意向专业 ${mc.total} 个</span>`
+    : `<span style="font-size:11px;color:#9ca3af;">共 ${mc.total} 个专业</span>`;
+  return `<div class="major-match-row" onclick="openUniDetail(${u.id})">
+    <div class="mm-counts">
+      ${mc.rush   > 0 ? `<span class="mm-item mm-r">冲 ${mc.rush}</span>`   : ''}
+      ${mc.stable > 0 ? `<span class="mm-item mm-s">稳 ${mc.stable}</span>` : ''}
+      ${mc.safe   > 0 ? `<span class="mm-item mm-p">保 ${mc.safe}</span>`   : ''}
+      ${hint}
+    </div>
+    <span style="font-size:14px;color:#9ca3af;">›</span>
+  </div>`;
+}
+
 function setFilter(f, btn) {
   S.poolFilter = f;
   document.querySelectorAll('.pf-btn').forEach(b=>b.classList.remove('on'));
@@ -757,6 +880,7 @@ function buildUniCard(u) {
       <div class="ri-div"></div>
       <div class="ri"><div class="ri-lbl">概率</div><div class="ri-val" style="color:${u.type==='rush'?'#dc2626':u.type==='stable'?'#d97706':'#059669'}">${u.prob}%</div></div>
     </div>
+    ${buildMajorMatchRow(u)}
     <div class="ann-row">
       <span class="ann-lbl">标注</span>
       <div class="ann-group">
@@ -764,7 +888,7 @@ function buildUniCard(u) {
       </div>
     </div>
     <div class="card-btns">
-      <button class="cb" onclick="showToast('院校详情即将上线')">详情</button>
+      <button class="cb blue" onclick="openUniDetail(${u.id})">详情</button>
       <button class="cb${inPK?' active':''}" id="pkb-${u.id}" onclick="togglePK(${u.id})">${inPK?'✓ 已对比':'加入对比'}</button>
       <button class="cb green" onclick="openChooseList(${u.id})">＋ 加入清单</button>
     </div>
@@ -1108,6 +1232,81 @@ function openTutorPage(uniName) {
 }
 function closeTutorPage() {
   document.getElementById('tutorOverlay').classList.remove('show');
+}
+
+/* ================================================================
+   UNI DETAIL PAGE
+================================================================ */
+let _uniDetailId = null, _uniMajorFilter = 'all';
+
+function openUniDetail(uniId) {
+  _uniDetailId = uniId; _uniMajorFilter = 'all';
+  const u = allUnis().find(x => x.id === uniId); if (!u) return;
+  document.getElementById('unidetTitle').textContent = u.name;
+  const tl={rush:'冲',stable:'稳',safe:'保'}, pc={rush:'pb-rush',stable:'pb-stable',safe:'pb-safe'};
+  const diff = S.rank ? S.rank - u.r24 : null;
+  const ds = diff !== null ? (diff>0?'+':'')+diff.toLocaleString() : '--';
+  const dc = diff!==null&&diff>0 ? '#059669' : '#dc2626';
+  document.getElementById('unidetInfo').innerHTML = `
+    <div class="uni-head">
+      <div class="uni-logo">${u.logo}</div>
+      <div class="uni-info"><div class="uni-name">${u.name}</div><div class="uni-loc">📍 ${u.city}</div></div>
+      <div class="prob-badge ${pc[u.type]}">${tl[u.type]}</div>
+    </div>
+    <div class="uni-tags">
+      ${u.tags.map(t=>`<span class="uni-tag ${t==='985'?'ut-985':t==='211'?'ut-211':t==='双一流'?'ut-double':'ut-pub'}">${t}</span>`).join('')}
+    </div>
+    <div class="rank-strip" style="margin-bottom:0;">
+      <div class="ri"><div class="ri-lbl">我的位次</div><div class="ri-val mine">${S.rank?S.rank.toLocaleString():'--'}</div></div>
+      <div class="ri-div"></div>
+      <div class="ri"><div class="ri-lbl">24年录取</div><div class="ri-val">${u.r24.toLocaleString()}</div></div>
+      <div class="ri-div"></div>
+      <div class="ri"><div class="ri-lbl">位次差</div><div class="ri-val" style="color:${dc}">${ds}</div></div>
+      <div class="ri-div"></div>
+      <div class="ri"><div class="ri-lbl">概率</div><div class="ri-val" style="color:${u.type==='rush'?'#dc2626':u.type==='stable'?'#d97706':'#059669'}">${u.prob}%</div></div>
+    </div>`;
+  document.querySelectorAll('.udf-btn').forEach((b,i) => b.classList.toggle('on', i===0));
+  renderUniMajors();
+  document.getElementById('uniDetailOverlay').classList.add('show');
+}
+function closeUniDetail() {
+  document.getElementById('uniDetailOverlay').classList.remove('show');
+  _uniDetailId = null;
+}
+function setUniMajorFilter(filter, btn) {
+  _uniMajorFilter = filter;
+  document.querySelectorAll('.udf-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderUniMajors();
+}
+function renderUniMajors() {
+  const all = UNI_MAJORS[_uniDetailId] || [];
+  const list = _uniMajorFilter === 'all' ? all : all.filter(m => m.type === _uniMajorFilter);
+  const matchedTotal = S.majors.length > 0 ? all.filter(m => S.majors.includes(m.name)).length : 0;
+  document.getElementById('unidetMajorCount').textContent = S.majors.length > 0
+    ? `共 ${all.length} 个 · ${matchedTotal} 个符合意向`
+    : `共 ${all.length} 个`;
+  if (!list.length) {
+    document.getElementById('unidetMajors').innerHTML = `<div class="empty" style="padding:24px;"><div class="empty-ico">📚</div><div class="empty-title">该类型暂无数据</div></div>`;
+    return;
+  }
+  const tl={rush:'冲',stable:'稳',safe:'保'}, pc={rush:'pb-rush',stable:'pb-stable',safe:'pb-safe'};
+  document.getElementById('unidetMajors').innerHTML = list.map(m => {
+    const isMatch = S.majors.includes(m.name);
+    const diff = S.rank ? S.rank - m.r24 : null;
+    const ds = diff !== null ? (diff>0?'+':'')+diff.toLocaleString() : null;
+    const dc = diff!==null&&diff>0 ? '#059669' : '#dc2626';
+    return `<div class="mj-card ${m.type}">
+      <div style="flex:1;min-width:0;">
+        <div class="mj-name">${m.name}${isMatch?'<span class="mj-match-tag">✓ 意向</span>':''}</div>
+        <div class="mj-info">24年录取位次 ${m.r24.toLocaleString()} &nbsp;·&nbsp; 录取概率 ${m.prob}%</div>
+      </div>
+      <div class="mj-right">
+        <span class="prob-badge ${pc[m.type]}">${tl[m.type]}</span>
+        ${ds ? `<span style="font-size:11px;color:${dc};font-weight:600;">${ds}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ================================================================

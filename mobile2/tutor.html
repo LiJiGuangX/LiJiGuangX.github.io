@@ -177,49 +177,32 @@
 
           <div class="form-divider"></div>
 
-          <!-- 重复设置 -->
-          <div class="fl" style="margin-bottom:8px;">🔁 重复设置</div>
-          <div class="rec-chips" id="recChips">
-            <button class="rc on" onclick="setRec(this,'once')">仅此日</button>
-            <button class="rc" onclick="setRec(this,'weekly')">按星期</button>
-            <button class="rc" onclick="setRec(this,'daily')">每天</button>
+          <!-- 重复日期（不选 = 仅设置当天）-->
+          <div class="fl" style="margin-bottom:8px;">📅 重复日期 <span style="font-size:11px;color:#9ca3af;font-weight:400;">（不选则仅设置当天）</span></div>
+          <div class="week-chips" id="weekChips">
+            <button class="wc" onclick="toggleWeekday(this,'一')">一</button>
+            <button class="wc" onclick="toggleWeekday(this,'二')">二</button>
+            <button class="wc" onclick="toggleWeekday(this,'三')">三</button>
+            <button class="wc" onclick="toggleWeekday(this,'四')">四</button>
+            <button class="wc" onclick="toggleWeekday(this,'五')">五</button>
+            <button class="wc" onclick="toggleWeekday(this,'六')">六</button>
+            <button class="wc" onclick="toggleWeekday(this,'日')">日</button>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px;margin-bottom:14px;">
+            <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('workdays')">工作日</button>
+            <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('daily')">每天</button>
+            <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('clear')">清除</button>
           </div>
 
-          <!-- 星期选择器（按星期时显示） -->
-          <div id="weekdayPicker" style="display:none;margin-top:12px;">
-            <div class="week-chips" id="weekChips">
-              <button class="wc" onclick="toggleWeekday(this,'一')">一</button>
-              <button class="wc" onclick="toggleWeekday(this,'二')">二</button>
-              <button class="wc" onclick="toggleWeekday(this,'三')">三</button>
-              <button class="wc" onclick="toggleWeekday(this,'四')">四</button>
-              <button class="wc" onclick="toggleWeekday(this,'五')">五</button>
-              <button class="wc" onclick="toggleWeekday(this,'六')">六</button>
-              <button class="wc" onclick="toggleWeekday(this,'日')">日</button>
-            </div>
-            <div style="display:flex;gap:6px;margin-top:10px;">
-              <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('workdays')">工作日</button>
-              <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('daily')">每天</button>
-              <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('clear')">清除</button>
-            </div>
-          </div>
-
-          <!-- 应用范围（重复不为"仅此日"时显示） -->
-          <div id="applyRangeWrap" style="display:none;margin-top:12px;">
-            <div class="form-divider" style="margin-top:0;margin-bottom:12px;"></div>
-            <div class="fl" style="margin-bottom:8px;">📅 应用到</div>
-            <div class="rec-chips" id="applyChips">
-              <button class="rc on" onclick="setApply(this,'curmonth')">本月</button>
-              <button class="rc" onclick="setApply(this,'pickmonth')">指定月份</button>
-            </div>
-            <div class="month-chips" id="monthPicker" style="display:none;">
-              <button class="mc-m" onclick="toggleMonth(this,'3月')">3月</button>
-              <button class="mc-m" onclick="toggleMonth(this,'4月')">4月</button>
-              <button class="mc-m" onclick="toggleMonth(this,'5月')">5月</button>
-              <button class="mc-m" onclick="toggleMonth(this,'6月')">6月</button>
-              <button class="mc-m" onclick="toggleMonth(this,'7月')">7月</button>
-              <button class="mc-m" onclick="toggleMonth(this,'8月')">8月</button>
-            </div>
-            <div class="fh" style="margin-top:8px;">批量设置后，仍可进入具体日期单独修改</div>
+          <!-- 应用到月份（不选 = 仅本月）-->
+          <div class="fl" style="margin-bottom:8px;">📆 应用到 <span style="font-size:11px;color:#9ca3af;font-weight:400;">（不选则仅本月）</span></div>
+          <div class="month-chips" id="monthPicker">
+            <button class="mc-m" onclick="toggleMonth(this,'3月')">3月</button>
+            <button class="mc-m" onclick="toggleMonth(this,'4月')">4月</button>
+            <button class="mc-m" onclick="toggleMonth(this,'5月')">5月</button>
+            <button class="mc-m" onclick="toggleMonth(this,'6月')">6月</button>
+            <button class="mc-m" onclick="toggleMonth(this,'7月')">7月</button>
+            <button class="mc-m" onclick="toggleMonth(this,'8月')">8月</button>
           </div>
 
           <div style="display:flex;gap:8px;margin-top:14px;">
@@ -555,14 +538,12 @@
   // ── 时间段设置 ──
   const SS = {
     slots: [
-      {id:1, hour:9,  minute:0,  duration:30, rec:'once',   weekdays:[], months:[]},
-      {id:2, hour:19, minute:0,  duration:60, rec:'weekly', weekdays:['一','二','三','四','五'], months:[]},
+      {id:1, hour:9,  minute:0,  duration:30, weekdays:[], months:[]},
+      {id:2, hour:19, minute:0,  duration:60, weekdays:['一','二','三','四','五'], months:['3月','4月']},
     ],
     slotIdSeed: 3,
     pendingDur: 30,
-    pendingRec: 'once',
     pendingWeekdays: [],
-    pendingApply: 'curmonth',
     pendingMonths: [],
   };
 
@@ -587,20 +568,20 @@
     el.innerHTML = sorted.map(s => {
       const hh = String(s.hour).padStart(2,'0');
       const mm = String(s.minute).padStart(2,'0');
-      const endTotalMin = s.hour*60 + s.minute + s.duration;
-      const eh = String(Math.floor(endTotalMin/60) % 24).padStart(2,'0');
-      const em = String(endTotalMin % 60).padStart(2,'0');
+      const endMin = s.hour*60 + s.minute + s.duration;
+      const eh = String(Math.floor(endMin/60) % 24).padStart(2,'0');
+      const em = String(endMin % 60).padStart(2,'0');
       let recTag = '';
-      if (s.rec === 'daily') recTag = '<span class="slot-rec">每天</span>';
-      else if (s.rec === 'weekly' && s.weekdays.length) {
+      if (s.weekdays.length) {
         const label = s.weekdays.length === 7 ? '每天'
           : s.weekdays.length === 5 && !s.weekdays.includes('六') && !s.weekdays.includes('日') ? '工作日'
           : s.weekdays.join('、');
         recTag = `<span class="slot-rec">${label}</span>`;
       }
+      const monthTag = s.months.length ? `<span class="slot-rec" style="background:#f0fdf4;color:#065f46;">${s.months.join('、')}</span>` : '';
       return `<div class="slot-row">
         <div style="flex:1;min-width:0;">
-          <div class="slot-time">${hh}:${mm} — ${eh}:${em}${recTag}</div>
+          <div class="slot-time">${hh}:${mm} — ${eh}:${em}${recTag}${monthTag}</div>
           <div class="slot-dur">指导时长 ${s.duration} 分钟</div>
         </div>
         <button class="slot-del" onclick="deleteSlot(${s.id})">✕</button>
@@ -609,16 +590,10 @@
   }
 
   function showAddSlotForm() {
-    SS.pendingRec = 'once'; SS.pendingWeekdays = [];
-    SS.pendingApply = 'curmonth'; SS.pendingMonths = []; SS.pendingDur = 30;
-    document.querySelectorAll('#recChips .rc').forEach((b,i) => b.classList.toggle('on', i===0));
+    SS.pendingWeekdays = []; SS.pendingMonths = []; SS.pendingDur = 30;
     document.querySelectorAll('#durChips .dc').forEach((b,i) => b.classList.toggle('on', i===0));
     document.querySelectorAll('#weekChips .wc').forEach(b => b.classList.remove('on'));
-    document.querySelectorAll('#applyChips .rc').forEach((b,i) => b.classList.toggle('on', i===0));
     document.querySelectorAll('.mc-m').forEach(b => b.classList.remove('on'));
-    document.getElementById('weekdayPicker').style.display = 'none';
-    document.getElementById('applyRangeWrap').style.display = 'none';
-    document.getElementById('monthPicker').style.display = 'none';
     document.getElementById('addSlotForm').style.display = 'block';
     document.getElementById('btnAddSlot').style.display = 'none';
   }
@@ -630,31 +605,17 @@
     document.querySelectorAll('#durChips .dc').forEach(b => b.classList.remove('on'));
     btn.classList.add('on'); SS.pendingDur = dur;
   }
-  function setRec(btn, type) {
-    SS.pendingRec = type;
-    document.querySelectorAll('#recChips .rc').forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-    document.getElementById('weekdayPicker').style.display = type === 'weekly' ? 'block' : 'none';
-    document.getElementById('applyRangeWrap').style.display = type !== 'once' ? 'block' : 'none';
-  }
   function toggleWeekday(btn, day) {
     btn.classList.toggle('on');
     const i = SS.pendingWeekdays.indexOf(day);
     i >= 0 ? SS.pendingWeekdays.splice(i, 1) : SS.pendingWeekdays.push(day);
   }
   function setWeekPreset(preset) {
-    const all = ['一','二','三','四','五','六','日'];
-    const work = ['一','二','三','四','五'];
+    const all = ['一','二','三','四','五','六','日'], work = ['一','二','三','四','五'];
     SS.pendingWeekdays = preset === 'clear' ? [] : preset === 'workdays' ? [...work] : [...all];
     document.querySelectorAll('#weekChips .wc').forEach(b =>
       b.classList.toggle('on', SS.pendingWeekdays.includes(b.textContent))
     );
-  }
-  function setApply(btn, mode) {
-    SS.pendingApply = mode;
-    document.querySelectorAll('#applyChips .rc').forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-    document.getElementById('monthPicker').style.display = mode === 'pickmonth' ? 'flex' : 'none';
   }
   function toggleMonth(btn, month) {
     btn.classList.toggle('on');
@@ -667,22 +628,18 @@
     if (SS.slots.find(s => s.hour === h && s.minute === m)) {
       showToast('该时间点已存在，请换一个时间'); return;
     }
-    if (SS.pendingRec === 'weekly' && !SS.pendingWeekdays.length) {
-      showToast('请至少选择一个星期'); return;
-    }
-    if (SS.pendingApply === 'pickmonth' && !SS.pendingMonths.length) {
-      showToast('请选择应用的月份'); return;
-    }
     SS.slots.push({
       id: SS.slotIdSeed++, hour: h, minute: m, duration: SS.pendingDur,
-      rec: SS.pendingRec, weekdays: [...SS.pendingWeekdays], months: [...SS.pendingMonths]
+      weekdays: [...SS.pendingWeekdays], months: [...SS.pendingMonths]
     });
     hideAddSlotForm();
     renderSlots();
-    if (SS.pendingRec !== 'once') {
-      const where = SS.pendingApply === 'curmonth' ? '本月' : SS.pendingMonths.join('、');
-      const freq = SS.pendingRec === 'daily' ? '每天' : SS.pendingWeekdays.join('、');
-      showToast(`✅ 已批量设置至 ${where} · ${freq}`);
+    if (SS.pendingWeekdays.length) {
+      const freq = SS.pendingWeekdays.length === 7 ? '每天'
+        : SS.pendingWeekdays.length === 5 && !SS.pendingWeekdays.includes('六') ? '工作日'
+        : SS.pendingWeekdays.join('、');
+      const where = SS.pendingMonths.length ? SS.pendingMonths.join('、') : '本月';
+      showToast(`✅ 已批量设置 ${where} · ${freq}`);
     }
   }
   function deleteSlot(id) {
