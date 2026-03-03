@@ -10,7 +10,47 @@
     .level-hero{text-align:center;padding:24px 16px 16px}
     .level-name{font-size:34px;font-weight:700;color:#d97706;margin-bottom:6px}
     .level-sub{font-size:13px;color:#9ca3af}
-    .time-slot-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+
+    /* ── 费率卡 ── */
+    .fee-card{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fde68a;}
+    .fee-item{flex:1;text-align:center;background:white;border-radius:8px;padding:8px 4px}
+    .fee-num{display:block;font-size:16px;font-weight:700;color:#b45309}
+    .fee-lbl{display:block;font-size:10px;color:#9ca3af;margin-top:2px}
+    .fee-item-dim{opacity:.45}
+
+    /* ── 时间段设置 ── */
+    .dur-chips{display:flex;gap:7px;flex-wrap:wrap}
+    .dc{padding:7px 16px;border-radius:20px;font-size:13px;border:1.5px solid #e5e7eb;background:white;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s}
+    .dc.on{background:#1e40af;color:white;border-color:#1e40af}
+    .slot-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #f3f4f6}
+    .slot-row:last-child{border-bottom:none}
+    .slot-time{font-size:15px;font-weight:700;color:#111827}
+    .slot-dur{font-size:12px;color:#9ca3af;margin-top:2px}
+    .slot-del{border:none;background:none;font-size:18px;color:#d1d5db;cursor:pointer;padding:4px;line-height:1;margin-left:auto;flex-shrink:0}
+    .slot-del:hover{color:#dc2626}
+    .slot-rec{display:inline-block;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:600;background:#eff6ff;color:#1d4ed8;margin-left:5px;vertical-align:middle}
+    .add-slot-form{background:#f9fafb;border-radius:12px;padding:14px;margin-top:10px;border:1.5px dashed #e5e7eb}
+    .time-pick-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .time-pick-row .fi{flex:1;min-width:0;text-align:center;font-weight:600}
+    .time-colon{font-size:20px;font-weight:700;color:#374151}
+
+    /* ── 重复设置 ── */
+    .rec-chips{display:flex;gap:6px;}
+    .rc{padding:7px 14px;border-radius:20px;font-size:13px;border:1.5px solid #e5e7eb;background:white;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s}
+    .rc.on{background:#1e40af;color:white;border-color:#1e40af}
+
+    /* ── 星期圆形圈（闹钟风格）── */
+    .week-chips{display:flex;gap:0;justify-content:space-between}
+    .wc{width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:white;color:#374151;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
+    .wc.on{background:#1e40af;color:white;border-color:#1e40af}
+
+    /* ── 月份选择 ── */
+    .month-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .mc-m{padding:6px 14px;border-radius:20px;font-size:13px;border:1.5px solid #e5e7eb;background:white;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s}
+    .mc-m.on{background:#1e40af;color:white;border-color:#1e40af}
+
+    /* ── 分割线 ── */
+    .form-divider{height:1px;background:#e5e7eb;margin:12px 0}
   </style>
 </head>
 <body>
@@ -66,7 +106,26 @@
     <!-- ② 时间管理 -->
     <div class="page" id="p-schedule">
       <div class="sec-title c-blue">可预约时间设置</div>
-      <div class="fh tc" style="margin-bottom:14px">每次咨询30分钟，用户将按时间段预约</div>
+
+      <!-- 费率说明（只读，系统按等级决定） -->
+      <div class="card fee-card">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:22px;">💰</span>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:700;color:#92400e;">当前等级 · 系统费率</div>
+            <div style="font-size:11px;color:#b45309;margin-top:2px;">费率由系统按等级自动设定，升级可解锁更高档位</div>
+          </div>
+          <span class="bdg bdg-gold" id="sched-badge">🥈 银牌</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <div class="fee-item"><span class="fee-num">¥ 80</span><span class="fee-lbl">30 分钟</span></div>
+          <div class="fee-item"><span class="fee-num">¥ 130</span><span class="fee-lbl">60 分钟</span></div>
+          <div class="fee-item fee-item-dim"><span class="fee-num">¥ 180</span><span class="fee-lbl">90 分钟</span></div>
+        </div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:8px;">90 分钟档需 🥇 金牌及以上等级方可开启</div>
+      </div>
+
+      <!-- 日历选日期 -->
       <div class="card">
         <div class="row-sb" style="margin-bottom:12px">
           <span style="font-size:15px;font-weight:600">2026年 3月</span>
@@ -81,19 +140,106 @@
           <div class="cad">29</div><div class="cad">30</div><div class="cad av">31</div>
         </div>
       </div>
+
+      <!-- 当日时间段管理 -->
       <div class="card">
-        <div class="ct">📅 3月10日 · 可预约时间段</div>
-        <div class="time-slot-wrap">
-          <button class="btn-s bl" style="background:#1e40af;color:white;border-color:#1e40af">✓ 09:00-09:30</button>
-          <button class="btn-s bl">09:30-10:00</button>
-          <button class="btn-s bl" style="background:#1e40af;color:white;border-color:#1e40af">✓ 19:00-19:30</button>
-          <button class="btn-s bl">19:30-20:00</button>
-          <button class="btn-s bl" style="background:#1e40af;color:white;border-color:#1e40af">✓ 20:00-20:30</button>
-          <button class="btn-s bl">20:30-21:00</button>
+        <div class="row-sb" style="margin-bottom:4px">
+          <span class="ct" style="margin-bottom:0" id="slotDateTitle">📅 3月10日 · 时间段</span>
+          <button class="btn-s bl" id="btnAddSlot" onclick="showAddSlotForm()">＋ 添加</button>
+        </div>
+        <div id="slotList"></div>
+
+        <!-- 添加时间段表单（默认隐藏）-->
+        <div class="add-slot-form" id="addSlotForm" style="display:none;">
+          <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:12px;">新增时间段</div>
+
+          <!-- 开始时间 -->
+          <div class="fl" style="margin-bottom:6px;">开始时间</div>
+          <div class="time-pick-row">
+            <select id="slotHour" class="fi"></select>
+            <span class="time-colon">:</span>
+            <select id="slotMin" class="fi">
+              <option value="0">00</option>
+              <option value="15">15</option>
+              <option value="30">30</option>
+              <option value="45">45</option>
+            </select>
+          </div>
+
+          <!-- 指导时长 -->
+          <div class="fl" style="margin-bottom:8px;">指导时长</div>
+          <div class="dur-chips" id="durChips" style="margin-bottom:0;">
+            <button class="dc on" onclick="setDur(this,30)">30分钟</button>
+            <button class="dc" onclick="setDur(this,45)">45分钟</button>
+            <button class="dc" onclick="setDur(this,60)">60分钟</button>
+            <button class="dc" onclick="setDur(this,90)">90分钟</button>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <!-- 重复设置 -->
+          <div class="fl" style="margin-bottom:8px;">🔁 重复设置</div>
+          <div class="rec-chips" id="recChips">
+            <button class="rc on" onclick="setRec(this,'once')">仅此日</button>
+            <button class="rc" onclick="setRec(this,'weekly')">按星期</button>
+            <button class="rc" onclick="setRec(this,'daily')">每天</button>
+          </div>
+
+          <!-- 星期选择器（按星期时显示） -->
+          <div id="weekdayPicker" style="display:none;margin-top:12px;">
+            <div class="week-chips" id="weekChips">
+              <button class="wc" onclick="toggleWeekday(this,'一')">一</button>
+              <button class="wc" onclick="toggleWeekday(this,'二')">二</button>
+              <button class="wc" onclick="toggleWeekday(this,'三')">三</button>
+              <button class="wc" onclick="toggleWeekday(this,'四')">四</button>
+              <button class="wc" onclick="toggleWeekday(this,'五')">五</button>
+              <button class="wc" onclick="toggleWeekday(this,'六')">六</button>
+              <button class="wc" onclick="toggleWeekday(this,'日')">日</button>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:10px;">
+              <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('workdays')">工作日</button>
+              <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('daily')">每天</button>
+              <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('clear')">清除</button>
+            </div>
+          </div>
+
+          <!-- 应用范围（重复不为"仅此日"时显示） -->
+          <div id="applyRangeWrap" style="display:none;margin-top:12px;">
+            <div class="form-divider" style="margin-top:0;margin-bottom:12px;"></div>
+            <div class="fl" style="margin-bottom:8px;">📅 应用到</div>
+            <div class="rec-chips" id="applyChips">
+              <button class="rc on" onclick="setApply(this,'curmonth')">本月</button>
+              <button class="rc" onclick="setApply(this,'pickmonth')">指定月份</button>
+            </div>
+            <div class="month-chips" id="monthPicker" style="display:none;">
+              <button class="mc-m" onclick="toggleMonth(this,'3月')">3月</button>
+              <button class="mc-m" onclick="toggleMonth(this,'4月')">4月</button>
+              <button class="mc-m" onclick="toggleMonth(this,'5月')">5月</button>
+              <button class="mc-m" onclick="toggleMonth(this,'6月')">6月</button>
+              <button class="mc-m" onclick="toggleMonth(this,'7月')">7月</button>
+              <button class="mc-m" onclick="toggleMonth(this,'8月')">8月</button>
+            </div>
+            <div class="fh" style="margin-top:8px;">批量设置后，仍可进入具体日期单独修改</div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:14px;">
+            <button class="btn-s bl" style="flex:1;" onclick="hideAddSlotForm()">取消</button>
+            <button class="btn-p bg-blue" style="flex:2;padding:10px;" onclick="confirmAddSlot()">确认添加</button>
+          </div>
         </div>
       </div>
-      <button class="btn-s bl" style="width:100%;padding:11px;text-align:center;margin-bottom:10px">📋 批量设置每周固定时段</button>
-      <button class="btn-p bg-blue" data-toast="设置成功">保存设置</button>
+
+      <!-- 复用其他日期设置 -->
+      <div class="card">
+        <div class="ct" style="margin-bottom:6px;">📋 复用已有设置</div>
+        <div class="fh" style="margin-bottom:10px;">将某一天的全部时间段复制到当前日期，复制后可再单独调整</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-s bl" style="flex:1;" onclick="showToast('请先选择源日期，再点复用（演示：已复用 3月5日 设置）')">复用某天设置</button>
+          <button class="btn-s bl" style="flex:1;" onclick="showToast('清除后可重新设置此日的时间段')">清空此日设置</button>
+        </div>
+      </div>
+
+      <button class="btn-p bg-blue" data-toast="设置成功，已同步到所选日期 ✅">保存设置</button>
     </div>
 
     <!-- ③ 等级成长 -->
@@ -405,6 +551,145 @@
   if (phoneToggle) phoneToggle.addEventListener('change', () => {
     phoneInput.style.display = phoneToggle.checked ? 'block' : 'none';
   });
+
+  // ── 时间段设置 ──
+  const SS = {
+    slots: [
+      {id:1, hour:9,  minute:0,  duration:30, rec:'once',   weekdays:[], months:[]},
+      {id:2, hour:19, minute:0,  duration:60, rec:'weekly', weekdays:['一','二','三','四','五'], months:[]},
+    ],
+    slotIdSeed: 3,
+    pendingDur: 30,
+    pendingRec: 'once',
+    pendingWeekdays: [],
+    pendingApply: 'curmonth',
+    pendingMonths: [],
+  };
+
+  function initSlotForm() {
+    const sel = document.getElementById('slotHour');
+    if (!sel) return;
+    sel.innerHTML = Array.from({length:24}, (_,i) =>
+      `<option value="${i}">${String(i).padStart(2,'0')}</option>`
+    ).join('');
+    sel.value = 9;
+    renderSlots();
+  }
+
+  function renderSlots() {
+    const el = document.getElementById('slotList');
+    if (!el) return;
+    if (!SS.slots.length) {
+      el.innerHTML = '<div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">暂无时间段，点击右上角「添加」新增</div>';
+      return;
+    }
+    const sorted = [...SS.slots].sort((a,b) => a.hour*60+a.minute - (b.hour*60+b.minute));
+    el.innerHTML = sorted.map(s => {
+      const hh = String(s.hour).padStart(2,'0');
+      const mm = String(s.minute).padStart(2,'0');
+      const endTotalMin = s.hour*60 + s.minute + s.duration;
+      const eh = String(Math.floor(endTotalMin/60) % 24).padStart(2,'0');
+      const em = String(endTotalMin % 60).padStart(2,'0');
+      let recTag = '';
+      if (s.rec === 'daily') recTag = '<span class="slot-rec">每天</span>';
+      else if (s.rec === 'weekly' && s.weekdays.length) {
+        const label = s.weekdays.length === 7 ? '每天'
+          : s.weekdays.length === 5 && !s.weekdays.includes('六') && !s.weekdays.includes('日') ? '工作日'
+          : s.weekdays.join('、');
+        recTag = `<span class="slot-rec">${label}</span>`;
+      }
+      return `<div class="slot-row">
+        <div style="flex:1;min-width:0;">
+          <div class="slot-time">${hh}:${mm} — ${eh}:${em}${recTag}</div>
+          <div class="slot-dur">指导时长 ${s.duration} 分钟</div>
+        </div>
+        <button class="slot-del" onclick="deleteSlot(${s.id})">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  function showAddSlotForm() {
+    SS.pendingRec = 'once'; SS.pendingWeekdays = [];
+    SS.pendingApply = 'curmonth'; SS.pendingMonths = []; SS.pendingDur = 30;
+    document.querySelectorAll('#recChips .rc').forEach((b,i) => b.classList.toggle('on', i===0));
+    document.querySelectorAll('#durChips .dc').forEach((b,i) => b.classList.toggle('on', i===0));
+    document.querySelectorAll('#weekChips .wc').forEach(b => b.classList.remove('on'));
+    document.querySelectorAll('#applyChips .rc').forEach((b,i) => b.classList.toggle('on', i===0));
+    document.querySelectorAll('.mc-m').forEach(b => b.classList.remove('on'));
+    document.getElementById('weekdayPicker').style.display = 'none';
+    document.getElementById('applyRangeWrap').style.display = 'none';
+    document.getElementById('monthPicker').style.display = 'none';
+    document.getElementById('addSlotForm').style.display = 'block';
+    document.getElementById('btnAddSlot').style.display = 'none';
+  }
+  function hideAddSlotForm() {
+    document.getElementById('addSlotForm').style.display = 'none';
+    document.getElementById('btnAddSlot').style.display = '';
+  }
+  function setDur(btn, dur) {
+    document.querySelectorAll('#durChips .dc').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on'); SS.pendingDur = dur;
+  }
+  function setRec(btn, type) {
+    SS.pendingRec = type;
+    document.querySelectorAll('#recChips .rc').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('weekdayPicker').style.display = type === 'weekly' ? 'block' : 'none';
+    document.getElementById('applyRangeWrap').style.display = type !== 'once' ? 'block' : 'none';
+  }
+  function toggleWeekday(btn, day) {
+    btn.classList.toggle('on');
+    const i = SS.pendingWeekdays.indexOf(day);
+    i >= 0 ? SS.pendingWeekdays.splice(i, 1) : SS.pendingWeekdays.push(day);
+  }
+  function setWeekPreset(preset) {
+    const all = ['一','二','三','四','五','六','日'];
+    const work = ['一','二','三','四','五'];
+    SS.pendingWeekdays = preset === 'clear' ? [] : preset === 'workdays' ? [...work] : [...all];
+    document.querySelectorAll('#weekChips .wc').forEach(b =>
+      b.classList.toggle('on', SS.pendingWeekdays.includes(b.textContent))
+    );
+  }
+  function setApply(btn, mode) {
+    SS.pendingApply = mode;
+    document.querySelectorAll('#applyChips .rc').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('monthPicker').style.display = mode === 'pickmonth' ? 'flex' : 'none';
+  }
+  function toggleMonth(btn, month) {
+    btn.classList.toggle('on');
+    const i = SS.pendingMonths.indexOf(month);
+    i >= 0 ? SS.pendingMonths.splice(i, 1) : SS.pendingMonths.push(month);
+  }
+  function confirmAddSlot() {
+    const h = parseInt(document.getElementById('slotHour').value);
+    const m = parseInt(document.getElementById('slotMin').value);
+    if (SS.slots.find(s => s.hour === h && s.minute === m)) {
+      showToast('该时间点已存在，请换一个时间'); return;
+    }
+    if (SS.pendingRec === 'weekly' && !SS.pendingWeekdays.length) {
+      showToast('请至少选择一个星期'); return;
+    }
+    if (SS.pendingApply === 'pickmonth' && !SS.pendingMonths.length) {
+      showToast('请选择应用的月份'); return;
+    }
+    SS.slots.push({
+      id: SS.slotIdSeed++, hour: h, minute: m, duration: SS.pendingDur,
+      rec: SS.pendingRec, weekdays: [...SS.pendingWeekdays], months: [...SS.pendingMonths]
+    });
+    hideAddSlotForm();
+    renderSlots();
+    if (SS.pendingRec !== 'once') {
+      const where = SS.pendingApply === 'curmonth' ? '本月' : SS.pendingMonths.join('、');
+      const freq = SS.pendingRec === 'daily' ? '每天' : SS.pendingWeekdays.join('、');
+      showToast(`✅ 已批量设置至 ${where} · ${freq}`);
+    }
+  }
+  function deleteSlot(id) {
+    SS.slots = SS.slots.filter(s => s.id !== id);
+    renderSlots();
+  }
+  initSlotForm();
 
   // 初始化等级显示（演示当前等级 Lv3，修改 CUR_LV 即可切换）
   function initLevels() {
