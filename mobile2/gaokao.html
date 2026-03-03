@@ -187,6 +187,36 @@ input[type=number]{-moz-appearance:textfield}
 .choose-item:last-child{border-bottom:none}
 .choose-name{font-size:14px;font-weight:600;color:#111827;flex:1}
 .choose-cnt{font-size:12px;color:#9ca3af}
+
+/* ── 导师头像行（卡片底部）── */
+.tutor-row{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid #f3f4f6;margin-top:6px;cursor:pointer}
+.tutor-avs{display:flex;}
+.tutor-av{width:28px;height:28px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:14px;margin-left:-6px;flex-shrink:0}
+.tutor-av:first-child{margin-left:0}
+.tutor-row-lbl{font-size:12px;color:#1d4ed8;font-weight:600;flex:1}
+.tutor-row-arrow{font-size:14px;color:#9ca3af}
+
+/* ── 导师覆盖页 ── */
+.tutor-overlay{display:none;position:fixed;inset:0;background:#f5f7fa;z-index:300;overflow-y:auto}
+.tutor-overlay.show{display:block}
+.tutor-pg-bar{background:linear-gradient(90deg,#1e3a8a,#1d4ed8);padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;color:white}
+.tutor-pg-back{font-size:26px;cursor:pointer;border:none;background:none;color:white;line-height:1;padding:0}
+.tutor-pg-title{font-size:16px;font-weight:700;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tutor-pg-body{padding:14px 14px 32px}
+.tutor-card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.tutor-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.tutor-avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.tutor-meta{flex:1}
+.tutor-name{font-size:15px;font-weight:700;color:#111827}
+.tutor-title{font-size:12px;color:#9ca3af;margin-top:2px}
+.tutor-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.tutor-tag{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600;background:#eff6ff;color:#1d4ed8}
+.tutor-desc{font-size:13px;color:#374151;background:#f9fafb;border-radius:8px;padding:9px 11px;line-height:1.65;margin-bottom:10px}
+.tutor-stats{display:flex;gap:8px;margin-bottom:10px}
+.ts-item{flex:1;text-align:center;background:#f9fafb;border-radius:8px;padding:8px 4px}
+.ts-num{font-size:15px;font-weight:700;color:#1e40af}
+.ts-lbl{font-size:10px;color:#9ca3af;margin-top:2px}
+.tutor-consult-btn{width:100%;padding:11px;background:#1e3a8a;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
 </style>
 </head>
 <body>
@@ -408,6 +438,19 @@ input[type=number]{-moz-appearance:textfield}
   </div>
 </div>
 
+<!-- ======= 导师选择覆盖页（全屏，无底部导航）======= -->
+<div class="tutor-overlay" id="tutorOverlay">
+  <div class="tutor-pg-bar">
+    <button class="tutor-pg-back" onclick="closeTutorPage()">‹</button>
+    <span class="tutor-pg-title" id="tutorPageTitle">咨询导师</span>
+    <span style="width:26px;"></span>
+  </div>
+  <div class="tutor-pg-body">
+    <div class="alert bl" style="margin-bottom:14px;">💡 以下导师熟悉该院校填报规律，可直接发起一对一咨询</div>
+    <div id="tutorList"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 </div><!-- /mobile -->
@@ -450,6 +493,14 @@ const UNIVERSITIES = [
 ];
 
 const PROVINCE_LIMIT = {'山东':96,'江苏':40,'浙江':80,'河南':6,'默认':45};
+
+const TUTORS = [
+  {id:1, name:'李明辉', emoji:'👨‍🏫', bg:'#dbeafe', title:'985高校升学规划师', tags:['工学','理学','名校冲刺'], consult:312, good:98, desc:'毕业于清华大学，深耕高考志愿填报12年，擅长理工科名校冲刺策略与专业匹配分析，帮助超300名学子圆梦985。'},
+  {id:2, name:'张雨欣', emoji:'👩‍💼', bg:'#fce7f3', title:'资深高考规划导师', tags:['医学','生命科学','双一流'], consult:267, good:99, desc:'武汉大学医学院背景，专注医学类和生命科学类院校志愿规划，擅长分析录取趋势，成功率业内领先。'},
+  {id:3, name:'王建国', emoji:'👨‍💻', bg:'#d1fae5', title:'互联网方向升学顾问', tags:['计算机','人工智能','软件工程'], consult:198, good:97, desc:'前互联网大厂工程师，跨界教育领域，专精计算机/人工智能方向院校专业分析，懂行业更懂填报。'},
+  {id:4, name:'陈思远', emoji:'👩‍🎓', bg:'#fef9c3', title:'综合型志愿规划师', tags:['经管','法学','稳保策略'], consult:445, good:96, desc:'从事志愿规划8年，擅长稳保策略制定与录取概率测算，帮助数百名学生稳入目标院校，零失误记录。'},
+  {id:5, name:'刘晓燕', emoji:'👩‍🏫', bg:'#ede9fe', title:'文史类专业顾问', tags:['文法','新闻','师范'], consult:156, good:98, desc:'师范院校背景，专注文史类、教育类、法学类专业填报咨询，对省内报考规律研究深入，屡创佳绩。'},
+];
 
 /* ================================================================
    STATE
@@ -716,6 +767,15 @@ function buildUniCard(u) {
       <button class="cb" onclick="showToast('院校详情即将上线')">详情</button>
       <button class="cb${inPK?' active':''}" id="pkb-${u.id}" onclick="togglePK(${u.id})">${inPK?'✓ 已对比':'加入对比'}</button>
       <button class="cb green" onclick="openChooseList(${u.id})">＋ 加入清单</button>
+    </div>
+    <div class="tutor-row" onclick="openTutorPage('${u.name}')">
+      <div class="tutor-avs">
+        <div class="tutor-av" style="background:#dbeafe;">👨‍🏫</div>
+        <div class="tutor-av" style="background:#fce7f3;">👩‍💼</div>
+        <div class="tutor-av" style="background:#d1fae5;">👨‍💻</div>
+      </div>
+      <span class="tutor-row-lbl">5位导师 · 点击咨询</span>
+      <span class="tutor-row-arrow">›</span>
     </div>
   </div>`;
 }
@@ -1019,6 +1079,35 @@ function liDrop(e,toIdx){
   const l=S.lists.find(x=>x.id===S.currentListId);if(!l)return;
   const item=l.items.splice(liFrom,1)[0];l.items.splice(toIdx,0,item);
   liFrom=null;renderListDetail();
+}
+
+/* ================================================================
+   TUTOR PAGE
+================================================================ */
+function openTutorPage(uniName) {
+  document.getElementById('tutorPageTitle').textContent = uniName + ' · 导师';
+  document.getElementById('tutorList').innerHTML = TUTORS.map(t => `
+    <div class="tutor-card">
+      <div class="tutor-head">
+        <div class="tutor-avatar" style="background:${t.bg};">${t.emoji}</div>
+        <div class="tutor-meta">
+          <div class="tutor-name">${t.name}</div>
+          <div class="tutor-title">${t.title}</div>
+        </div>
+      </div>
+      <div class="tutor-tags">${t.tags.map(tg=>`<span class="tutor-tag">${tg}</span>`).join('')}</div>
+      <div class="tutor-desc">${t.desc}</div>
+      <div class="tutor-stats">
+        <div class="ts-item"><div class="ts-num">${t.consult}</div><div class="ts-lbl">服务人数</div></div>
+        <div class="ts-item"><div class="ts-num">${t.good}%</div><div class="ts-lbl">好评率</div></div>
+      </div>
+      <button class="tutor-consult-btn" onclick="showToast('📱 正在连线 ${t.name} 导师…')">立即咨询</button>
+    </div>
+  `).join('');
+  document.getElementById('tutorOverlay').classList.add('show');
+}
+function closeTutorPage() {
+  document.getElementById('tutorOverlay').classList.remove('show');
 }
 
 /* ================================================================
