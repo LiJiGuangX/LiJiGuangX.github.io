@@ -341,27 +341,13 @@
           <button class="btn-s" style="background:white;color:#1e40af;border-color:white" data-toast="提现申请已提交，1-3个工作日到账">立即提现</button>
         </div>
       </div>
-      <div class="mine-tabs">
-        <button class="mtab on" data-sec="mc">认证进度</button>
-        <button class="mtab" data-sec="mr">沟通记录</button>
-        <button class="mtab" data-sec="mb">收支明细</button>
-      </div>
+      <!-- 认证状态标签 -->
+      <div style="padding:12px 0;text-align:center;font-size:16px;font-weight:600;color:#059669;">
+        ✅ 导师认证：已通过
+      </div>  <!-- 可根据实际状态动态替换文字或颜色 -->
 
-      <!-- 认证进度 -->
+      <!-- 认证进度已移除，仅保留状态信息 -->
       <div class="msec on" id="mc">
-        <div class="card">
-          <div class="ct">📋 认证进度</div>
-          <div class="step-bar">
-            <div class="step"><div class="step-dot" style="background:#059669;color:white">✓</div><span>提交材料</span></div>
-            <div class="step-line done"></div>
-            <div class="step"><div class="step-dot" style="background:#059669;color:white">✓</div><span>身份核验</span></div>
-            <div class="step-line done"></div>
-            <div class="step"><div class="step-dot" style="background:#1e40af;color:white">3</div><span>内容审核</span></div>
-            <div class="step-line"></div>
-            <div class="step"><div class="step-dot" style="background:#e5e7eb;color:#9ca3af">4</div><span>开通权限</span></div>
-          </div>
-          <div class="alert bl mt8">当前处于内容审核阶段，预计1-2个工作日完成</div>
-        </div>
         <div class="card">
           <div class="ct">🔑 关键词状态</div>
           <div class="sr"><span>志愿填报</span><span class="pass">审核通过</span></div>
