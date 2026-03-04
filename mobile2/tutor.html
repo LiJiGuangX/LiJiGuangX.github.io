@@ -284,7 +284,7 @@
       <div class="card">
         <div class="ct" style="margin-bottom:4px;">🏅 荣誉认证</div>
         <div class="fh" style="margin-bottom:14px;">完善资质认证，在导师卡片上展示徽章，提升学生信任度</div>
-        <div id="honorList" style="max-height:1000px;overflow-y:auto;padding-right:4px;">
+        <div id="honorList" style="max-height:300px;overflow-y:auto;padding-right:4px;">
           <div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">加载中…</div>
         </div>
       </div>
@@ -511,9 +511,19 @@
       <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;">📋 申请指引</div>
       <div class="honor-apply-template" id="honorApplyTemplate">加载中…</div>
 
+      <div class="fl" style="margin-bottom:6px;">上传资质文件 <span style="color:#ef4444;font-size:10px">图片/视频</span></div>
+      <div style="border:2px dashed #bfdbfe;border-radius:10px;padding:16px;text-align:center;margin-bottom:12px;background:#eff6ff;cursor:pointer;" 
+        id="uploadArea" onclick="document.getElementById('honorApplyFiles').click()">
+        <div style="font-size:28px;margin-bottom:6px;">📁</div>
+        <div style="font-size:13px;color:#1d4ed8;margin-bottom:4px;">点击或拖拽上传文件</div>
+        <div style="font-size:11px;color:#6b7280;">支持图片(JPG/PNG/GIF)、视频(MP4/MOV)，最多上传 5 个文件</div>
+      </div>
+      <input type="file" id="honorApplyFiles" multiple accept="image/*,video/*" style="display:none;" onchange="handleHonorFileSelect(event)">
+      <div id="honorFilesList" style="margin-bottom:12px;"></div>
+
       <div class="fl" style="margin-bottom:6px;">材料说明 <span style="color:#ef4444;font-size:10px">必填</span></div>
       <textarea class="fi" id="honorApplyMaterials" rows="4"
-        placeholder="请描述您提交的材料，如：截图链接/说明文字/验证码等"></textarea>
+        placeholder="请描述您提交的材料，如：截图说明、视频内容等"></textarea>
       <div class="fh" style="margin-bottom:14px;">提交后平台将在 2 个工作日内完成核验</div>
 
       <div style="display:flex;gap:8px;">
@@ -1205,33 +1215,99 @@
   }
 
   function openHonorApplyModal(honorId) {
-    let types = [];
-    try { types = JSON.parse(localStorage.getItem('honor_types') || '[]'); } catch(e){}
-    if (!types.length) {
-      types = [
-        { id:1, name:'985/211 高校',   icon:'🎓', template:'1. 登录学信网获取在线验证报告截图\n2. 上传学生证（在读）或毕业证照片\n3. 提交后平台将在 2 个工作日内完成核验' },
-        { id:2, name:'优质咨询师',     icon:'⭐', template:'本认证由平台系统自动推送，无需主动申请' },
-        { id:3, name:'高考命中率认证', icon:'🎯', template:'1. 整理历史辅导案例\n2. 截图呈现学生录取通知书\n3. 提交后平台核验数据真实性' },
-        { id:4, name:'职业资格证书',   icon:'📜', template:'1. 上传证书正面清晰照片（JPG/PNG）\n2. 填写证书编号及颁发机构\n3. 平台将在 3 个工作日内完成核验' },
-        { id:5, name:'年度优秀导师',   icon:'🏆', template:'1. 填写年度辅导总结报告（不少于500字）\n2. 上传典型辅导案例截图（不少于3份，学生信息可脱敏）\n3. 平台将综合评审后给予认证，每年1月评选一次' },
-        { id:6, name:'竞赛辅导认证',   icon:'🥇', template:'1. 上传辅导学生竞赛获奖证书（省级及以上，不少于2份）\n2. 填写辅导经历说明（学科、届次、获奖等级）\n3. 提交后平台将在 3 个工作日内完成核验' },
-        { id:7, name:'公益助学认证',   icon:'❤️', template:'本认证由平台系统自动推送，无需主动申请。\n\n参与公益助学活动满10次后，系统将自动发起认证并向您发送站内通知。' },
-        { id:8, name:'海外留学背景',   icon:'✈️', template:'1. 上传海外院校毕业证或在读证明（英文原件 + 中文译本）\n2. 上传官方成绩单（GPA 3.0 及以上）\n3. 填写留学经历简述（院校、专业、入学/毕业年份）\n4. 平台将在 5 个工作日内完成核验' },
-      ];
-    }
+    // 直接使用完整的 7 个默认认证类型，不读取 localStorage
+    let types = [
+      { id:1, name:'985/211 高校',   icon:'🎓', template:'1. 登录学信网获取在线验证报告截图\n2. 上传学生证（在读）或毕业证照片\n3. 提交后平台将在 2 个工作日内完成核验' },
+      { id:2, name:'优质咨询师',     icon:'⭐', template:'本认证由平台系统自动推送，无需主动申请。系统检测到您满足条件后将发送通知' },
+      { id:3, name:'高考命中率认证', icon:'🎯', template:'1. 整理历史辅导案例（学生姓名可脱敏）\n2. 截图呈现学生录取通知书\n3. 提交后平台核验数据真实性' },
+      { id:4, name:'职业资格证书',   icon:'📜', template:'1. 上传证书正面清晰照片（JPG/PNG）\n2. 填写证书编号及颁发机构\n3. 平台将在 3 个工作日内完成核验' },
+      { id:5, name:'年度优秀导师',   icon:'🏆', template:'1. 填写年度辅导总结报告（不少于500字）\n2. 上传典型辅导案例截图（不少于3份，学生信息可脱敏）\n3. 平台将综合评审后给予认证，每年1月评选一次' },
+      { id:6, name:'竞赛辅导认证',   icon:'🥇', template:'1. 上传辅导学生竞赛获奖证书（省级及以上，不少于2份）\n2. 填写辅导经历说明（学科、届次、获奖等级）\n3. 提交后平台将在 3 个工作日内完成核验' },
+      { id:7, name:'公益助学认证',   icon:'❤️', template:'本认证由平台系统自动推送，无需主动申请。\n\n参与公益助学活动满10次后，系统将自动发起认证并向您发送站内通知。请持续参与公益活动以满足条件。' },
+    ];
+    
+    // 转换 honorId 为数字
+    honorId = parseInt(honorId);
     const t = types.find(x => x.id === honorId);
-    if (!t) return;
+    if (!t) {
+      alert('错误：找不到对应的认证类型（honorId=' + honorId + '）');
+      return;
+    }
+    
     _honorApplyTarget = t;
     document.getElementById('honorApplyTitle').textContent = t.icon + ' ' + t.name + ' · 申请认证';
     document.getElementById('honorApplySubtitle').textContent = '请按以下指引提交申请材料';
     document.getElementById('honorApplyTemplate').textContent = t.template || '暂无申请指引';
     document.getElementById('honorApplyMaterials').value = '';
+    document.getElementById('honorApplyFiles').value = '';
+    _honorApplyFiles = [];
+    renderHonorFilesList();
     document.getElementById('honorApplyModal').style.display = 'flex';
+    alert('✅ 申请认证弹窗已打开：' + t.name);
   }
+
+  let _honorApplyFiles = [];  // 存储上传的文件信息
 
   function closeHonorApplyModal() {
     document.getElementById('honorApplyModal').style.display = 'none';
+    document.getElementById('honorApplyMaterials').value = '';
+    document.getElementById('honorApplyFiles').value = '';
+    document.getElementById('honorFilesList').innerHTML = '';
     _honorApplyTarget = null;
+    _honorApplyFiles = [];
+  }
+
+  function handleHonorFileSelect(e) {
+    if (!e || !e.target || !e.target.files) return;
+    const files = Array.from(e.target.files);
+    if (files.length + _honorApplyFiles.length > 5) {
+      showToast('⚠️ 最多只能上传 5 个文件');
+      return;
+    }
+    
+    files.forEach(file => {
+      // 检查文件类型和大小
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+      if (!isImage && !isVideo) {
+        showToast('⚠️ 仅支持图片和视频文件');
+        return;
+      }
+      if (file.size > 100 * 1024 * 1024) { // 100MB
+        showToast('⚠️ 文件大小不能超过 100MB');
+        return;
+      }
+      _honorApplyFiles.push({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        uploadTime: new Date().toISOString()
+      });
+    });
+    renderHonorFilesList();
+  }
+
+  function renderHonorFilesList() {
+    const list = document.getElementById('honorFilesList');
+    if (!list) return;  // 元素不存在时直接返回
+    if (!_honorApplyFiles || _honorApplyFiles.length === 0) {
+      list.innerHTML = '';
+      return;
+    }
+    list.innerHTML = '<div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;">✓ 已上传文件</div>' +
+      _honorApplyFiles.map((f, i) => {
+        const sizeStr = f.size < 1024*1024 ? (f.size/1024).toFixed(0)+'KB' : (f.size/(1024*1024)).toFixed(1)+'MB';
+        const icon = f.type.startsWith('image/') ? '🖼️' : '🎬';
+        return '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:12px;color:#065f46;">' +
+          '<div><div style="margin-bottom:2px;">' + icon + ' ' + f.name + '</div><div style="color:#9ca3af;font-size:11px;">(' + sizeStr + ')</div></div>' +
+          '<button style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:16px;padding:0;" onclick="removeHonorFile(' + i + ')">✕</button>' +
+        '</div>';
+      }).join('');
+  }
+
+  function removeHonorFile(index) {
+    _honorApplyFiles.splice(index, 1);
+    renderHonorFilesList();
   }
 
   function submitHonorApply() {
@@ -1252,6 +1328,7 @@
       submittedAt: new Date().toISOString().split('T')[0],
       status: 'pending',
       materials: materials,
+      files: _honorApplyFiles.length > 0 ? _honorApplyFiles : null,
     });
     localStorage.setItem('honor_applications', JSON.stringify(apps));
     closeHonorApplyModal();
@@ -1263,6 +1340,31 @@
   document.getElementById('honorApplyModal').addEventListener('click', function(e) {
     if (e.target === this) closeHonorApplyModal();
   });
+
+  // 拖拽上传功能
+  const uploadArea = document.getElementById('uploadArea');
+  if (uploadArea) {
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = '#dbeafe';
+      uploadArea.style.borderColor = '#3b82f6';
+    });
+    uploadArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = '#eff6ff';
+      uploadArea.style.borderColor = '#bfdbfe';
+    });
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = '#eff6ff';
+      uploadArea.style.borderColor = '#bfdbfe';
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        document.getElementById('honorApplyFiles').files = files;
+        handleHonorFileSelect({ target: { files: files } });
+      }
+    });
+  }
 
   // ══════════════════════════════════════
   //  等级初始化
