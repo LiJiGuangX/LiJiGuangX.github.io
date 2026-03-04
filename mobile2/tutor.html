@@ -67,9 +67,9 @@
     .reason-row input[type=radio]{margin-top:2px;accent-color:#1e40af;flex-shrink:0;width:16px;height:16px}
 
     /* ── 荣誉认证 ── */
-    .honor-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f3f4f6}
+    .honor-item{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid #f3f4f6}
     .honor-item:last-child{border-bottom:none}
-    .honor-icon{font-size:26px;width:34px;text-align:center;flex-shrink:0}
+    .honor-icon{font-size:26px;width:34px;text-align:center;flex-shrink:0;padding-top:2px}
     .honor-info{flex:1;min-width:0}
     .honor-name{font-size:14px;font-weight:600;color:#111827}
     .honor-desc{font-size:11px;color:#9ca3af;margin-top:2px;line-height:1.4}
@@ -89,6 +89,20 @@
     /* ── 日历图例 ── */
     .cal-legend{margin-top:8px;font-size:11px;color:#9ca3af;display:flex;align-items:center;gap:12px}
     .cal-legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+    /* ── 已预约时段 ── */
+    .slot-booked{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #fde68a;background:transparent}
+    .slot-booked:last-of-type{border-bottom:none}
+    .slot-book-name{font-size:13px;font-weight:600;color:#92400e;margin-top:2px}
+    .slot-rate-tag{display:inline-block;font-size:10px;background:#fffbeb;color:#b45309;border:1px solid #fde68a;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+
+    /* ── 费率动态卡 ── */
+    .fee-range-row{display:flex;gap:8px;margin-top:12px}
+
+    /* ── 荣誉申请弹窗 ── */
+    .honor-apply-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end}
+    .honor-apply-box{background:white;border-radius:20px 20px 0 0;padding:24px;max-height:80vh;overflow-y:auto}
+    .honor-apply-template{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;font-size:12px;color:#065f46;line-height:1.7;margin-bottom:14px;white-space:pre-line}
   </style>
 </head>
 <body>
@@ -123,25 +137,6 @@
     <div class="page" id="p-schedule">
       <div class="sec-title c-blue">可预约时间设置</div>
 
-      <!-- 费率说明（只读，系统按等级决定） -->
-      <div class="card fee-card">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:22px;">💰</span>
-          <div style="flex:1;">
-            <div style="font-size:14px;font-weight:700;color:#92400e;">当前等级 · 系统费率</div>
-            <div style="font-size:11px;color:#b45309;margin-top:2px;">费率由系统按等级自动设定，升级可解锁更高档位</div>
-          </div>
-          <span class="bdg bdg-gold" id="sched-badge">🥈 银牌</span>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:12px;">
-          <div class="fee-item"><span class="fee-num">¥ 30</span><span class="fee-lbl">15 分钟</span></div>
-          <div class="fee-item"><span class="fee-num">¥ 80</span><span class="fee-lbl">30 分钟</span></div>
-          <div class="fee-item"><span class="fee-num">¥ 130</span><span class="fee-lbl">60 分钟</span></div>
-          <div class="fee-item fee-item-dim"><span class="fee-num">¥ 180</span><span class="fee-lbl">90 分钟</span></div>
-        </div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:8px;">90 分钟档需 🥇 金牌及以上等级方可开启</div>
-      </div>
-
       <!-- 日历（交互式） -->
       <div class="card">
         <div class="row-sb" style="margin-bottom:12px">
@@ -155,6 +150,9 @@
         <div class="cal-legend">
           <span style="display:inline-flex;align-items:center;gap:4px;">
             <span class="cal-legend-dot" style="background:#1e40af"></span> 有可预约时段
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:4px;">
+            <span class="cal-legend-dot" style="background:#d97706"></span> 已有预约
           </span>
           <span style="display:inline-flex;align-items:center;gap:4px;">
             <span class="cal-legend-dot" style="background:#fde68a;border:1.5px solid #f59e0b"></span> 当前选中
@@ -192,12 +190,23 @@
           <!-- 指导时长 -->
           <div class="fl" style="margin-bottom:8px;">指导时长</div>
           <div class="dur-chips" id="durChips" style="margin-bottom:0;">
-            <button class="dc" onclick="setDur(this,15)">15分钟</button>
-            <button class="dc on" onclick="setDur(this,30)">30分钟</button>
-            <button class="dc" onclick="setDur(this,45)">45分钟</button>
+            <button class="dc" onclick="setDur(this,20)">20分钟</button>
+            <button class="dc on" onclick="setDur(this,40)">40分钟</button>
             <button class="dc" onclick="setDur(this,60)">60分钟</button>
-            <button class="dc" onclick="setDur(this,90)">90分钟</button>
           </div>
+
+          <!-- 自主定价 -->
+          <div class="fl" style="margin-bottom:6px;margin-top:12px;">
+            自主定价 <span style="font-size:11px;color:#9ca3af;font-weight:400;">元/分钟</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <input class="fi" id="slotRate" type="number" step="0.1" placeholder="请输入费率"
+              style="flex:1;margin-bottom:0" oninput="validateSlotRate(this)">
+            <div style="font-size:12px;color:#9ca3af;white-space:nowrap;flex-shrink:0;">
+              范围：<span id="rateRangeHint" style="color:#b45309;font-weight:600">0 – 2 元/分钟</span>
+            </div>
+          </div>
+          <div id="rateHelpText" class="fh" style="margin-bottom:0;min-height:14px;"></div>
 
           <div class="form-divider"></div>
 
@@ -275,56 +284,8 @@
       <div class="card">
         <div class="ct" style="margin-bottom:4px;">🏅 荣誉认证</div>
         <div class="fh" style="margin-bottom:14px;">完善资质认证，在导师卡片上展示徽章，提升学生信任度</div>
-
-        <div class="honor-item">
-          <span class="honor-icon">🎓</span>
-          <div class="honor-info">
-            <div class="honor-name">985 / 211 高校</div>
-            <div class="honor-desc">北京大学 · 计算机科学，已核验学信网信息</div>
-            <div class="honor-st-pass">✓ 已认证</div>
-          </div>
-        </div>
-
-        <div class="honor-item">
-          <span class="honor-icon">⭐</span>
-          <div class="honor-info">
-            <div class="honor-name">优质咨询师</div>
-            <div class="honor-desc">好评率 ≥ 90% 且累计完成 ≥ 20 次咨询</div>
-            <div class="honor-st-pend">⏳ 审核中（预计 1-2 个工作日）</div>
-          </div>
-        </div>
-
-        <div class="honor-item">
-          <span class="honor-icon">🏆</span>
-          <div class="honor-info">
-            <div class="honor-name">年度 TOP 导师</div>
-            <div class="honor-desc">平台年度评选，需提交申请材料</div>
-            <div class="honor-st-none">未认证</div>
-          </div>
-          <button class="btn-s bl" style="font-size:12px;white-space:nowrap;"
-            onclick="showToast('请上传相关申请材料，平台将在 5 个工作日内审核')">上传申请</button>
-        </div>
-
-        <div class="honor-item">
-          <span class="honor-icon">📜</span>
-          <div class="honor-info">
-            <div class="honor-name">职业资格证书</div>
-            <div class="honor-desc">如教师资格证、职业规划师资格证等</div>
-            <div class="honor-st-none">未认证</div>
-          </div>
-          <button class="btn-s bl" style="font-size:12px;white-space:nowrap;"
-            onclick="showToast('请上传证书照片，平台将在 3 个工作日内核验')">上传证书</button>
-        </div>
-
-        <div class="honor-item">
-          <span class="honor-icon">🎯</span>
-          <div class="honor-info">
-            <div class="honor-name">高考命中率认证</div>
-            <div class="honor-desc">历史辅导学生志愿命中率 ≥ 85%，需上传案例</div>
-            <div class="honor-st-none">未认证</div>
-          </div>
-          <button class="btn-s bl" style="font-size:12px;white-space:nowrap;"
-            onclick="showToast('请上传历史案例截图，平台将审核数据真实性')">上传案例</button>
+        <div id="honorList">
+          <div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">加载中…</div>
         </div>
       </div>
 
@@ -361,24 +322,6 @@
         </div>
       </div>
 
-      <!-- 卡片预览 -->
-      <div class="preview">
-        <div class="preview-tip">📱 用户看到的导师卡片预览</div>
-        <div class="row">
-          <div class="av">👨‍🏫</div>
-          <div class="flex-1">
-            <div style="font-size:16px;font-weight:700;margin-bottom:4px">张XX</div>
-            <div><span class="bdg" id="preview-badge"></span> <span class="bdg bdg-blue">在校生</span></div>
-            <div style="font-size:12px;color:#6b7280;margin-top:4px">北京大学 · 计算机科学</div>
-          </div>
-          <div style="font-size:15px;font-weight:700;color:#1e40af">100元<br><span style="font-size:11px;font-weight:400;color:#9ca3af">/30分钟</span></div>
-        </div>
-        <div class="tags mt8"><span class="tag">保研</span><span class="tag">计算机</span><span class="tag">志愿填报</span></div>
-        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-          <span style="font-size:11px;background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:10px;">🎓 985/211认证</span>
-          <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;">⭐ 优质导师（审核中）</span>
-        </div>
-      </div>
       <button class="btn-p bg-blue mt16" data-toast="提交成功，等待平台审核">保存并提交审核</button>
     </div>
 
@@ -559,6 +502,27 @@
     </div>
   </div>
 
+  <!-- 荣誉申请弹窗 -->
+  <div class="honor-apply-overlay" id="honorApplyModal">
+    <div class="honor-apply-box">
+      <div style="font-size:17px;font-weight:700;margin-bottom:4px" id="honorApplyTitle">申请荣誉认证</div>
+      <div style="font-size:13px;color:#9ca3af;margin-bottom:14px" id="honorApplySubtitle">请按以下要求提交材料</div>
+
+      <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;">📋 申请指引</div>
+      <div class="honor-apply-template" id="honorApplyTemplate">加载中…</div>
+
+      <div class="fl" style="margin-bottom:6px;">材料说明 <span style="color:#ef4444;font-size:10px">必填</span></div>
+      <textarea class="fi" id="honorApplyMaterials" rows="4"
+        placeholder="请描述您提交的材料，如：截图链接/说明文字/验证码等"></textarea>
+      <div class="fh" style="margin-bottom:14px;">提交后平台将在 2 个工作日内完成核验</div>
+
+      <div style="display:flex;gap:8px;">
+        <button class="btn-s bl" style="flex:1;" onclick="closeHonorApplyModal()">取消</button>
+        <button class="btn-p bg-blue" style="flex:2;padding:10px;" onclick="submitHonorApply()">提交申请</button>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /mobile -->
 
 <script>
@@ -636,6 +600,37 @@
   });
 
   // ══════════════════════════════════════
+  //  平台配置（从 localStorage 读取）
+  // ══════════════════════════════════════
+  let PCFG = { priceMin: 0, priceMax: 2, confirmHours: 1 };
+  function loadPlatformConfig() {
+    const saved = localStorage.getItem('platform_config');
+    if (saved) try { Object.assign(PCFG, JSON.parse(saved)); } catch(e){}
+    // 更新费率提示
+    const hint = document.getElementById('rateRangeHint');
+    if (hint) hint.textContent = PCFG.priceMin + ' – ' + PCFG.priceMax + ' 元/分钟';
+    const rateInput = document.getElementById('slotRate');
+    if (rateInput) { rateInput.min = PCFG.priceMin; rateInput.max = PCFG.priceMax; }
+  }
+
+  function validateSlotRate(input) {
+    const v = parseFloat(input.value);
+    const help = document.getElementById('rateHelpText');
+    if (!input.value) { help.textContent = ''; help.style.color = ''; return; }
+    if (isNaN(v) || v < PCFG.priceMin) {
+      help.textContent = '费率不得低于系统最低值 ' + PCFG.priceMin + ' 元/分钟';
+      help.style.color = '#dc2626';
+    } else if (v > PCFG.priceMax) {
+      help.textContent = '费率不得高于系统最高值 ' + PCFG.priceMax + ' 元/分钟';
+      help.style.color = '#dc2626';
+    } else {
+      const dur = SS.pendingDur;
+      help.textContent = '该时段费用：¥' + (v * dur).toFixed(0) + '（' + dur + ' 分钟）';
+      help.style.color = '#059669';
+    }
+  }
+
+  // ══════════════════════════════════════
   //  预约管理
   // ══════════════════════════════════════
   const _now = Date.now();
@@ -643,10 +638,11 @@
     // 待确认 — 档期1: 2026-06-10 19:00
     { id:1, status:'pending', date:'2026-06-10', timeRange:'19:00-19:30',
       name:'李**', question:'想咨询计算机专业保研流程，以及本科阶段需要如何备考', deadline: _now + 8*60*1000 },
-    { id:2, status:'pending', date:'2026-06-10', timeRange:'19:00-19:30',
+    // 待确认 — 档期2: 2026-06-11 19:00（不同日期，确保每个时间段唯一预约）
+    { id:2, status:'pending', date:'2026-06-11', timeRange:'19:00-19:40',
       name:'陈**', question:'北大CS专业保研要求和夏令营笔试内容是什么？', deadline: _now + 4*60*1000 },
-    // 待确认 — 档期2: 2026-06-12 20:00
-    { id:3, status:'pending', date:'2026-06-12', timeRange:'20:00-20:30',
+    // 待确认 — 档期3: 2026-06-12 20:00
+    { id:3, status:'pending', date:'2026-06-12', timeRange:'20:00-20:40',
       name:'张**', question:'高考620分物理选科，如何科学分配冲稳保比例？', deadline: _now + 12*60*1000 },
     // 已确认
     { id:4, status:'confirmed', date:'2026-06-15', timeRange:'20:00-20:30',
@@ -783,11 +779,23 @@
   function confirmCancel() {
     const r = document.querySelector('input[name="cancelReason"]:checked');
     if (!r) { showToast('请选择取消原因'); return; }
-    const a = APPTS.find(x => x.id === _cancelTarget);
-    if (a) a.status = 'cancelled';
-    closeCancelModal();
-    showToast('预约已取消，学生将收到通知');
-    renderAppts();
+    if (typeof _cancelTarget === 'string' && _cancelTarget.startsWith('booking-')) {
+      // Cancel from slot view
+      const bookingId = parseInt(_cancelTarget.replace('booking-', ''));
+      const b = SS.bookings.find(x => x.id === bookingId);
+      if (b) b.status = 'cancelled';
+      closeCancelModal();
+      showToast('预约已取消，学生将收到通知');
+      renderSlots();
+      renderCalendar();
+    } else {
+      // Cancel from appt list view
+      const a = APPTS.find(x => x.id === _cancelTarget);
+      if (a) a.status = 'cancelled';
+      closeCancelModal();
+      showToast('预约已取消，学生将收到通知');
+      renderAppts();
+    }
   }
 
   // ══════════════════════════════════════
@@ -818,6 +826,10 @@
     });
   }
 
+  function _hasBooking(dateStr) {
+    return SS.bookings.some(b => b.date === dateStr && b.status !== 'cancelled');
+  }
+
   function renderCalendar() {
     const { year, month } = CAL;
     document.getElementById('calTitle').textContent = year + '年 ' + month + '月';
@@ -829,9 +841,13 @@
     for (let i = 0; i < firstDow; i++) html += '<div class="cad"></div>';
     for (let d = 1; d <= daysInMonth; d++) {
       const ds = year + '-' + String(month).padStart(2,'0') + '-' + String(d).padStart(2,'0');
-      const hasSlot = _hasSlot(ds);
+      const hasSlot    = _hasSlot(ds);
+      const hasBooking = _hasBooking(ds);
       const isSel = SS.selectedDate === ds;
-      const cls = 'cad' + (hasSlot ? ' av' : '') + (isSel ? ' sel' : '');
+      let cls = 'cad';
+      if (isSel)          cls += ' sel';
+      else if (hasBooking) cls += ' av-o';
+      else if (hasSlot)    cls += ' av';
       html += '<div class="' + cls + '" data-date="' + ds + '">' + d + '</div>';
     }
     grid.innerHTML = html;
@@ -864,15 +880,21 @@
   const SS = {
     slots: [
       // 工作日 19:00 共60分钟，适用3-6月
-      { id:1, hour:19, minute:0, duration:60, weekdays:['一','二','三','四','五'], months:['3月','4月','5月','6月'], date:null },
-      // 周六 09:00 共30分钟，适用3-4月
-      { id:2, hour:9,  minute:0, duration:30, weekdays:['六'], months:['3月','4月'], date:null },
+      { id:1, hour:19, minute:0, duration:60, rate:1.5, weekdays:['一','二','三','四','五'], months:['3月','4月','5月','6月'], date:null },
+      // 周六 09:00 共40分钟，适用3-4月
+      { id:2, hour:9,  minute:0, duration:40, rate:1.2, weekdays:['六'], months:['3月','4月'], date:null },
+    ],
+    // 模拟已确认的预约（slotId → 预约信息）
+    bookings: [
+      { id:101, slotId:1, date:'2026-03-05', studentName:'李**', status:'confirmed' },
+      { id:102, slotId:1, date:'2026-03-06', studentName:'王**', status:'pending'   },
     ],
     slotIdSeed: 3,
     selectedDate: null,
-    pendingDur: 30,
+    pendingDur: 40,
     pendingWeekdays: [],
     pendingMonths: [],
+    pendingRate: null,
   };
 
   function initSlotForm() {
@@ -912,10 +934,29 @@
       }
       const mTag = s.months && s.months.length
         ? '<span class="slot-rec" style="background:#f0fdf4;color:#065f46;">' + s.months.join(' ') + '</span>' : '';
+      const rateTag = s.rate != null
+        ? '<span class="slot-rate-tag">¥' + s.rate + '/分钟</span>' : '';
       const typeLabel = s.weekdays.length ? '循环时间段' : '仅此日';
+
+      // Check if this slot has a booking on the selected date
+      const booking = SS.bookings.find(b => b.slotId === s.id && b.date === SS.selectedDate && b.status !== 'cancelled');
+      if (booking) {
+        const statusLabel = booking.status === 'pending' ? '待确认' : '已确认';
+        const statusColor = booking.status === 'pending' ? '#d97706' : '#059669';
+        return '<div class="slot-booked">' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div class="slot-time">' + hh + ':' + mm + ' — ' + eh + ':' + em + recTag + rateTag + '</div>' +
+            '<div class="slot-dur">' + typeLabel + ' · ' + s.duration + ' 分钟</div>' +
+            '<div class="slot-book-name">👤 ' + booking.studentName +
+              ' <span style="color:' + statusColor + ';font-size:10px;font-weight:600;">' + statusLabel + '</span></div>' +
+          '</div>' +
+          '<button class="btn-s" style="font-size:11px;color:#dc2626;border-color:#fca5a5;white-space:nowrap;" ' +
+            'onclick="showCancelBookingFromSlot(' + booking.id + ')">取消预约</button>' +
+        '</div>';
+      }
       return '<div class="slot-row">' +
         '<div style="flex:1;min-width:0;">' +
-          '<div class="slot-time">' + hh + ':' + mm + ' — ' + eh + ':' + em + recTag + mTag + '</div>' +
+          '<div class="slot-time">' + hh + ':' + mm + ' — ' + eh + ':' + em + recTag + mTag + rateTag + '</div>' +
           '<div class="slot-dur">' + typeLabel + ' · ' + s.duration + ' 分钟</div>' +
         '</div>' +
         '<button class="slot-del" onclick="deleteSlot(' + s.id + ')">✕</button>' +
@@ -925,10 +966,20 @@
 
   function showAddSlotForm() {
     if (!SS.selectedDate) { showToast('请先在日历中点击选择日期'); return; }
-    SS.pendingWeekdays = []; SS.pendingMonths = []; SS.pendingDur = 30;
-    document.querySelectorAll('#durChips .dc').forEach(b => b.classList.toggle('on', b.textContent === '30分钟'));
+    // Check if selected date already has a booked slot
+    const bookedOnDate = SS.bookings.some(b => b.date === SS.selectedDate && b.status !== 'cancelled');
+    if (bookedOnDate) {
+      showToast('该日期已有学生预约，如需修改请先取消或等待咨询完成');
+      return;
+    }
+    SS.pendingWeekdays = []; SS.pendingMonths = []; SS.pendingDur = 40; SS.pendingRate = null;
+    document.querySelectorAll('#durChips .dc').forEach(b => b.classList.toggle('on', b.textContent === '40分钟'));
     document.querySelectorAll('#weekChips .wc').forEach(b => b.classList.remove('on'));
     document.querySelectorAll('.mc-m').forEach(b => b.classList.remove('on'));
+    const rateInput = document.getElementById('slotRate');
+    if (rateInput) { rateInput.value = ''; }
+    const help = document.getElementById('rateHelpText');
+    if (help) { help.textContent = ''; help.style.color = ''; }
     document.getElementById('addSlotForm').style.display = 'block';
     document.getElementById('btnAddSlot').style.display = 'none';
   }
@@ -939,6 +990,9 @@
   function setDur(btn, dur) {
     document.querySelectorAll('#durChips .dc').forEach(b => b.classList.remove('on'));
     btn.classList.add('on'); SS.pendingDur = dur;
+    // Refresh rate help text if rate already entered
+    const rateInput = document.getElementById('slotRate');
+    if (rateInput && rateInput.value) validateSlotRate(rateInput);
   }
   function toggleWeekday(btn, day) {
     btn.classList.toggle('on');
@@ -961,12 +1015,19 @@
     if (!SS.selectedDate) { showToast('请先在日历中点击选择日期'); return; }
     const h = parseInt(document.getElementById('slotHour').value);
     const m = parseInt(document.getElementById('slotMin').value);
+    const rateVal = document.getElementById('slotRate').value;
+    if (!rateVal) { showToast('请填写该时间段的费率（元/分钟）'); return; }
+    const rate = parseFloat(rateVal);
+    if (isNaN(rate) || rate < PCFG.priceMin || rate > PCFG.priceMax) {
+      showToast('费率须在 ' + PCFG.priceMin + ' – ' + PCFG.priceMax + ' 元/分钟之间');
+      return;
+    }
     const existing = _slotsFor(SS.selectedDate);
     if (existing.find(s => s.hour === h && s.minute === m)) {
       showToast('该时间点已存在，请换一个时间'); return;
     }
     const slot = {
-      id: SS.slotIdSeed++, hour: h, minute: m, duration: SS.pendingDur,
+      id: SS.slotIdSeed++, hour: h, minute: m, duration: SS.pendingDur, rate: rate,
       weekdays: [...SS.pendingWeekdays], months: [...SS.pendingMonths],
       date: SS.pendingWeekdays.length ? null : SS.selectedDate,
     };
@@ -980,16 +1041,26 @@
       : null;
     const where = slot.months.length ? slot.months.join('') : '本月';
     showToast(freq
-      ? '✅ 循环设置已保存（' + freq + ' · ' + where + '）'
-      : '✅ ' + SS.selectedDate.replace(/^\d{4}-0?(\d+)-0?(\d+)$/, '$1月$2日') + ' 时间段已添加'
+      ? '✅ 循环设置已保存（' + freq + ' · ' + where + '，¥' + rate + '/分钟）'
+      : '✅ ' + SS.selectedDate.replace(/^\d{4}-0?(\d+)-0?(\d+)$/, '$1月$2日') + ' 时间段已添加（¥' + rate + '/分钟）'
     );
   }
   function deleteSlot(id) {
+    // Don't allow deleting a slot that has an active booking
+    const hasActive = SS.bookings.some(b => b.slotId === id && b.status !== 'cancelled');
+    if (hasActive) { showToast('该时间段已有预约，请先取消预约再删除'); return; }
     SS.slots = SS.slots.filter(s => s.id !== id);
     renderSlots();
     renderCalendar();
     renderTimeGrid();
     showToast('时间段已删除');
+  }
+
+  function showCancelBookingFromSlot(bookingId) {
+    _cancelTarget = 'booking-' + bookingId;
+    document.querySelectorAll('input[name="cancelReason"]').forEach(r => r.checked = false);
+    document.getElementById('cancelNote').value = '';
+    document.getElementById('cancelModal').style.display = 'flex';
   }
 
   // ══════════════════════════════════════
@@ -1036,6 +1107,146 @@
   }
 
   // ══════════════════════════════════════
+  //  荣誉认证（动态从 localStorage 读取）
+  // ══════════════════════════════════════
+  const MY_TUTOR_ID = 1; // 模拟当前导师ID
+  let _honorApplyTarget = null; // 当前申请的荣誉类型
+
+  function toggleHonorReason(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function renderHonorList() {
+    const el = document.getElementById('honorList');
+    if (!el) return;
+    // Load from localStorage (written by admin.html)
+    let types = [];
+    try { types = JSON.parse(localStorage.getItem('honor_types') || '[]'); } catch(e){}
+
+    // Default types if admin hasn't configured any yet
+    if (!types.length) {
+      types = [
+        { id:1, name:'985/211 高校',    icon:'🎓', desc:'需上传学信网在线验证报告及在读/毕业证明', template:'1. 登录学信网获取在线验证报告截图\n2. 上传学生证（在读）或毕业证照片\n3. 提交后平台将在 2 个工作日内完成核验' },
+        { id:2, name:'优质咨询师',      icon:'⭐', desc:'好评率 ≥ 90% 且累计完成咨询 ≥ 20 次，系统自动触发审核', template:'本认证由平台系统自动推送，无需主动申请。系统检测到您满足条件后将发送通知' },
+        { id:3, name:'高考命中率认证',  icon:'🎯', desc:'历史辅导学生志愿命中率 ≥ 85%，需上传案例截图', template:'1. 整理历史辅导案例（学生姓名可脱敏）\n2. 截图呈现学生录取通知书\n3. 提交后平台核验数据真实性' },
+      ];
+    }
+
+    // Load my applications
+    let apps = [];
+    try { apps = JSON.parse(localStorage.getItem('honor_applications') || '[]'); } catch(e){}
+    let myApps = apps.filter(a => a.tutorId === MY_TUTOR_ID);
+
+    // Seed demo states if no records for this tutor yet
+    if (!myApps.length) {
+      myApps = [
+        { id:201, tutorId:MY_TUTOR_ID, honorId:2, status:'approved',
+          reviewedAt:'2026-02-17' },
+        { id:202, tutorId:MY_TUTOR_ID, honorId:3, status:'rejected',
+          rejectReason:'案例截图模糊，无法核实录取信息。请重新上传高分辨率的录取通知书截图，确保学生姓名、院校、专业清晰可读。',
+          reviewedAt:'2026-02-22' },
+      ];
+    }
+
+    if (!types.length) {
+      el.innerHTML = '<div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">暂无荣誉类型，请联系管理员配置</div>';
+      return;
+    }
+
+    el.innerHTML = types.map(t => {
+      const app = myApps.find(a => a.honorId === t.id);
+      let statusHtml = '', btnHtml = '';
+      if (app) {
+        if (app.status === 'approved') {
+          statusHtml = '<div class="honor-st-pass">✓ 已认证</div>';
+        } else if (app.status === 'rejected') {
+          const rid = 'hr-' + t.id;
+          statusHtml = '<div class="honor-st-none" style="color:#dc2626;">✗ 审核未通过，可重新申请</div>' +
+            '<div id="' + rid + '" style="display:none;font-size:10px;color:#dc2626;' +
+            'background:#fee2e2;border-radius:6px;padding:6px 8px;margin-top:4px;line-height:1.5;">' +
+            (app.rejectReason || '未提供原因') + '</div>';
+          btnHtml = '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">' +
+            '<button class="btn-s" style="font-size:11px;white-space:nowrap;color:#dc2626;' +
+            'border-color:#fca5a5;padding:4px 8px;" onclick="toggleHonorReason(\'' + rid + '\')">详情</button>' +
+            '<button class="btn-s bl" style="font-size:11px;white-space:nowrap;padding:4px 8px;" ' +
+            'onclick="openHonorApplyModal(' + t.id + ')">重新申请</button>' +
+            '</div>';
+        } else {
+          statusHtml = '<div class="honor-st-pend">⏳ 审核中（预计 1-2 个工作日）</div>';
+        }
+      } else {
+        statusHtml = '<div class="honor-st-none">未认证</div>';
+        btnHtml = '<button class="btn-s bl" style="font-size:12px;white-space:nowrap;" onclick="openHonorApplyModal(' + t.id + ')">申请认证</button>';
+      }
+      return '<div class="honor-item">' +
+        '<span class="honor-icon">' + t.icon + '</span>' +
+        '<div class="honor-info">' +
+          '<div class="honor-name">' + t.name + '</div>' +
+          '<div class="honor-desc">' + t.desc + '</div>' +
+          statusHtml +
+        '</div>' +
+        (btnHtml ? btnHtml : '') +
+      '</div>';
+    }).join('');
+  }
+
+  function openHonorApplyModal(honorId) {
+    let types = [];
+    try { types = JSON.parse(localStorage.getItem('honor_types') || '[]'); } catch(e){}
+    if (!types.length) {
+      types = [
+        { id:1, name:'985/211 高校',   icon:'🎓', template:'1. 登录学信网获取在线验证报告截图\n2. 上传学生证（在读）或毕业证照片\n3. 提交后平台将在 2 个工作日内完成核验' },
+        { id:2, name:'优质咨询师',     icon:'⭐', template:'本认证由平台系统自动推送，无需主动申请' },
+        { id:3, name:'高考命中率认证', icon:'🎯', template:'1. 整理历史辅导案例\n2. 截图呈现学生录取通知书\n3. 提交后平台核验数据真实性' },
+      ];
+    }
+    const t = types.find(x => x.id === honorId);
+    if (!t) return;
+    _honorApplyTarget = t;
+    document.getElementById('honorApplyTitle').textContent = t.icon + ' ' + t.name + ' · 申请认证';
+    document.getElementById('honorApplySubtitle').textContent = '请按以下指引提交申请材料';
+    document.getElementById('honorApplyTemplate').textContent = t.template || '暂无申请指引';
+    document.getElementById('honorApplyMaterials').value = '';
+    document.getElementById('honorApplyModal').style.display = 'flex';
+  }
+
+  function closeHonorApplyModal() {
+    document.getElementById('honorApplyModal').style.display = 'none';
+    _honorApplyTarget = null;
+  }
+
+  function submitHonorApply() {
+    if (!_honorApplyTarget) return;
+    const materials = document.getElementById('honorApplyMaterials').value.trim();
+    if (!materials) { showToast('请填写材料说明后再提交'); return; }
+    let apps = [];
+    try { apps = JSON.parse(localStorage.getItem('honor_applications') || '[]'); } catch(e){}
+    // Remove old application for same honor
+    apps = apps.filter(a => !(a.tutorId === MY_TUTOR_ID && a.honorId === _honorApplyTarget.id));
+    apps.push({
+      id: Date.now(),
+      tutorId: MY_TUTOR_ID,
+      tutorName: '张XX',
+      honorId: _honorApplyTarget.id,
+      honorName: _honorApplyTarget.name,
+      icon: _honorApplyTarget.icon,
+      submittedAt: new Date().toISOString().split('T')[0],
+      status: 'pending',
+      materials: materials,
+    });
+    localStorage.setItem('honor_applications', JSON.stringify(apps));
+    closeHonorApplyModal();
+    renderHonorList();
+    showToast('✅ 申请已提交，平台将在 2 个工作日内完成核验');
+  }
+
+  // Click outside to close honor apply modal
+  document.getElementById('honorApplyModal').addEventListener('click', function(e) {
+    if (e.target === this) closeHonorApplyModal();
+  });
+
+  // ══════════════════════════════════════
   //  等级初始化
   // ══════════════════════════════════════
   function initLevels() {
@@ -1073,10 +1284,12 @@
 
   // ── 初始化 ──
   initSlotForm();
+  loadPlatformConfig();
   renderCalendar();
   renderTimeGrid();
   renderAppts();
   initLevels();
+  renderHonorList();
 </script>
 </body>
 </html>

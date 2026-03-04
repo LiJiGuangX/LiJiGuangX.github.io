@@ -111,6 +111,36 @@
     .dm-eye{background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:2px 4px;margin-left:4px}
     .adm-modal-acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
     .adm-modal-acts .rb{flex:1}
+    /* ── 平台设置 / 荣誉配置 ── */
+    .cfg-card{background:white;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+    .cfg-title{font-size:15px;font-weight:700;color:#111827;margin-bottom:4px}
+    .cfg-sub{font-size:12px;color:#9ca3af;margin-bottom:18px;line-height:1.7}
+    .cfg-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:16px}
+    .cfg-field{flex:1;min-width:0}
+    .cfg-lbl{font-size:12px;font-weight:600;color:#374151;margin-bottom:6px}
+    .cfg-inp{width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:16px;font-weight:700;color:#111827;font-family:inherit;outline:none;text-align:center;box-sizing:border-box}
+    .cfg-inp:focus{border-color:#1e40af}
+    .cfg-inp-sm{font-size:14px;font-weight:400;text-align:left;padding:9px 12px}
+    .cfg-unit{font-size:11px;color:#9ca3af;text-align:center;margin-top:4px}
+    .cfg-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#f9fafb;border-radius:10px;padding:12px;margin-bottom:16px}
+    .cfg-prev-item{text-align:center;padding:4px 0}
+    .cfg-prev-dur{font-size:11px;color:#9ca3af;margin-bottom:4px}
+    .cfg-prev-range{font-size:13px;font-weight:700;color:#1e40af}
+    .cfg-save{width:100%;padding:12px;background:#1e40af;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+    .cfg-save:hover{background:#1d3a9a}
+    .cfg-quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .cfg-qbtn{padding:7px 14px;border-radius:8px;font-size:13px;border:1.5px solid #e5e7eb;background:white;cursor:pointer;font-family:inherit;color:#374151;transition:all .15s}
+    .cfg-qbtn.on{background:#1e40af;color:white;border-color:#1e40af}
+    .cfg-divider{height:1px;background:#f3f4f6;margin:16px 0}
+    .cfg-sep{display:flex;align-items:center;padding-bottom:10px;font-size:20px;color:#9ca3af}
+    /* Honor type card */
+    .ht-card{background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:4px solid #1e40af}
+    .ht-hd{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .ht-icon{font-size:26px;width:32px;text-align:center;flex-shrink:0}
+    .ht-name{font-size:15px;font-weight:700;color:#111827}
+    .ht-id{font-size:11px;color:#9ca3af;margin-top:2px}
+    .ht-body{font-size:12px;color:#374151;background:#f9fafb;border-radius:8px;padding:10px;line-height:1.7;white-space:pre-wrap;margin-bottom:10px}
+    .ht-acts{display:flex;gap:8px}
     /* Toast */
     .toast{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);color:white;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap}
   </style>
@@ -130,6 +160,9 @@
     <button class="atab" data-sec="s-disp">争议裁决</button>
     <button class="atab" data-sec="s-vio">违规处理</button>
     <button class="atab" data-sec="s-tutors">导师管理</button>
+    <button class="atab" data-sec="s-honor">荣誉配置</button>
+    <button class="atab" data-sec="s-honor-review">荣誉审核</button>
+    <button class="atab" data-sec="s-platform">平台设置</button>
   </div>
 
   <div class="wrap">
@@ -141,9 +174,8 @@
         <div class="sc"><div class="sv cv-blue">1,204</div><div class="sl">在册咨询师</div><div class="ss">↑12 本周新增</div></div>
         <div class="sc"><div class="sv cv-green">86</div><div class="sl">今日预约</div><div class="ss">完成率 92%</div></div>
         <div class="sc"><div class="sv cv-orange">51</div><div class="sl">待处理事项</div><div class="ss">审核37·裁决3·违规11</div></div>
-        <div class="sc"><div class="sv cv-red">3</div><div class="sl">今日超时未确认</div><div class="ss">10分钟内未响应</div></div>
+        <div class="sc"><div class="sv cv-red">3</div><div class="sl">今日超时未确认</div><div class="ss" id="dashConfirmHint">1小时内未响应</div></div>
       </div>
-
       <div class="sh">咨询师等级分布</div>
       <div class="sg sg3">
         <div class="sc"><div class="sv" style="color:#9ca3af">423</div><div class="sl">🌱 初级导师</div></div>
@@ -152,12 +184,11 @@
         <div class="sc"><div class="sv cv-orange">98</div><div class="sl">🏅 资深导师</div></div>
         <div class="sc"><div class="sv cv-purple">26</div><div class="sl">🏆 金牌导师</div></div>
       </div>
-
       <div class="sh">待处理快速入口</div>
       <div class="qa">
         <div class="qa-c" onclick="sw('s-cert')"><span class="qa-ico">📝</span><div><div class="qa-lbl">导师资质审核</div><div class="qa-n">12</div></div></div>
         <div class="qa-c" onclick="sw('s-kw')"><span class="qa-ico">🔑</span><div><div class="qa-lbl">关键词审核</div><div class="qa-n">36</div></div></div>
-        <div class="qa-c" onclick="sw('s-cont')"><span class="qa-ico">🖼️</span><div><div class="qa-lbl">内容合规审核</div><div class="qa-n">3</div></div></div>
+        <div class="qa-c" onclick="sw('s-honor-review')"><span class="qa-ico">🏅</span><div><div class="qa-lbl">荣誉申请审核</div><div class="qa-n" id="honorPendingCount">2</div></div></div>
         <div class="qa-c" onclick="sw('s-disp')"><span class="qa-ico">⚖️</span><div><div class="qa-lbl">争议裁决</div><div class="qa-n">3</div></div></div>
       </div>
     </div>
@@ -170,7 +201,6 @@
         <button class="fbn">已驳回</button>
         <button class="fbn">待补材料</button>
       </div>
-
       <div class="ri">
         <div class="ri-hd"><div><div class="ri-name">张小明</div><div class="ri-meta">北京大学 · 计算机科学 · 在校生 · 提交：2026-03-01 09:15</div></div><span class="b b-warn">待审核</span></div>
         <div class="ri-body">身份证：110101****2318 &nbsp;|&nbsp; 学信网：<span style="color:#059669;font-weight:600">系统已比对 ✓</span><br>院校：北京大学 &nbsp;|&nbsp; 专业：计算机科学 &nbsp;|&nbsp; 年级：2023级</div>
@@ -180,7 +210,6 @@
           <button class="rb rb-no" data-toast="请填写驳回原因">❌ 驳回</button>
         </div>
       </div>
-
       <div class="ri">
         <div class="ri-hd"><div><div class="ri-name">李思雨</div><div class="ri-meta">清华大学 · 电子工程 · 毕业2年 · 提交：2026-03-01 08:42</div></div><span class="b b-warn">待审核</span></div>
         <div class="ri-body">身份证：110105****1821 &nbsp;|&nbsp; 学信网：<span style="color:#dc2626;font-weight:600">需人工核对 ⚠️</span><br>院校：清华大学 &nbsp;|&nbsp; 专业：电子信息工程 &nbsp;|&nbsp; 状态：2024届毕业</div>
@@ -190,7 +219,6 @@
           <button class="rb rb-no" data-toast="请选择驳回原因">❌ 驳回</button>
         </div>
       </div>
-
       <button style="width:100%;padding:12px;background:#f3f4f6;border:none;border-radius:10px;font-size:14px;font-weight:600;color:#374151;cursor:pointer;font-family:inherit;margin-top:4px" data-toast="已批量通过学信网已验证的9条申请">⚡ 批量通过（仅学信网已自动验证）</button>
     </div>
 
@@ -201,7 +229,6 @@
         <button class="fbn">已通过</button>
         <button class="fbn">已驳回</button>
       </div>
-
       <div class="ri">
         <div class="ri-hd"><div><div class="ri-name">「北大计算机内部资料」</div><div class="ri-meta">申请人：张XX（🎯 高级导师 · 北京大学）· 2026-03-01</div></div><span class="ai ai-mid">🤖 风险：中</span></div>
         <div class="ri-body">「内部资料」可能引发虚假宣传联想<br>建议修改为：<strong>「北大计算机保研经验分享」</strong></div>
@@ -211,7 +238,6 @@
           <button class="rb rb-no" data-toast="关键词已驳回">❌ 驳回</button>
         </div>
       </div>
-
       <div class="ri">
         <div class="ri-hd"><div><div class="ri-name">「竞赛获奖经历」</div><div class="ri-meta">申请人：王XX（⭐ 中级导师 · 复旦大学）· 2026-03-01</div></div><span class="ai ai-low">🤖 风险：低</span></div>
         <div class="ri-body">与申请人资质（竞赛获奖证书已上传）匹配，无风险词汇，建议直接通过。</div>
@@ -225,13 +251,10 @@
     <!-- ④ 内容合规审核 -->
     <div class="asec" id="s-cont">
       <div class="sh">内容待审核（3项）</div>
-
       <div class="ri">
         <div class="ri-hd"><div><div class="ri-name">赵天宇 · 宣传资料更新</div><div class="ri-meta">复旦大学 · 金融学 · 提交：2026-03-01 10:20</div></div><span class="b b-warn">待审核</span></div>
-
         <div style="font-size:13px;font-weight:600;margin-bottom:6px">📝 自我介绍文本</div>
         <div class="ri-body">复旦金融学在读，<span class="risk">保证帮您</span>进入理想学校，四年<span class="risk">内部名额</span>保研/就业规划全包...<br><span style="font-size:11px;color:#dc2626">⚠️ AI已标注2处风险词，含承诺性表达</span></div>
-
         <div style="font-size:13px;font-weight:600;margin:10px 0 6px">🖼️ 宣传图片</div>
         <div class="imgr">
           <div class="imgt">🏆</div>
@@ -239,7 +262,6 @@
           <div class="imgt warn">⚠️</div>
         </div>
         <div style="font-size:12px;color:#dc2626;margin-bottom:10px">第3张图含联系方式（微信号），需驳回</div>
-
         <div class="ra">
           <button class="rb rb-mod" data-toast="已部分驳回：文本+第3张图，其余内容通过">🔧 部分驳回</button>
           <button class="rb rb-no" data-toast="全部内容已驳回，已通知修改">❌ 全部驳回</button>
@@ -253,7 +275,6 @@
         <button class="fbn on">待裁决 (3)</button>
         <button class="fbn">已裁决</button>
       </div>
-
       <div class="ri">
         <div class="ri-hd"><div><div class="ri-name">争议 #20260310-001</div><div class="ri-meta">导师张XX（🎯 高级导师）↔ 学生李** · 2026-06-10 19:00 · 费用100元</div></div><span class="b b-warn">待裁决</span></div>
         <div class="ri-body">
@@ -264,8 +285,8 @@
         <div style="font-size:13px;font-weight:600;margin-bottom:8px">裁决操作（需填写裁决理由）</div>
         <div class="dr">
           <button class="drb rb-ok" data-toast="已裁决：维持结果，费用归导师，已通知双方">✅ 维持结果</button>
-          <button class="drb rb-mod" data-toast="已裁决：退款30%（30元），已通知双方">💸 退款30%</button>
-          <button class="drb rb-mod" style="background:#7c3aed" data-toast="已裁决：退款50%（50元），已通知双方">💸 退款50%</button>
+          <button class="drb rb-mod" data-toast="已裁决：退款30%，已通知双方">💸 退款30%</button>
+          <button class="drb rb-mod" style="background:#7c3aed" data-toast="已裁决：退款50%，已通知双方">💸 退款50%</button>
           <button class="drb rb-no" data-toast="已裁决：全额退款，已通知双方">🔄 全额退款</button>
         </div>
       </div>
@@ -277,7 +298,6 @@
         <button class="fbn on">待处理 (11)</button>
         <button class="fbn">已处理</button>
       </div>
-
       <div class="ri vi">
         <div class="ri-hd"><div><div class="ri-name">孙XX · 会议中引导私下交易</div><div class="ri-meta">🎯 高级导师 · 举报时间：2026-03-01 11:30</div></div><span class="b b-err">高风险</span></div>
         <div class="ri-body">用户举报：导师多次在会议中引导添加微信，提示平台外低价咨询。AI会议笔记含多处关键片段。</div>
@@ -287,9 +307,8 @@
           <button class="rb rb-no" data-toast="账号已封禁，用户已通知">🚫 封禁</button>
         </div>
       </div>
-
       <div class="ri vi-o">
-        <div class="ri-hd"><div><div class="ri-name">周XX · 10分钟响应超时 ×3</div><div class="ri-meta">⭐ 中级导师 · 本周累计3次超时</div></div><span class="b b-warn">中风险</span></div>
+        <div class="ri-hd"><div><div class="ri-name">周XX · 确认超时 ×3</div><div class="ri-meta">⭐ 中级导师 · 本周累计3次超时未确认</div></div><span class="b b-warn">中风险</span></div>
         <div class="ri-body">本周超时率12%，已触发响应预警（阈值10%），成长值扣分机制自动触发，建议同步发送预警通知。</div>
         <div class="ra">
           <button class="rb rb-gray" data-toast="预警通知已发送">📩 发预警通知</button>
@@ -301,11 +320,7 @@
     <!-- ⑦ 导师管理 -->
     <div class="asec" id="s-tutors">
       <div class="sh">导师管理 <span style="font-size:13px;font-weight:400;color:#9ca3af;">共 1,204 位</span></div>
-
-      <!-- 搜索 -->
       <input class="tm-search" id="tmSearch" placeholder="🔍 搜索姓名 / 用户名 / 邮箱 / 院校" oninput="renderTutors()">
-
-      <!-- 等级筛选 -->
       <div class="fb" id="tmLevelFilter">
         <button class="fbn on" data-lv="0">全部</button>
         <button class="fbn" data-lv="1">🌱 初级</button>
@@ -314,16 +329,107 @@
         <button class="fbn" data-lv="4">🏅 资深</button>
         <button class="fbn" data-lv="5">🏆 金牌</button>
       </div>
-
-      <!-- 状态筛选 -->
       <div class="fb" id="tmStatusFilter">
         <button class="fbn on" data-st="all">全部状态</button>
         <button class="fbn" data-st="normal">正常</button>
         <button class="fbn" data-st="banned">已封禁</button>
         <button class="fbn" data-st="pending">待审核</button>
       </div>
-
       <div id="tmList"></div>
+    </div>
+
+    <!-- ⑧ 荣誉配置 -->
+    <div class="asec" id="s-honor">
+
+      <!-- 新增荣誉类型 -->
+      <div class="cfg-card">
+        <div class="cfg-title">➕ 新增荣誉类型</div>
+        <div class="cfg-sub">配置后，导师端将自动显示该荣誉的申请入口，导师可上传材料并提交申请。</div>
+        <div style="margin-bottom:12px;">
+          <div class="cfg-lbl">图标（Emoji）</div>
+          <input id="hfIcon" class="cfg-inp" style="font-size:22px;text-align:center;" value="🏅" maxlength="4">
+        </div>
+        <div style="margin-bottom:12px;">
+          <div class="cfg-lbl">荣誉名称 <span style="color:#ef4444;font-size:10px">必填</span></div>
+          <input id="hfName" class="cfg-inp cfg-inp-sm" placeholder="如：年度优秀导师">
+        </div>
+        <div style="margin-bottom:12px;">
+          <div class="cfg-lbl">申请材料描述 <span style="color:#ef4444;font-size:10px">必填</span></div>
+          <input id="hfDesc" class="cfg-inp cfg-inp-sm" placeholder="简要描述导师需提交的材料类型">
+        </div>
+        <div style="margin-bottom:16px;">
+          <div class="cfg-lbl">申请说明模板（展示给导师，支持换行）</div>
+          <textarea id="hfTemplate" class="cfg-inp cfg-inp-sm" rows="4" style="resize:vertical;" placeholder="1. 提交步骤说明&#10;2. 材料格式要求&#10;3. 审核周期说明"></textarea>
+        </div>
+        <button class="cfg-save" onclick="addHonorType()">添加荣誉配置</button>
+      </div>
+
+      <!-- 已配置列表 -->
+      <div class="sh">已配置荣誉类型（<span id="honorCount">0</span> 项）</div>
+      <div id="honorTypeList"></div>
+    </div>
+
+    <!-- ⑨ 荣誉审核 -->
+    <div class="asec" id="s-honor-review">
+      <div class="sh">荣誉申请审核（<span id="honorReviewCount">0</span> 条待审）</div>
+      <div id="honorAppList"></div>
+    </div>
+
+    <!-- ⑩ 平台设置 -->
+    <div class="asec" id="s-platform">
+
+      <!-- 咨询定价范围 -->
+      <div class="cfg-card">
+        <div class="cfg-title">💰 咨询定价范围</div>
+        <div class="cfg-sub">设定导师每分钟咨询费率的允许区间。导师在排期时必须在此范围内自主定价，超出范围无法保存。</div>
+        <div class="cfg-row">
+          <div class="cfg-field">
+            <div class="cfg-lbl">最低费率（元/分钟）</div>
+            <input id="cfgPriceMin" class="cfg-inp" type="number" min="0" max="100" step="0.1" value="0">
+            <div class="cfg-unit">最低可设为 0 元</div>
+          </div>
+          <div class="cfg-sep">—</div>
+          <div class="cfg-field">
+            <div class="cfg-lbl">最高费率（元/分钟）</div>
+            <input id="cfgPriceMax" class="cfg-inp" type="number" min="0" max="100" step="0.1" value="2">
+            <div class="cfg-unit">默认上限 2 元/分钟</div>
+          </div>
+        </div>
+
+        <!-- 实时预览：各时长对应的价格区间 -->
+        <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">各时长费用区间预览</div>
+        <div class="cfg-preview" id="pricePreview"></div>
+
+        <button class="cfg-save" onclick="savePriceConfig()">保存定价设置</button>
+      </div>
+
+      <!-- 预约确认时限 -->
+      <div class="cfg-card">
+        <div class="cfg-title">⏱ 预约确认时限</div>
+        <div class="cfg-sub">导师收到预约请求后，必须在此时限内确认或取消。超时系统将自动取消本次预约并全额退款给学生，同时记入导师的超时违规指标。</div>
+
+        <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">快捷选择</div>
+        <div class="cfg-quick" id="confirmQuick">
+          <button class="cfg-qbtn" data-h="0.5">30 分钟</button>
+          <button class="cfg-qbtn on" data-h="1">1 小时</button>
+          <button class="cfg-qbtn" data-h="2">2 小时</button>
+          <button class="cfg-qbtn" data-h="6">6 小时</button>
+          <button class="cfg-qbtn" data-h="24">24 小时</button>
+        </div>
+
+        <div class="cfg-row" style="align-items:flex-end;">
+          <div class="cfg-field">
+            <div class="cfg-lbl">自定义时限（小时，最小 0.5）</div>
+            <input id="cfgConfirmH" class="cfg-inp" type="number" min="0.5" max="48" step="0.5" value="1" oninput="syncConfirmQuick()">
+            <div class="cfg-unit" id="confirmPreviewLabel">= 60 分钟</div>
+          </div>
+        </div>
+
+        <div style="background:#eff6ff;border-radius:8px;padding:10px 12px;font-size:12px;color:#1e40af;margin-bottom:16px;">
+          ℹ️ 当前设置：导师须在收到预约后 <strong id="confirmHoursDisplay">1 小时</strong> 内响应，超时自动取消并全额退款
+        </div>
+        <button class="cfg-save" onclick="saveConfirmConfig()">保存确认时限</button>
+      </div>
     </div>
 
   </div><!-- /wrap -->
@@ -334,7 +440,6 @@
       <div class="adm-modal-title" id="detailName">-</div>
       <div class="adm-modal-sub" id="detailSub">-</div>
       <button class="adm-modal-close" onclick="closeTutorDetail()">✕</button>
-
       <div class="dm-sec">账号信息</div>
       <div class="dm-row"><span class="dm-label">用户名</span><span class="dm-value" id="detailUname">-</span></div>
       <div class="dm-row">
@@ -347,15 +452,12 @@
       <div class="dm-row"><span class="dm-label">邮箱</span><span class="dm-value" id="detailEmail">-</span></div>
       <div class="dm-row"><span class="dm-label">手机号</span><span class="dm-value" id="detailPhone">-</span></div>
       <div class="dm-row"><span class="dm-label">注册时间</span><span class="dm-value" id="detailJoined">-</span></div>
-
       <div class="dm-sec">等级与状态</div>
       <div class="dm-row"><span class="dm-label">当前等级</span><span class="dm-value" id="detailLevel">-</span></div>
       <div class="dm-row"><span class="dm-label">账号状态</span><span class="dm-value" id="detailStatus">-</span></div>
-
       <div class="dm-sec">服务数据</div>
       <div class="dm-row"><span class="dm-label">累计咨询次数</span><span class="dm-value" id="detailSessions">-</span></div>
       <div class="dm-row"><span class="dm-label">好评率</span><span class="dm-value" id="detailRating">-</span></div>
-
       <div class="adm-modal-acts">
         <button class="rb rb-mod tab-level" id="detailLevelBtn" onclick="adjLevel()">调整等级</button>
         <button class="rb tab-pwd" onclick="toast('密码重置邮件已发送至导师邮箱')">重置密码</button>
@@ -366,12 +468,29 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- 驳回原因弹窗 -->
+  <div class="adm-overlay" id="rejectReasonOverlay" onclick="if(event.target===this)closeRejectModal()">
+    <div class="adm-modal" style="padding-bottom:24px;">
+      <div class="adm-modal-title">❌ 驳回荣誉申请</div>
+      <div class="adm-modal-sub">请填写驳回原因，将通知导师修改后重新申请</div>
+      <button class="adm-modal-close" onclick="closeRejectModal()">✕</button>
+      <div class="cfg-lbl" style="margin-bottom:6px;">驳回原因 <span style="color:#ef4444;font-size:10px">必填</span></div>
+      <textarea id="rejectReasonInput" class="cfg-inp cfg-inp-sm" rows="3"
+        placeholder="如：材料不清晰，请重新上传高清截图；或：暂不符合认证条件"></textarea>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="rb rb-gray" style="flex:1;" onclick="closeRejectModal()">取消</button>
+        <button class="rb rb-no" style="flex:2;" onclick="confirmRejectHonorApp()">确认驳回</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    /* ── 导航 ── */
     function sw(id) {
       document.querySelectorAll('.asec').forEach(s => s.classList.remove('on'));
       document.querySelectorAll('.atab').forEach(t => t.classList.remove('on'));
       document.getElementById(id).classList.add('on');
-      document.querySelector(`.atab[data-sec="${id}"]`).classList.add('on');
+      document.querySelector('.atab[data-sec="' + id + '"]').classList.add('on');
     }
     function toast(msg) {
       const t = document.getElementById('toast');
@@ -388,10 +507,280 @@
       if (el) toast(el.dataset.toast);
     });
 
-    /* ─────── 导师管理 ─────── */
+    /* ══════════════════════════════════════
+       平台设置
+    ══════════════════════════════════════ */
+    const PCFG = { priceMin: 0, priceMax: 2, confirmHours: 1 };
+
+    function loadPlatformConfig() {
+      const saved = localStorage.getItem('platform_config');
+      if (saved) Object.assign(PCFG, JSON.parse(saved));
+      document.getElementById('cfgPriceMin').value = PCFG.priceMin;
+      document.getElementById('cfgPriceMax').value = PCFG.priceMax;
+      document.getElementById('cfgConfirmH').value  = PCFG.confirmHours;
+      updatePricePreview();
+      syncConfirmQuick();
+      // Update dash hint
+      const hint = document.getElementById('dashConfirmHint');
+      if (hint) hint.textContent = PCFG.confirmHours + ' 小时内未响应';
+    }
+
+    function savePriceConfig() {
+      const mn = parseFloat(document.getElementById('cfgPriceMin').value);
+      const mx = parseFloat(document.getElementById('cfgPriceMax').value);
+      if (isNaN(mn) || mn < 0) { toast('最低费率不能为负数'); return; }
+      if (isNaN(mx) || mx < 0) { toast('最高费率不能为负数'); return; }
+      if (mx < mn) { toast('最高费率不能低于最低费率'); return; }
+      PCFG.priceMin = mn; PCFG.priceMax = mx;
+      localStorage.setItem('platform_config', JSON.stringify(PCFG));
+      updatePricePreview();
+      toast('✅ 定价范围已保存，导师端下次进入时间管理时将自动同步');
+    }
+
+    function saveConfirmConfig() {
+      const h = parseFloat(document.getElementById('cfgConfirmH').value);
+      if (isNaN(h) || h < 0.5) { toast('确认时限最短为 0.5 小时（30分钟）'); return; }
+      PCFG.confirmHours = h;
+      localStorage.setItem('platform_config', JSON.stringify(PCFG));
+      syncConfirmQuick();
+      const hint = document.getElementById('dashConfirmHint');
+      if (hint) hint.textContent = h + ' 小时内未响应';
+      toast('✅ 确认时限已保存：' + (h >= 1 ? h + ' 小时' : (h * 60) + ' 分钟'));
+    }
+
+    function updatePricePreview() {
+      const mn = parseFloat(document.getElementById('cfgPriceMin').value) || 0;
+      const mx = parseFloat(document.getElementById('cfgPriceMax').value) || 2;
+      const durs = [20, 40, 60];
+      const el = document.getElementById('pricePreview');
+      if (!el) return;
+      el.innerHTML = durs.map(d =>
+        '<div class="cfg-prev-item">' +
+          '<div class="cfg-prev-dur">' + d + ' 分钟</div>' +
+          '<div class="cfg-prev-range">¥' + (mn * d).toFixed(0) + ' – ¥' + (mx * d).toFixed(0) + '</div>' +
+        '</div>'
+      ).join('');
+    }
+
+    function syncConfirmQuick() {
+      const h = parseFloat(document.getElementById('cfgConfirmH').value) || 1;
+      document.querySelectorAll('#confirmQuick .cfg-qbtn').forEach(b => {
+        b.classList.toggle('on', parseFloat(b.dataset.h) === h);
+      });
+      const mins = Math.round(h * 60);
+      document.getElementById('confirmPreviewLabel').textContent = '= ' + (mins >= 60 ? (h + ' 小时') : (mins + ' 分钟'));
+      const disp = document.getElementById('confirmHoursDisplay');
+      if (disp) disp.textContent = h >= 1 ? h + ' 小时' : (mins + ' 分钟');
+    }
+
+    document.querySelectorAll('#confirmQuick .cfg-qbtn').forEach(b => {
+      b.addEventListener('click', () => {
+        document.getElementById('cfgConfirmH').value = b.dataset.h;
+        syncConfirmQuick();
+      });
+    });
+
+    // Live update price preview as user types
+    ['cfgPriceMin','cfgPriceMax'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', updatePricePreview);
+    });
+
+    /* ══════════════════════════════════════
+       荣誉配置
+    ══════════════════════════════════════ */
+    let HONOR_TYPES = [];
+    let HONOR_APPS  = [];
+
+    function loadHonorData() {
+      const savedTypes = localStorage.getItem('honor_types');
+      if (savedTypes) {
+        HONOR_TYPES = JSON.parse(savedTypes);
+      } else {
+        // 默认荣誉类型
+        HONOR_TYPES = [
+          { id: 1, name: '985/211 高校', icon: '🎓',
+            desc: '需上传学信网在线验证报告及在读/毕业证明',
+            template: '1. 登录学信网（xuexin.net.cn）获取在线验证报告截图\n2. 上传学生证（在读）或毕业证照片\n3. 提交后平台将在 2 个工作日内完成核验' },
+          { id: 2, name: '优质咨询师', icon: '⭐',
+            desc: '好评率 ≥ 90% 且累计完成咨询 ≥ 20 次，系统自动触发审核',
+            template: '本认证由平台系统自动推送，无需主动申请。\n当您满足好评率 ≥ 90% 且累计完成咨询 ≥ 20 次时，系统将自动创建认证申请并通知管理员审核。' },
+          { id: 3, name: '高考命中率认证', icon: '🎯',
+            desc: '历史辅导学生志愿命中率 ≥ 85%，需上传案例截图',
+            template: '1. 整理历史辅导案例（学生姓名可脱敏）\n2. 截图呈现学生录取通知书或录取结果页面\n3. 说明您的填报建议与最终录取的对应关系\n4. 提交后平台将在 5 个工作日内审核' },
+        ];
+        localStorage.setItem('honor_types', JSON.stringify(HONOR_TYPES));
+      }
+
+      const savedApps = localStorage.getItem('honor_applications');
+      if (savedApps) {
+        HONOR_APPS = JSON.parse(savedApps);
+      } else {
+        HONOR_APPS = [
+          { id: 1, tutorId: 1, tutorName: '张小明', honorId: 1, honorName: '985/211 高校', icon: '🎓',
+            submittedAt: '2026-03-01', status: 'pending', materials: '已上传学信网在线验证报告截图及北大学生证正反面照片' },
+          { id: 2, tutorId: 2, tutorName: '李思雨', honorId: 2, honorName: '优质咨询师', icon: '⭐',
+            submittedAt: '2026-03-02', status: 'pending', materials: '系统自动申请（好评率 99%，累计咨询 82 次）' },
+        ];
+        localStorage.setItem('honor_applications', JSON.stringify(HONOR_APPS));
+      }
+
+      renderHonorTypes();
+      renderHonorApps();
+      updateHonorPendingCount();
+    }
+
+    function addHonorType() {
+      const icon     = document.getElementById('hfIcon').value.trim() || '🏅';
+      const name     = document.getElementById('hfName').value.trim();
+      const desc     = document.getElementById('hfDesc').value.trim();
+      const template = document.getElementById('hfTemplate').value.trim();
+      if (!name) { toast('请填写荣誉名称'); return; }
+      if (!desc) { toast('请填写申请材料描述'); return; }
+      HONOR_TYPES.push({ id: Date.now(), name, icon, desc, template });
+      localStorage.setItem('honor_types', JSON.stringify(HONOR_TYPES));
+      document.getElementById('hfIcon').value = '🏅';
+      ['hfName','hfDesc','hfTemplate'].forEach(id => { document.getElementById(id).value = ''; });
+      renderHonorTypes();
+      toast('✅ 荣誉类型已添加，导师端将自动同步显示申请入口');
+    }
+
+    function deleteHonorType(id) {
+      if (!confirm('确认删除此荣誉类型？删除后导师端申请入口将消失，已申请记录保留。')) return;
+      HONOR_TYPES = HONOR_TYPES.filter(h => h.id !== id);
+      localStorage.setItem('honor_types', JSON.stringify(HONOR_TYPES));
+      renderHonorTypes();
+      toast('荣誉类型已删除');
+    }
+
+    function renderHonorTypes() {
+      const el = document.getElementById('honorTypeList');
+      document.getElementById('honorCount').textContent = HONOR_TYPES.length;
+      if (!el) return;
+      if (!HONOR_TYPES.length) {
+        el.innerHTML = '<div style="text-align:center;padding:20px;color:#9ca3af;font-size:13px;">暂无配置，请在上方添加荣誉类型</div>';
+        return;
+      }
+      el.innerHTML = HONOR_TYPES.map(h =>
+        '<div class="ht-card">' +
+          '<div class="ht-hd">' +
+            '<span class="ht-icon">' + h.icon + '</span>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div class="ht-name">' + h.name + '</div>' +
+              '<div class="ht-id">ID ' + h.id + ' &nbsp;·&nbsp; ' + h.desc + '</div>' +
+            '</div>' +
+            '<button class="rb rb-no" style="flex:0;padding:5px 12px;font-size:12px;" onclick="deleteHonorType(' + h.id + ')">删除</button>' +
+          '</div>' +
+          (h.template ? '<div class="ht-body">' + h.template + '</div>' : '') +
+        '</div>'
+      ).join('');
+    }
+
+    function approveHonorApp(id) {
+      const app = HONOR_APPS.find(a => a.id === id);
+      if (app) { app.status = 'approved'; app.reviewedAt = new Date().toISOString().split('T')[0]; }
+      localStorage.setItem('honor_applications', JSON.stringify(HONOR_APPS));
+      renderHonorApps();
+      updateHonorPendingCount();
+      toast('✅ 荣誉申请已通过，导师端将显示已认证徽章');
+    }
+
+    function rejectHonorApp(id) {
+      _rejectTargetId = id;
+      document.getElementById('rejectReasonInput').value = '';
+      document.getElementById('rejectReasonOverlay').classList.add('show');
+    }
+
+    let _rejectTargetId = null;
+    function closeRejectModal() {
+      document.getElementById('rejectReasonOverlay').classList.remove('show');
+      _rejectTargetId = null;
+    }
+    function confirmRejectHonorApp() {
+      const reason = document.getElementById('rejectReasonInput').value.trim();
+      if (!reason) { toast('请填写驳回原因'); return; }
+      const app = HONOR_APPS.find(a => a.id === _rejectTargetId);
+      if (app) {
+        app.status = 'rejected';
+        app.rejectReason = reason;
+        app.reviewedAt = new Date().toISOString().split('T')[0];
+      }
+      localStorage.setItem('honor_applications', JSON.stringify(HONOR_APPS));
+      closeRejectModal();
+      renderHonorApps();
+      updateHonorPendingCount();
+      toast('申请已驳回，系统将通知导师补充或重新提交');
+    }
+
+    function updateHonorPendingCount() {
+      const n = HONOR_APPS.filter(a => a.status === 'pending').length;
+      const el = document.getElementById('honorPendingCount');
+      if (el) el.textContent = n;
+      const rc = document.getElementById('honorReviewCount');
+      if (rc) rc.textContent = n;
+    }
+
+    function renderHonorApps() {
+      const el = document.getElementById('honorAppList');
+      if (!el) return;
+      const pending  = HONOR_APPS.filter(a => a.status === 'pending');
+      const reviewed = HONOR_APPS.filter(a => a.status !== 'pending');
+      let html = '';
+
+      if (!HONOR_APPS.length) {
+        el.innerHTML = '<div style="text-align:center;padding:20px;color:#9ca3af;font-size:13px;">暂无荣誉申请记录</div>';
+        return;
+      }
+
+      if (pending.length) {
+        html += '<div style="font-size:13px;font-weight:700;color:#d97706;margin-bottom:8px;">⏳ 待审核（' + pending.length + '）</div>';
+        pending.forEach(app => {
+          html += '<div class="ri">' +
+            '<div class="ri-hd">' +
+              '<div>' +
+                '<div class="ri-name">' + app.icon + ' ' + app.honorName + '</div>' +
+                '<div class="ri-meta">申请人：' + app.tutorName + ' &nbsp;·&nbsp; 提交：' + app.submittedAt + '</div>' +
+              '</div>' +
+              '<span class="b b-warn">待审核</span>' +
+            '</div>' +
+            '<div class="ri-body" style="margin-bottom:10px;">' + app.materials + '</div>' +
+            '<div class="ra">' +
+              '<button class="rb rb-ok" onclick="approveHonorApp(' + app.id + ')">✅ 通过认证</button>' +
+              '<button class="rb rb-no" onclick="rejectHonorApp(' + app.id + ')">❌ 驳回</button>' +
+            '</div>' +
+          '</div>';
+        });
+      }
+
+      if (reviewed.length) {
+        html += '<div style="font-size:13px;font-weight:700;color:#6b7280;margin:16px 0 8px;">已处理</div>';
+        reviewed.forEach(app => {
+          const isOk = app.status === 'approved';
+          const reasonHtml = !isOk && app.rejectReason
+            ? '<div style="font-size:12px;color:#dc2626;background:#fee2e2;border-radius:6px;padding:6px 10px;margin-top:6px;">驳回原因：' + app.rejectReason + '</div>'
+            : '';
+          html += '<div class="ri">' +
+            '<div class="ri-hd">' +
+              '<div>' +
+                '<div class="ri-name">' + app.icon + ' ' + app.honorName + '</div>' +
+                '<div class="ri-meta">申请人：' + app.tutorName + ' &nbsp;·&nbsp; 提交：' + app.submittedAt +
+                  (app.reviewedAt ? ' &nbsp;·&nbsp; 审核：' + app.reviewedAt : '') + '</div>' +
+              '</div>' +
+              '<span class="b ' + (isOk ? 'b-ok' : 'b-err') + '">' + (isOk ? '已通过' : '已驳回') + '</span>' +
+            '</div>' +
+            reasonHtml +
+          '</div>';
+        });
+      }
+
+      el.innerHTML = html;
+    }
+
+    /* ══════════════════════════════════════
+       导师管理
+    ══════════════════════════════════════ */
     const LEVEL_NAMES = ['','🌱 初级','⭐ 中级','🎯 高级','🏅 资深','🏆 金牌'];
-    const STATUS_MAP  = {normal:'正常', banned:'已封禁', pending:'待审核'};
-    const STATUS_CLR  = {normal:'b-ok', banned:'b-err', pending:'b-warn'};
+    const STATUS_MAP  = { normal:'正常', banned:'已封禁', pending:'待审核' };
+    const STATUS_CLR  = { normal:'b-ok', banned:'b-err', pending:'b-warn' };
 
     const TUTORS_DATA = [
       {id:1, name:'张小明', emoji:'👨‍💼', school:'北京大学', major:'计算机科学', type:'在校生',
@@ -418,7 +807,7 @@
 
     function renderTutors() {
       const q = (document.getElementById('tmSearch')?.value || '').toLowerCase();
-      let list = TUTORS_DATA.filter(t => {
+      const list = TUTORS_DATA.filter(t => {
         if (tmLvFilter > 0 && t.lv !== tmLvFilter) return false;
         if (tmStFilter !== 'all' && t.status !== tmStFilter) return false;
         if (q && !t.name.includes(q) && !t.uname.includes(q) &&
@@ -431,56 +820,49 @@
         el.innerHTML = '<div style="text-align:center;padding:32px;color:#9ca3af;font-size:14px;">无匹配导师</div>';
         return;
       }
-      el.innerHTML = list.map(t => `
-        <div class="tm-card">
-          <div class="tm-hd">
-            <div class="tm-av" style="background:${t.status==='banned'?'#fee2e2':t.status==='pending'?'#fef9c3':'#dbeafe'}">${t.emoji}</div>
-            <div style="flex:1;min-width:0;">
-              <div class="tm-name">${t.name} &nbsp;<span class="b ${STATUS_CLR[t.status]}" style="font-size:10px;">${STATUS_MAP[t.status]}</span></div>
-              <div class="tm-school">${t.school} · ${t.major} · ${t.type}</div>
-            </div>
-            <span class="b b-blue" style="font-size:11px;white-space:nowrap;">${LEVEL_NAMES[t.lv]}</span>
-          </div>
-          <div class="tm-info">
-            <div><span class="tm-il">📱 </span>${t.phone}</div>
-            <div><span class="tm-il">📧 </span>${t.email}</div>
-            <div><span class="tm-il">👤 </span>${t.uname}</div>
-            <div><span class="tm-il">📅 </span>注册 ${t.joined}</div>
-          </div>
-          <div class="tm-stats">
-            <div class="tm-stat"><div class="tm-stat-num">${t.sessions}</div><div class="tm-stat-lbl">咨询次数</div></div>
-            <div class="tm-stat"><div class="tm-stat-num">${t.rating}%</div><div class="tm-stat-lbl">好评率</div></div>
-            <div class="tm-stat"><div class="tm-stat-num">${LEVEL_NAMES[t.lv]}</div><div class="tm-stat-lbl">当前等级</div></div>
-          </div>
-          <div class="tm-acts">
-            <button class="tab tab-detail" onclick="openTutorDetail(${t.id})">查看详情</button>
-            <button class="tab tab-level" onclick="toast('等级已调整（演示）')">调整等级</button>
-            <button class="tab tab-pwd" onclick="toast('密码重置邮件已发送至 ${t.email}')">重置密码</button>
-            <button class="tab ${t.status==='banned'?'tab-unban':'tab-ban'}"
-              onclick="toast('${t.status==='banned'?'账号已解封':'账号已封禁'}（演示）')">
-              ${t.status==='banned'?'解封':'封禁'}
-            </button>
-          </div>
-        </div>
-      `).join('');
+      el.innerHTML = list.map(t =>
+        '<div class="tm-card">' +
+          '<div class="tm-hd">' +
+            '<div class="tm-av" style="background:' + (t.status==='banned'?'#fee2e2':t.status==='pending'?'#fef9c3':'#dbeafe') + '">' + t.emoji + '</div>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div class="tm-name">' + t.name + ' &nbsp;<span class="b ' + STATUS_CLR[t.status] + '" style="font-size:10px;">' + STATUS_MAP[t.status] + '</span></div>' +
+              '<div class="tm-school">' + t.school + ' · ' + t.major + ' · ' + t.type + '</div>' +
+            '</div>' +
+            '<span class="b b-blue" style="font-size:11px;white-space:nowrap;">' + LEVEL_NAMES[t.lv] + '</span>' +
+          '</div>' +
+          '<div class="tm-info">' +
+            '<div><span class="tm-il">📱 </span>' + t.phone + '</div>' +
+            '<div><span class="tm-il">📧 </span>' + t.email + '</div>' +
+            '<div><span class="tm-il">👤 </span>' + t.uname + '</div>' +
+            '<div><span class="tm-il">📅 </span>注册 ' + t.joined + '</div>' +
+          '</div>' +
+          '<div class="tm-stats">' +
+            '<div class="tm-stat"><div class="tm-stat-num">' + t.sessions + '</div><div class="tm-stat-lbl">咨询次数</div></div>' +
+            '<div class="tm-stat"><div class="tm-stat-num">' + t.rating + '%</div><div class="tm-stat-lbl">好评率</div></div>' +
+            '<div class="tm-stat"><div class="tm-stat-num">' + LEVEL_NAMES[t.lv] + '</div><div class="tm-stat-lbl">当前等级</div></div>' +
+          '</div>' +
+          '<div class="tm-acts">' +
+            '<button class="tab tab-detail" onclick="openTutorDetail(' + t.id + ')">查看详情</button>' +
+            '<button class="tab tab-level" onclick="toast(\'等级已调整（演示）\')">调整等级</button>' +
+            '<button class="tab tab-pwd" onclick="toast(\'密码重置邮件已发送至 ' + t.email + '\')">重置密码</button>' +
+            '<button class="tab ' + (t.status==='banned'?'tab-unban':'tab-ban') + '" onclick="toast(\'' + (t.status==='banned'?'账号已解封':'账号已封禁') + '（演示）\')">' +
+              (t.status==='banned'?'解封':'封禁') +
+            '</button>' +
+          '</div>' +
+        '</div>'
+      ).join('');
     }
 
-    // Level filter
     document.getElementById('tmLevelFilter')?.querySelectorAll('.fbn').forEach(b => {
       b.addEventListener('click', () => {
         document.getElementById('tmLevelFilter').querySelectorAll('.fbn').forEach(x => x.classList.remove('on'));
-        b.classList.add('on');
-        tmLvFilter = parseInt(b.dataset.lv);
-        renderTutors();
+        b.classList.add('on'); tmLvFilter = parseInt(b.dataset.lv); renderTutors();
       });
     });
-    // Status filter
     document.getElementById('tmStatusFilter')?.querySelectorAll('.fbn').forEach(b => {
       b.addEventListener('click', () => {
         document.getElementById('tmStatusFilter').querySelectorAll('.fbn').forEach(x => x.classList.remove('on'));
-        b.classList.add('on');
-        tmStFilter = b.dataset.st;
-        renderTutors();
+        b.classList.add('on'); tmStFilter = b.dataset.st; renderTutors();
       });
     });
 
@@ -497,7 +879,7 @@
       document.getElementById('detailPhone').textContent = t.phone;
       document.getElementById('detailJoined').textContent = t.joined;
       document.getElementById('detailLevel').textContent = LEVEL_NAMES[t.lv];
-      document.getElementById('detailStatus').innerHTML = `<span class="b ${STATUS_CLR[t.status]}">${STATUS_MAP[t.status]}</span>`;
+      document.getElementById('detailStatus').innerHTML = '<span class="b ' + STATUS_CLR[t.status] + '">' + STATUS_MAP[t.status] + '</span>';
       document.getElementById('detailSessions').textContent = t.sessions + ' 次';
       document.getElementById('detailRating').textContent = t.rating + '%';
       document.getElementById('detailBanBtn').textContent = t.status === 'banned' ? '解封账号' : '封禁账号';
@@ -516,15 +898,17 @@
     }
     function adjLevel() {
       if (!currentTutor) return;
-      toast(`等级已调整（演示）：${LEVEL_NAMES[currentTutor.lv]} → ${LEVEL_NAMES[Math.min(5, currentTutor.lv+1)]}`);
+      toast('等级已调整（演示）：' + LEVEL_NAMES[currentTutor.lv] + ' → ' + LEVEL_NAMES[Math.min(5, currentTutor.lv + 1)]);
     }
     function toggleBan() {
       if (!currentTutor) return;
-      const isBanned = currentTutor.status === 'banned';
-      toast(isBanned ? '账号已解封' : '账号已封禁');
+      toast(currentTutor.status === 'banned' ? '账号已解封' : '账号已封禁');
       closeTutorDetail();
     }
 
+    /* ── 初始化 ── */
+    loadPlatformConfig();
+    loadHonorData();
     renderTutors();
   </script>
 </body>
