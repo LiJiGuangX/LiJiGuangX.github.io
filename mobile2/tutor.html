@@ -20,7 +20,7 @@
 
     /* ── 时间段设置 ── */
     .dur-chips{display:flex;gap:7px;flex-wrap:wrap}
-    .dc{padding:7px 16px;border-radius:20px;font-size:13px;border:1.5px solid #e5e7eb;background:white;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s}
+    .dc{padding:7px 14px;border-radius:20px;font-size:13px;border:1.5px solid #e5e7eb;background:white;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s}
     .dc.on{background:#1e40af;color:white;border-color:#1e40af}
     .slot-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #f3f4f6}
     .slot-row:last-child{border-bottom:none}
@@ -35,7 +35,6 @@
     .time-colon{font-size:20px;font-weight:700;color:#374151}
 
     /* ── 重复设置 ── */
-    .rec-chips{display:flex;gap:6px;}
     .rc{padding:7px 14px;border-radius:20px;font-size:13px;border:1.5px solid #e5e7eb;background:white;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s}
     .rc.on{background:#1e40af;color:white;border-color:#1e40af}
 
@@ -51,6 +50,45 @@
 
     /* ── 分割线 ── */
     .form-divider{height:1px;background:#e5e7eb;margin:12px 0}
+
+    /* ── 预约管理 ── */
+    .appt-group{background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;margin-bottom:12px;overflow:hidden}
+    .ag-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fef3c7;font-size:13px;font-weight:600;color:#92400e}
+    .ag-cnt{font-size:11px;font-weight:700;background:#f59e0b;color:white;padding:2px 10px;border-radius:20px;flex-shrink:0}
+    .booking-card{border-top:1px solid #fde68a;padding:12px 14px}
+    .bc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .bc-name{font-size:15px;font-weight:700;color:#111827}
+    .bc-cd{font-size:12px;color:#6b7280;font-weight:600;font-variant-numeric:tabular-nums}
+    .bc-q{font-size:13px;color:#374151;line-height:1.6;background:white;border-radius:8px;padding:8px 10px;border:1px solid #fde68a}
+
+    /* ── 取消原因弹窗 ── */
+    .reason-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid #f3f4f6;cursor:pointer;font-size:13px;color:#374151;line-height:1.5}
+    .reason-row:last-child{border-bottom:none}
+    .reason-row input[type=radio]{margin-top:2px;accent-color:#1e40af;flex-shrink:0;width:16px;height:16px}
+
+    /* ── 荣誉认证 ── */
+    .honor-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f3f4f6}
+    .honor-item:last-child{border-bottom:none}
+    .honor-icon{font-size:26px;width:34px;text-align:center;flex-shrink:0}
+    .honor-info{flex:1;min-width:0}
+    .honor-name{font-size:14px;font-weight:600;color:#111827}
+    .honor-desc{font-size:11px;color:#9ca3af;margin-top:2px;line-height:1.4}
+    .honor-st-pass{font-size:11px;color:#059669;font-weight:600;margin-top:3px}
+    .honor-st-pend{font-size:11px;color:#d97706;font-weight:600;margin-top:3px}
+    .honor-st-none{font-size:11px;color:#9ca3af;margin-top:3px}
+
+    /* ── 时间图谱 ── */
+    .tg-scale{position:relative;height:14px;margin-left:34px;margin-bottom:3px}
+    .tg-tick{position:absolute;font-size:9px;color:#9ca3af;transform:translateX(-50%)}
+    .tg-row-g{display:flex;align-items:center;margin-bottom:4px;gap:6px}
+    .tg-day-lbl{font-size:10px;color:#6b7280;width:28px;flex-shrink:0;text-align:right}
+    .tg-bar{flex:1;height:14px;background:#f3f4f6;border-radius:4px;position:relative;overflow:hidden}
+    .tg-seg{position:absolute;top:1px;bottom:1px;background:#dc2626;border-radius:3px;opacity:.75}
+    .tg-empty-msg{font-size:12px;color:#9ca3af;text-align:center;padding:10px 0}
+
+    /* ── 日历图例 ── */
+    .cal-legend{margin-top:8px;font-size:11px;color:#9ca3af;display:flex;align-items:center;gap:12px}
+    .cal-legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
   </style>
 </head>
 <body>
@@ -64,43 +102,21 @@
 
     <!-- ① 预约管理 -->
     <div class="page active" id="p-appts">
-      <div class="fbar">
-        <button class="fbtn ab">全部</button>
-        <button class="fbtn">待确认</button>
-        <button class="fbtn">已确认</button>
-        <button class="fbtn">已完成</button>
-        <button class="fbtn">已取消</button>
+      <!-- 搜索行 -->
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <input class="fi" id="apptSearch" style="flex:1;margin-bottom:0" placeholder="🔍 搜索姓名 / 咨询关键词" oninput="renderAppts()">
+        <input class="fi" id="apptDate" type="date" style="width:132px;margin-bottom:0" onchange="renderAppts()">
       </div>
-      <input class="fi" style="margin-bottom:12px" placeholder="🔍 搜索用户姓名 / 预约日期">
-
-      <div class="li">
-        <div class="li-head"><span class="li-name">李**</span><span class="bdg bdg-blue">待确认</span></div>
-        <div class="li-sub">📅 2026-06-10 &nbsp; 19:00-19:30</div>
-        <div class="li-desc">💬 咨询计算机专业保研流程及相关注意事项</div>
-        <div class="btn-row">
-          <button class="btn-a ba-blue" data-toast="已接受预约">接受预约</button>
-          <button class="btn-a ba-gray" data-toast="请填写取消原因">取消预约</button>
-        </div>
+      <!-- 状态筛选 -->
+      <div class="fbar" id="apptFbar">
+        <button class="fbtn ab" data-status="all">全部</button>
+        <button class="fbtn" data-status="pending">待确认</button>
+        <button class="fbtn" data-status="confirmed">已确认</button>
+        <button class="fbtn" data-status="completed">已完成</button>
+        <button class="fbtn" data-status="cancelled">已取消</button>
       </div>
-
-      <div class="li">
-        <div class="li-head"><span class="li-name">王**</span><span class="bdg bdg-green">已确认</span></div>
-        <div class="li-sub">📅 2026-06-12 &nbsp; 20:00-20:30</div>
-        <div class="li-desc">💬 高考志愿冲稳保策略及院校选择建议</div>
-        <div class="btn-row">
-          <button class="btn-a ba-blue" data-toast="发起会议中…">发起会议</button>
-          <button class="btn-a ba-gray" data-toast="取消将承担违约处罚">取消预约</button>
-        </div>
-      </div>
-
-      <div class="li">
-        <div class="li-head"><span class="li-name">赵**</span><span class="bdg bdg-gray">已完成</span></div>
-        <div class="li-sub">📅 2026-06-05 &nbsp; 19:00-19:30</div>
-        <div class="li-desc">💬 双非院校转专业难度及时间节点分析</div>
-        <div class="btn-row">
-          <button class="btn-a ba-gray" data-toast="查看会议笔记">查看会议笔记</button>
-        </div>
-      </div>
+      <!-- 列表容器 -->
+      <div id="apptList"></div>
     </div>
 
     <!-- ② 时间管理 -->
@@ -118,6 +134,7 @@
           <span class="bdg bdg-gold" id="sched-badge">🥈 银牌</span>
         </div>
         <div style="display:flex;gap:8px;margin-top:12px;">
+          <div class="fee-item"><span class="fee-num">¥ 30</span><span class="fee-lbl">15 分钟</span></div>
           <div class="fee-item"><span class="fee-num">¥ 80</span><span class="fee-lbl">30 分钟</span></div>
           <div class="fee-item"><span class="fee-num">¥ 130</span><span class="fee-lbl">60 分钟</span></div>
           <div class="fee-item fee-item-dim"><span class="fee-num">¥ 180</span><span class="fee-lbl">90 分钟</span></div>
@@ -125,29 +142,35 @@
         <div style="font-size:11px;color:#9ca3af;margin-top:8px;">90 分钟档需 🥇 金牌及以上等级方可开启</div>
       </div>
 
-      <!-- 日历选日期 -->
+      <!-- 日历（交互式） -->
       <div class="card">
         <div class="row-sb" style="margin-bottom:12px">
-          <span style="font-size:15px;font-weight:600">2026年 3月</span>
-          <div class="btn-row g8"><button class="btn-s">＜</button><button class="btn-s">＞</button></div>
+          <span style="font-size:15px;font-weight:600" id="calTitle">2026年 3月</span>
+          <div class="btn-row g8">
+            <button class="btn-s" onclick="calNav(-1)">＜</button>
+            <button class="btn-s" onclick="calNav(1)">＞</button>
+          </div>
         </div>
-        <div class="cal">
-          <div class="cah">日</div><div class="cah">一</div><div class="cah">二</div><div class="cah">三</div><div class="cah">四</div><div class="cah">五</div><div class="cah">六</div>
-          <div class="cad">1</div><div class="cad">2</div><div class="cad">3</div><div class="cad">4</div><div class="cad av">5</div><div class="cad av">6</div><div class="cad">7</div>
-          <div class="cad">8</div><div class="cad">9</div><div class="cad av sel">10</div><div class="cad">11</div><div class="cad av">12</div><div class="cad">13</div><div class="cad">14</div>
-          <div class="cad">15</div><div class="cad">16</div><div class="cad">17</div><div class="cad av">18</div><div class="cad">19</div><div class="cad av">20</div><div class="cad">21</div>
-          <div class="cad">22</div><div class="cad">23</div><div class="cad av">24</div><div class="cad">25</div><div class="cad">26</div><div class="cad">27</div><div class="cad">28</div>
-          <div class="cad">29</div><div class="cad">30</div><div class="cad av">31</div>
+        <div class="cal" id="calGrid"></div>
+        <div class="cal-legend">
+          <span style="display:inline-flex;align-items:center;gap:4px;">
+            <span class="cal-legend-dot" style="background:#1e40af"></span> 有可预约时段
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:4px;">
+            <span class="cal-legend-dot" style="background:#fde68a;border:1.5px solid #f59e0b"></span> 当前选中
+          </span>
         </div>
       </div>
 
       <!-- 当日时间段管理 -->
       <div class="card">
         <div class="row-sb" style="margin-bottom:4px">
-          <span class="ct" style="margin-bottom:0" id="slotDateTitle">📅 3月10日 · 时间段</span>
-          <button class="btn-s bl" id="btnAddSlot" onclick="showAddSlotForm()">＋ 添加</button>
+          <span class="ct" style="margin-bottom:0" id="slotDateTitle">📅 请点击日历中的日期</span>
+          <button class="btn-s bl" id="btnAddSlot" onclick="showAddSlotForm()" style="display:none">＋ 添加</button>
         </div>
-        <div id="slotList"></div>
+        <div id="slotList">
+          <div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">点击日历选择日期后，可查看或添加该日时间段</div>
+        </div>
 
         <!-- 添加时间段表单（默认隐藏）-->
         <div class="add-slot-form" id="addSlotForm" style="display:none;">
@@ -169,6 +192,7 @@
           <!-- 指导时长 -->
           <div class="fl" style="margin-bottom:8px;">指导时长</div>
           <div class="dur-chips" id="durChips" style="margin-bottom:0;">
+            <button class="dc" onclick="setDur(this,15)">15分钟</button>
             <button class="dc on" onclick="setDur(this,30)">30分钟</button>
             <button class="dc" onclick="setDur(this,45)">45分钟</button>
             <button class="dc" onclick="setDur(this,60)">60分钟</button>
@@ -177,7 +201,7 @@
 
           <div class="form-divider"></div>
 
-          <!-- 重复日期（不选 = 仅设置当天）-->
+          <!-- 重复日期 -->
           <div class="fl" style="margin-bottom:8px;">📅 重复日期 <span style="font-size:11px;color:#9ca3af;font-weight:400;">（不选则仅设置当天）</span></div>
           <div class="week-chips" id="weekChips">
             <button class="wc" onclick="toggleWeekday(this,'一')">一</button>
@@ -194,8 +218,8 @@
             <button class="rc" style="font-size:12px;padding:5px 12px;" onclick="setWeekPreset('clear')">清除</button>
           </div>
 
-          <!-- 应用到月份（不选 = 仅本月）-->
-          <div class="fl" style="margin-bottom:8px;">📆 应用到 <span style="font-size:11px;color:#9ca3af;font-weight:400;">（不选则仅本月）</span></div>
+          <!-- 应用到月份 -->
+          <div class="fl" style="margin-bottom:8px;">📆 应用到月份 <span style="font-size:11px;color:#9ca3af;font-weight:400;">（不选则仅本月）</span></div>
           <div class="month-chips" id="monthPicker">
             <button class="mc-m" onclick="toggleMonth(this,'3月')">3月</button>
             <button class="mc-m" onclick="toggleMonth(this,'4月')">4月</button>
@@ -212,14 +236,11 @@
         </div>
       </div>
 
-      <!-- 复用其他日期设置 -->
+      <!-- 本周时间分布图 -->
       <div class="card">
-        <div class="ct" style="margin-bottom:6px;">📋 复用已有设置</div>
-        <div class="fh" style="margin-bottom:10px;">将某一天的全部时间段复制到当前日期，复制后可再单独调整</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn-s bl" style="flex:1;" onclick="showToast('请先选择源日期，再点复用（演示：已复用 3月5日 设置）')">复用某天设置</button>
-          <button class="btn-s bl" style="flex:1;" onclick="showToast('清除后可重新设置此日的时间段')">清空此日设置</button>
-        </div>
+        <div class="ct" style="margin-bottom:4px;">📊 本周时间分布图</div>
+        <div style="font-size:11px;color:#9ca3af;margin-bottom:10px;">红色为已设定的循环可预约时段（6–22时范围）</div>
+        <div id="timeGrid"></div>
       </div>
 
       <button class="btn-p bg-blue" data-toast="设置成功，已同步到所选日期 ✅">保存设置</button>
@@ -246,9 +267,68 @@
       <div class="card" id="level-overview" style="margin-top:12px"></div>
     </div>
 
-    <!-- ④ 宣传设置 -->
+    <!-- ④ 个人信息（原宣传设置） -->
     <div class="page" id="p-profile">
-      <div class="sec-title c-blue">个人宣传设置</div>
+      <div class="sec-title c-blue">咨询师信息设置</div>
+
+      <!-- 荣誉认证 -->
+      <div class="card">
+        <div class="ct" style="margin-bottom:4px;">🏅 荣誉认证</div>
+        <div class="fh" style="margin-bottom:14px;">完善资质认证，在导师卡片上展示徽章，提升学生信任度</div>
+
+        <div class="honor-item">
+          <span class="honor-icon">🎓</span>
+          <div class="honor-info">
+            <div class="honor-name">985 / 211 高校</div>
+            <div class="honor-desc">北京大学 · 计算机科学，已核验学信网信息</div>
+            <div class="honor-st-pass">✓ 已认证</div>
+          </div>
+        </div>
+
+        <div class="honor-item">
+          <span class="honor-icon">⭐</span>
+          <div class="honor-info">
+            <div class="honor-name">优质咨询师</div>
+            <div class="honor-desc">好评率 ≥ 90% 且累计完成 ≥ 20 次咨询</div>
+            <div class="honor-st-pend">⏳ 审核中（预计 1-2 个工作日）</div>
+          </div>
+        </div>
+
+        <div class="honor-item">
+          <span class="honor-icon">🏆</span>
+          <div class="honor-info">
+            <div class="honor-name">年度 TOP 导师</div>
+            <div class="honor-desc">平台年度评选，需提交申请材料</div>
+            <div class="honor-st-none">未认证</div>
+          </div>
+          <button class="btn-s bl" style="font-size:12px;white-space:nowrap;"
+            onclick="showToast('请上传相关申请材料，平台将在 5 个工作日内审核')">上传申请</button>
+        </div>
+
+        <div class="honor-item">
+          <span class="honor-icon">📜</span>
+          <div class="honor-info">
+            <div class="honor-name">职业资格证书</div>
+            <div class="honor-desc">如教师资格证、职业规划师资格证等</div>
+            <div class="honor-st-none">未认证</div>
+          </div>
+          <button class="btn-s bl" style="font-size:12px;white-space:nowrap;"
+            onclick="showToast('请上传证书照片，平台将在 3 个工作日内核验')">上传证书</button>
+        </div>
+
+        <div class="honor-item">
+          <span class="honor-icon">🎯</span>
+          <div class="honor-info">
+            <div class="honor-name">高考命中率认证</div>
+            <div class="honor-desc">历史辅导学生志愿命中率 ≥ 85%，需上传案例</div>
+            <div class="honor-st-none">未认证</div>
+          </div>
+          <button class="btn-s bl" style="font-size:12px;white-space:nowrap;"
+            onclick="showToast('请上传历史案例截图，平台将审核数据真实性')">上传案例</button>
+        </div>
+      </div>
+
+      <!-- 基础信息 -->
       <div class="fg">
         <div class="fl">自我介绍 <span style="color:#9ca3af;font-size:11px">限500字</span></div>
         <textarea class="fi" rows="3" placeholder="请简要介绍咨询优势、经历等"></textarea>
@@ -280,10 +360,8 @@
           <button class="btn-s bl flex-1">🎬 上传视频（最多1个）</button>
         </div>
       </div>
-      <div class="fg">
-        <div class="fl">咨询单价 <span style="color:#9ca3af;font-size:11px">建议50-200元/30min</span></div>
-        <div class="btn-row"><input class="fi flex-1" type="number" placeholder="请输入金额"><span style="font-size:14px;color:#374151;white-space:nowrap;line-height:44px">元/30分钟</span></div>
-      </div>
+
+      <!-- 卡片预览 -->
       <div class="preview">
         <div class="preview-tip">📱 用户看到的导师卡片预览</div>
         <div class="row">
@@ -296,6 +374,10 @@
           <div style="font-size:15px;font-weight:700;color:#1e40af">100元<br><span style="font-size:11px;font-weight:400;color:#9ca3af">/30分钟</span></div>
         </div>
         <div class="tags mt8"><span class="tag">保研</span><span class="tag">计算机</span><span class="tag">志愿填报</span></div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+          <span style="font-size:11px;background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:10px;">🎓 985/211认证</span>
+          <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;">⭐ 优质导师（审核中）</span>
+        </div>
       </div>
       <button class="btn-p bg-blue mt16" data-toast="提交成功，等待平台审核">保存并提交审核</button>
     </div>
@@ -327,25 +409,13 @@
         <div class="card">
           <div class="ct">📋 认证进度</div>
           <div class="step-bar">
-            <div class="step">
-              <div class="step-dot" style="background:#059669;color:white">✓</div>
-              <span>提交材料</span>
-            </div>
+            <div class="step"><div class="step-dot" style="background:#059669;color:white">✓</div><span>提交材料</span></div>
             <div class="step-line done"></div>
-            <div class="step">
-              <div class="step-dot" style="background:#059669;color:white">✓</div>
-              <span>身份核验</span>
-            </div>
+            <div class="step"><div class="step-dot" style="background:#059669;color:white">✓</div><span>身份核验</span></div>
             <div class="step-line done"></div>
-            <div class="step">
-              <div class="step-dot" style="background:#1e40af;color:white">3</div>
-              <span>内容审核</span>
-            </div>
+            <div class="step"><div class="step-dot" style="background:#1e40af;color:white">3</div><span>内容审核</span></div>
             <div class="step-line"></div>
-            <div class="step">
-              <div class="step-dot" style="background:#e5e7eb;color:#9ca3af">4</div>
-              <span>开通权限</span>
-            </div>
+            <div class="step"><div class="step-dot" style="background:#e5e7eb;color:#9ca3af">4</div><span>开通权限</span></div>
           </div>
           <div class="alert bl mt8">当前处于内容审核阶段，预计1-2个工作日完成</div>
         </div>
@@ -437,7 +507,7 @@
     <button class="ni ab" data-page="appts" data-ttl="预约管理"><span class="ni-icon">📋</span>预约管理</button>
     <button class="ni" data-page="schedule" data-ttl="时间管理"><span class="ni-icon">📅</span>时间管理</button>
     <button class="ni" data-page="level" data-ttl="等级成长"><span class="ni-icon">🏆</span>等级成长</button>
-    <button class="ni" data-page="profile" data-ttl="宣传设置"><span class="ni-icon">👤</span>宣传设置</button>
+    <button class="ni" data-page="profile" data-ttl="咨询师信息"><span class="ni-icon">👤</span>个人信息</button>
     <button class="ni" data-page="mine" data-ttl="我的"><span class="ni-icon">⚙️</span>我的</button>
   </div>
 
@@ -461,6 +531,34 @@
     </div>
   </div>
 
+  <!-- 取消预约原因弹窗 -->
+  <div class="overlay" id="cancelModal" style="display:none;">
+    <div class="modal-box">
+      <div style="font-size:17px;font-weight:700;margin-bottom:4px">取消预约</div>
+      <div style="font-size:13px;color:#9ca3af;margin-bottom:14px">请选择取消原因，将发送通知给学生</div>
+      <label class="reason-row">
+        <input type="radio" name="cancelReason" value="time">时间冲突，档期临时有变
+      </label>
+      <label class="reason-row">
+        <input type="radio" name="cancelReason" value="topic">该话题超出我的专业范围
+      </label>
+      <label class="reason-row">
+        <input type="radio" name="cancelReason" value="info">预约信息不完整，无法充分准备
+      </label>
+      <label class="reason-row">
+        <input type="radio" name="cancelReason" value="emergency">个人紧急情况
+      </label>
+      <label class="reason-row">
+        <input type="radio" name="cancelReason" value="other">其他原因
+      </label>
+      <textarea class="fi" id="cancelNote" rows="2" placeholder="补充说明（选填）" style="margin-top:10px;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <button class="btn-s bl" style="flex:1;" onclick="closeCancelModal()">返回</button>
+        <button class="btn-p" style="flex:2;padding:10px;background:#dc2626;border-color:#dc2626;" onclick="confirmCancel()">确认取消</button>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /mobile -->
 
 <script>
@@ -476,7 +574,7 @@
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.style.display = 'block';
-    clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 2200);
+    clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 2400);
   }
 
   // Bottom nav
@@ -488,7 +586,7 @@
     });
   });
 
-  // Event delegation
+  // Event delegation (toast / goto / modal / tag toggle)
   document.addEventListener('click', e => {
     const toast = e.target.closest('[data-toast]');
     if (toast) showToast(toast.dataset.toast);
@@ -497,6 +595,8 @@
     if (e.target.classList.contains('open-modal')) overlay.style.display = 'flex';
     if (e.target.classList.contains('close-modal') || e.target === overlay) overlay.style.display = 'none';
     if (e.target.classList.contains('tog-tag')) e.target.classList.toggle('sel');
+    // Close cancel modal when clicking backdrop
+    if (e.target === document.getElementById('cancelModal')) closeCancelModal();
   });
 
   // Mine sub-tabs
@@ -509,8 +609,8 @@
     });
   });
 
-  // Filter bar
-  document.querySelectorAll('.fbar').forEach(bar => {
+  // Generic filter bars (non-appt)
+  document.querySelectorAll('.fbar:not(#apptFbar)').forEach(bar => {
     bar.querySelectorAll('.fbtn').forEach(btn => {
       btn.addEventListener('click', () => {
         bar.querySelectorAll('.fbtn').forEach(b => b.classList.remove('ab', 'ao'));
@@ -519,12 +619,12 @@
     });
   });
 
-  // Calendar
-  document.querySelectorAll('.cad').forEach(d => {
-    d.addEventListener('click', () => {
-      if (!d.textContent.trim()) return;
-      document.querySelectorAll('.cad').forEach(x => x.classList.remove('sel'));
-      d.classList.add('sel', 'av');
+  // Appt filter bar — also re-renders list
+  document.querySelectorAll('#apptFbar .fbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#apptFbar .fbtn').forEach(b => b.classList.remove('ab'));
+      btn.classList.add('ab');
+      renderAppts();
     });
   });
 
@@ -535,13 +635,241 @@
     phoneInput.style.display = phoneToggle.checked ? 'block' : 'none';
   });
 
-  // ── 时间段设置 ──
+  // ══════════════════════════════════════
+  //  预约管理
+  // ══════════════════════════════════════
+  const _now = Date.now();
+  const APPTS = [
+    // 待确认 — 档期1: 2026-06-10 19:00
+    { id:1, status:'pending', date:'2026-06-10', timeRange:'19:00-19:30',
+      name:'李**', question:'想咨询计算机专业保研流程，以及本科阶段需要如何备考', deadline: _now + 8*60*1000 },
+    { id:2, status:'pending', date:'2026-06-10', timeRange:'19:00-19:30',
+      name:'陈**', question:'北大CS专业保研要求和夏令营笔试内容是什么？', deadline: _now + 4*60*1000 },
+    // 待确认 — 档期2: 2026-06-12 20:00
+    { id:3, status:'pending', date:'2026-06-12', timeRange:'20:00-20:30',
+      name:'张**', question:'高考620分物理选科，如何科学分配冲稳保比例？', deadline: _now + 12*60*1000 },
+    // 已确认
+    { id:4, status:'confirmed', date:'2026-06-15', timeRange:'20:00-20:30',
+      name:'王**', question:'高考志愿院校选择建议与专业匹配分析' },
+    { id:5, status:'confirmed', date:'2026-06-18', timeRange:'09:00-09:30',
+      name:'刘**', question:'人工智能与计算机科学专业方向就业对比' },
+    // 已完成
+    { id:6, status:'completed', date:'2026-06-05', timeRange:'19:00-19:30',
+      name:'赵**', question:'双非院校转专业难度及时间节点分析' },
+    // 已取消
+    { id:7, status:'cancelled', date:'2026-06-01', timeRange:'14:00-14:30',
+      name:'孙**', question:'暨南大学软件工程专业情况咨询' },
+  ];
+
+  let _cancelTarget = null;
+  let _cdTimer = null;
+
+  function renderAppts() {
+    const el = document.getElementById('apptList');
+    const search = (document.getElementById('apptSearch').value || '').toLowerCase();
+    const dateFilter = document.getElementById('apptDate').value;
+    const activeBtn = document.querySelector('#apptFbar .fbtn.ab');
+    const statusFilter = activeBtn ? activeBtn.dataset.status : 'all';
+
+    let data = [...APPTS];
+    if (search) data = data.filter(a =>
+      a.name.toLowerCase().includes(search) || a.question.toLowerCase().includes(search)
+    );
+    if (dateFilter) data = data.filter(a => a.date === dateFilter);
+    if (statusFilter !== 'all') data = data.filter(a => a.status === statusFilter);
+
+    if (!data.length) {
+      el.innerHTML = '<div style="text-align:center;padding:28px;font-size:13px;color:#9ca3af;">暂无符合条件的预约记录</div>';
+      clearInterval(_cdTimer); return;
+    }
+
+    const pending = data.filter(a => a.status === 'pending');
+    const others  = data.filter(a => a.status !== 'pending');
+
+    let html = '';
+
+    // 待确认：按档期分组
+    if (pending.length) {
+      const groups = {};
+      pending.forEach(a => {
+        const key = a.date + '|' + a.timeRange;
+        if (!groups[key]) groups[key] = { date: a.date, timeRange: a.timeRange, items: [] };
+        groups[key].items.push(a);
+      });
+      Object.values(groups).forEach(g => {
+        html += `<div class="appt-group">
+          <div class="ag-header">
+            <span>📅 ${g.date} &nbsp; ${g.timeRange}</span>
+            <span class="ag-cnt">${g.items.length} 人待确认</span>
+          </div>
+          ${g.items.map(buildBookingCard).join('')}
+        </div>`;
+      });
+    }
+
+    // 其他状态：平铺列表
+    others.forEach(a => { html += buildApptItem(a); });
+
+    el.innerHTML = html;
+    _startCountdowns(pending);
+  }
+
+  function buildBookingCard(a) {
+    return `<div class="booking-card" id="bc-${a.id}">
+      <div class="bc-head">
+        <span class="bc-name">${a.name}</span>
+        <span class="bc-cd" id="cd-${a.id}">⏱ 计算中…</span>
+      </div>
+      <div class="bc-q">💬 ${a.question}</div>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn-a ba-blue" onclick="acceptBooking(${a.id})">接受预约</button>
+        <button class="btn-a ba-gray" onclick="showCancelModal(${a.id})">取消预约</button>
+      </div>
+    </div>`;
+  }
+
+  function buildApptItem(a) {
+    const bdgMap = { confirmed:'bdg-green', completed:'bdg-gray', cancelled:'bdg-gray' };
+    const lblMap = { confirmed:'已确认', completed:'已完成', cancelled:'已取消' };
+    let btns = '';
+    if (a.status === 'confirmed') {
+      btns = `<button class="btn-a ba-blue" data-toast="发起会议中…">发起会议</button>
+              <button class="btn-a ba-gray" onclick="showCancelModal(${a.id})">取消预约</button>`;
+    } else if (a.status === 'completed') {
+      btns = `<button class="btn-a ba-gray" data-toast="查看会议笔记">查看笔记</button>`;
+    }
+    return `<div class="li">
+      <div class="li-head"><span class="li-name">${a.name}</span><span class="bdg ${bdgMap[a.status]||''}">${lblMap[a.status]||a.status}</span></div>
+      <div class="li-sub">📅 ${a.date} &nbsp; ${a.timeRange}</div>
+      <div class="li-desc">💬 ${a.question}</div>
+      ${btns ? `<div class="btn-row">${btns}</div>` : ''}
+    </div>`;
+  }
+
+  function _startCountdowns(pendingList) {
+    clearInterval(_cdTimer);
+    if (!pendingList.length) return;
+    function tick() {
+      pendingList.forEach(a => {
+        const el = document.getElementById('cd-' + a.id);
+        if (!el) return;
+        const left = Math.max(0, Math.round((a.deadline - Date.now()) / 1000));
+        const min = Math.floor(left / 60), sec = left % 60;
+        el.textContent = left > 0
+          ? '⏱ 剩 ' + min + ':' + String(sec).padStart(2,'0')
+          : '⚠️ 超时待处理';
+        el.style.color = left <= 120 ? '#dc2626' : left <= 300 ? '#d97706' : '#6b7280';
+      });
+    }
+    tick();
+    _cdTimer = setInterval(tick, 1000);
+  }
+
+  function acceptBooking(id) {
+    const a = APPTS.find(x => x.id === id);
+    if (a) { a.status = 'confirmed'; renderAppts(); showToast('✅ 已接受预约，学生已收到通知'); }
+  }
+
+  function showCancelModal(id) {
+    _cancelTarget = id;
+    document.querySelectorAll('input[name="cancelReason"]').forEach(r => r.checked = false);
+    document.getElementById('cancelNote').value = '';
+    document.getElementById('cancelModal').style.display = 'flex';
+  }
+  function closeCancelModal() {
+    document.getElementById('cancelModal').style.display = 'none';
+    _cancelTarget = null;
+  }
+  function confirmCancel() {
+    const r = document.querySelector('input[name="cancelReason"]:checked');
+    if (!r) { showToast('请选择取消原因'); return; }
+    const a = APPTS.find(x => x.id === _cancelTarget);
+    if (a) a.status = 'cancelled';
+    closeCancelModal();
+    showToast('预约已取消，学生将收到通知');
+    renderAppts();
+  }
+
+  // ══════════════════════════════════════
+  //  时间管理 — 日历
+  // ══════════════════════════════════════
+  const CAL = { year: 2026, month: 3 };
+
+  function _wdStr(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    return ['日','一','二','三','四','五','六'][d.getDay()];
+  }
+
+  function _hasSlot(dateStr) {
+    const wd = _wdStr(dateStr);
+    const m = parseInt(dateStr.split('-')[1]) + '月';
+    return SS.slots.some(s => {
+      if (!s.weekdays.length) return s.date === dateStr;
+      return s.weekdays.includes(wd) && (!s.months.length || s.months.includes(m));
+    });
+  }
+
+  function _slotsFor(dateStr) {
+    const wd = _wdStr(dateStr);
+    const m = parseInt(dateStr.split('-')[1]) + '月';
+    return SS.slots.filter(s => {
+      if (!s.weekdays.length) return s.date === dateStr;
+      return s.weekdays.includes(wd) && (!s.months.length || s.months.includes(m));
+    });
+  }
+
+  function renderCalendar() {
+    const { year, month } = CAL;
+    document.getElementById('calTitle').textContent = year + '年 ' + month + '月';
+    const grid = document.getElementById('calGrid');
+    const HEADS = ['日','一','二','三','四','五','六'];
+    let html = HEADS.map(h => '<div class="cah">' + h + '</div>').join('');
+    const firstDow = new Date(year, month - 1, 1).getDay();
+    const daysInMonth = new Date(year, month, 0).getDate();
+    for (let i = 0; i < firstDow; i++) html += '<div class="cad"></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds = year + '-' + String(month).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+      const hasSlot = _hasSlot(ds);
+      const isSel = SS.selectedDate === ds;
+      const cls = 'cad' + (hasSlot ? ' av' : '') + (isSel ? ' sel' : '');
+      html += '<div class="' + cls + '" data-date="' + ds + '">' + d + '</div>';
+    }
+    grid.innerHTML = html;
+    grid.querySelectorAll('.cad[data-date]').forEach(cell => {
+      cell.addEventListener('click', () => selectDate(cell.dataset.date));
+    });
+  }
+
+  function calNav(dir) {
+    CAL.month += dir;
+    if (CAL.month > 12) { CAL.month = 1; CAL.year++; }
+    if (CAL.month < 1)  { CAL.month = 12; CAL.year--; }
+    renderCalendar();
+  }
+
+  function selectDate(dateStr) {
+    SS.selectedDate = dateStr;
+    const d = new Date(dateStr + 'T00:00:00');
+    const label = (d.getMonth() + 1) + '月' + d.getDate() + '日 · 周' + _wdStr(dateStr);
+    document.getElementById('slotDateTitle').textContent = '📅 ' + label + ' · 时间段';
+    document.getElementById('btnAddSlot').style.display = '';
+    hideAddSlotForm();
+    renderSlots();
+    renderCalendar();
+  }
+
+  // ══════════════════════════════════════
+  //  时间管理 — 时间段
+  // ══════════════════════════════════════
   const SS = {
     slots: [
-      {id:1, hour:9,  minute:0,  duration:30, weekdays:[], months:[]},
-      {id:2, hour:19, minute:0,  duration:60, weekdays:['一','二','三','四','五'], months:['3月','4月']},
+      // 工作日 19:00 共60分钟，适用3-6月
+      { id:1, hour:19, minute:0, duration:60, weekdays:['一','二','三','四','五'], months:['3月','4月','5月','6月'], date:null },
+      // 周六 09:00 共30分钟，适用3-4月
+      { id:2, hour:9,  minute:0, duration:30, weekdays:['六'], months:['3月','4月'], date:null },
     ],
     slotIdSeed: 3,
+    selectedDate: null,
     pendingDur: 30,
     pendingWeekdays: [],
     pendingMonths: [],
@@ -551,20 +879,24 @@
     const sel = document.getElementById('slotHour');
     if (!sel) return;
     sel.innerHTML = Array.from({length:24}, (_,i) =>
-      `<option value="${i}">${String(i).padStart(2,'0')}</option>`
+      '<option value="' + i + '">' + String(i).padStart(2,'0') + '</option>'
     ).join('');
     sel.value = 9;
-    renderSlots();
   }
 
   function renderSlots() {
     const el = document.getElementById('slotList');
     if (!el) return;
-    if (!SS.slots.length) {
-      el.innerHTML = '<div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">暂无时间段，点击右上角「添加」新增</div>';
+    if (!SS.selectedDate) {
+      el.innerHTML = '<div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">点击日历选择日期后，可查看或添加该日时间段</div>';
       return;
     }
-    const sorted = [...SS.slots].sort((a,b) => a.hour*60+a.minute - (b.hour*60+b.minute));
+    const slots = _slotsFor(SS.selectedDate);
+    if (!slots.length) {
+      el.innerHTML = '<div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">当天暂无时间段，点击右上角「添加」新增</div>';
+      return;
+    }
+    const sorted = [...slots].sort((a,b) => a.hour*60+a.minute - (b.hour*60+b.minute));
     el.innerHTML = sorted.map(s => {
       const hh = String(s.hour).padStart(2,'0');
       const mm = String(s.minute).padStart(2,'0');
@@ -573,25 +905,28 @@
       const em = String(endMin % 60).padStart(2,'0');
       let recTag = '';
       if (s.weekdays.length) {
-        const label = s.weekdays.length === 7 ? '每天'
+        const lbl = s.weekdays.length === 7 ? '每天'
           : s.weekdays.length === 5 && !s.weekdays.includes('六') && !s.weekdays.includes('日') ? '工作日'
-          : s.weekdays.join('、');
-        recTag = `<span class="slot-rec">${label}</span>`;
+          : s.weekdays.join('');
+        recTag = '<span class="slot-rec">↻ ' + lbl + '</span>';
       }
-      const monthTag = s.months.length ? `<span class="slot-rec" style="background:#f0fdf4;color:#065f46;">${s.months.join('、')}</span>` : '';
-      return `<div class="slot-row">
-        <div style="flex:1;min-width:0;">
-          <div class="slot-time">${hh}:${mm} — ${eh}:${em}${recTag}${monthTag}</div>
-          <div class="slot-dur">指导时长 ${s.duration} 分钟</div>
-        </div>
-        <button class="slot-del" onclick="deleteSlot(${s.id})">✕</button>
-      </div>`;
+      const mTag = s.months && s.months.length
+        ? '<span class="slot-rec" style="background:#f0fdf4;color:#065f46;">' + s.months.join(' ') + '</span>' : '';
+      const typeLabel = s.weekdays.length ? '循环时间段' : '仅此日';
+      return '<div class="slot-row">' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div class="slot-time">' + hh + ':' + mm + ' — ' + eh + ':' + em + recTag + mTag + '</div>' +
+          '<div class="slot-dur">' + typeLabel + ' · ' + s.duration + ' 分钟</div>' +
+        '</div>' +
+        '<button class="slot-del" onclick="deleteSlot(' + s.id + ')">✕</button>' +
+      '</div>';
     }).join('');
   }
 
   function showAddSlotForm() {
+    if (!SS.selectedDate) { showToast('请先在日历中点击选择日期'); return; }
     SS.pendingWeekdays = []; SS.pendingMonths = []; SS.pendingDur = 30;
-    document.querySelectorAll('#durChips .dc').forEach((b,i) => b.classList.toggle('on', i===0));
+    document.querySelectorAll('#durChips .dc').forEach(b => b.classList.toggle('on', b.textContent === '30分钟'));
     document.querySelectorAll('#weekChips .wc').forEach(b => b.classList.remove('on'));
     document.querySelectorAll('.mc-m').forEach(b => b.classList.remove('on'));
     document.getElementById('addSlotForm').style.display = 'block';
@@ -599,7 +934,7 @@
   }
   function hideAddSlotForm() {
     document.getElementById('addSlotForm').style.display = 'none';
-    document.getElementById('btnAddSlot').style.display = '';
+    document.getElementById('btnAddSlot').style.display = SS.selectedDate ? '' : 'none';
   }
   function setDur(btn, dur) {
     document.querySelectorAll('#durChips .dc').forEach(b => b.classList.remove('on'));
@@ -623,70 +958,124 @@
     i >= 0 ? SS.pendingMonths.splice(i, 1) : SS.pendingMonths.push(month);
   }
   function confirmAddSlot() {
+    if (!SS.selectedDate) { showToast('请先在日历中点击选择日期'); return; }
     const h = parseInt(document.getElementById('slotHour').value);
     const m = parseInt(document.getElementById('slotMin').value);
-    if (SS.slots.find(s => s.hour === h && s.minute === m)) {
+    const existing = _slotsFor(SS.selectedDate);
+    if (existing.find(s => s.hour === h && s.minute === m)) {
       showToast('该时间点已存在，请换一个时间'); return;
     }
-    SS.slots.push({
+    const slot = {
       id: SS.slotIdSeed++, hour: h, minute: m, duration: SS.pendingDur,
-      weekdays: [...SS.pendingWeekdays], months: [...SS.pendingMonths]
-    });
+      weekdays: [...SS.pendingWeekdays], months: [...SS.pendingMonths],
+      date: SS.pendingWeekdays.length ? null : SS.selectedDate,
+    };
+    SS.slots.push(slot);
     hideAddSlotForm();
     renderSlots();
-    if (SS.pendingWeekdays.length) {
-      const freq = SS.pendingWeekdays.length === 7 ? '每天'
-        : SS.pendingWeekdays.length === 5 && !SS.pendingWeekdays.includes('六') ? '工作日'
-        : SS.pendingWeekdays.join('、');
-      const where = SS.pendingMonths.length ? SS.pendingMonths.join('、') : '本月';
-      showToast(`✅ 已批量设置 ${where} · ${freq}`);
-    }
+    renderCalendar();
+    renderTimeGrid();
+    const freq = slot.weekdays.length
+      ? (slot.weekdays.length === 7 ? '每天' : slot.weekdays.length === 5 && !slot.weekdays.includes('六') ? '工作日' : slot.weekdays.join(''))
+      : null;
+    const where = slot.months.length ? slot.months.join('') : '本月';
+    showToast(freq
+      ? '✅ 循环设置已保存（' + freq + ' · ' + where + '）'
+      : '✅ ' + SS.selectedDate.replace(/^\d{4}-0?(\d+)-0?(\d+)$/, '$1月$2日') + ' 时间段已添加'
+    );
   }
   function deleteSlot(id) {
     SS.slots = SS.slots.filter(s => s.id !== id);
     renderSlots();
+    renderCalendar();
+    renderTimeGrid();
+    showToast('时间段已删除');
   }
-  initSlotForm();
 
-  // 初始化等级显示（演示当前等级 Lv3，修改 CUR_LV 即可切换）
+  // ══════════════════════════════════════
+  //  时间图谱
+  // ══════════════════════════════════════
+  function renderTimeGrid() {
+    const el = document.getElementById('timeGrid');
+    if (!el) return;
+    const DAYS = ['一','二','三','四','五','六','日'];
+    const LBLS = ['周一','周二','周三','周四','周五','周六','周日'];
+    const SH = 6, EH = 22, RANGE = EH - SH;
+
+    // 刻度行
+    let scaleHtml = '<div class="tg-scale">';
+    for (let h = SH; h <= EH; h += 2) {
+      const pct = (h - SH) / RANGE * 100;
+      scaleHtml += '<div class="tg-tick" style="left:' + pct.toFixed(1) + '%">' + h + '</div>';
+    }
+    scaleHtml += '</div>';
+
+    // 日期行
+    let anySlot = false;
+    let rowsHtml = '';
+    DAYS.forEach((day, i) => {
+      const daySlots = SS.slots.filter(s => s.weekdays.includes(day));
+      if (daySlots.length) anySlot = true;
+      let segs = '';
+      daySlots.forEach(s => {
+        const startH = s.hour + s.minute / 60;
+        const endH = startH + s.duration / 60;
+        if (endH <= SH || startH >= EH) return;
+        const left  = (Math.max(startH, SH) - SH) / RANGE * 100;
+        const width = (Math.min(endH, EH) - Math.max(startH, SH)) / RANGE * 100;
+        segs += '<div class="tg-seg" style="left:' + left.toFixed(1) + '%;width:' + width.toFixed(1) + '%"></div>';
+      });
+      rowsHtml += '<div class="tg-row-g">' +
+        '<div class="tg-day-lbl">' + LBLS[i] + '</div>' +
+        '<div class="tg-bar">' + segs + '</div>' +
+      '</div>';
+    });
+
+    el.innerHTML = scaleHtml + rowsHtml
+      + (anySlot ? '' : '<div class="tg-empty-msg">暂无循环时间段，添加后将显示在此图中</div>');
+  }
+
+  // ══════════════════════════════════════
+  //  等级初始化
+  // ══════════════════════════════════════
   function initLevels() {
     const CUR_LV = 3;
     const cur  = TUTOR_LEVELS[CUR_LV - 1];
-    const next = TUTOR_LEVELS[CUR_LV]; // lv CUR_LV+1
+    const next = TUTOR_LEVELS[CUR_LV];
     const $ = id => document.getElementById(id);
-
     if ($('cur-level-display')) $('cur-level-display').textContent = cur.icon + ' ' + cur.name;
-    if ($('cur-level-sub'))     $('cur-level-sub').innerHTML =
-      `Lv${cur.lv} · 成长值 680 / 800 &nbsp;·&nbsp; 距升级${next.name}还差 120 分`;
+    if ($('cur-level-sub')) $('cur-level-sub').innerHTML =
+      'Lv' + cur.lv + ' · 成长值 680 / 800 &nbsp;·&nbsp; 距升级' + next.name + '还差 120 分';
     if ($('next-level-display')) $('next-level-display').textContent = next.icon + ' ' + next.name;
-
-    ['preview-badge', 'mine-badge'].forEach(id => {
-      const el = $(id);
-      if (!el) return;
+    ['preview-badge','mine-badge'].forEach(id => {
+      const el = $(id); if (!el) return;
       el.className = 'bdg ' + cur.badge;
       if (id === 'mine-badge') el.style.fontSize = '10px';
       el.textContent = cur.icon + ' ' + cur.name;
     });
-
-    // 等级体系总览
     const ov = $('level-overview');
     if (ov) {
       ov.innerHTML = '<div class="ct c-blue">等级体系总览</div>' +
         TUTOR_LEVELS.map((lv, i) => {
-          const isCur = lv.lv === CUR_LV;
-          const isLast = i === TUTOR_LEVELS.length - 1;
-          const rowStyle = isCur
+          const isCur = lv.lv === CUR_LV, isLast = i === TUTOR_LEVELS.length - 1;
+          const rs = isCur
             ? 'background:#eff6ff;border-radius:8px;padding:6px 8px;margin:2px -8px'
-            : `padding:6px 0;${isLast ? '' : 'border-bottom:1px solid #f3f4f6'}`;
-          return `<div style="display:flex;align-items:center;gap:10px;${rowStyle}">
-            <span class="bdg ${lv.badge}" style="white-space:nowrap;font-size:11px">${lv.icon} ${lv.name}</span>
-            <span style="flex:1;font-size:12px;color:#6b7280">${lv.desc}</span>
-            ${isCur ? '<span style="font-size:11px;color:#1e40af;font-weight:600;white-space:nowrap">◀ 当前</span>' : ''}
-          </div>`;
+            : 'padding:6px 0;' + (isLast ? '' : 'border-bottom:1px solid #f3f4f6');
+          return '<div style="display:flex;align-items:center;gap:10px;' + rs + '">' +
+            '<span class="bdg ' + lv.badge + '" style="white-space:nowrap;font-size:11px">' + lv.icon + ' ' + lv.name + '</span>' +
+            '<span style="flex:1;font-size:12px;color:#6b7280">' + lv.desc + '</span>' +
+            (isCur ? '<span style="font-size:11px;color:#1e40af;font-weight:600;white-space:nowrap">◀ 当前</span>' : '') +
+          '</div>';
         }).join('') +
         '<div style="font-size:11px;color:#9ca3af;margin-top:10px">* 升级需同时满足以上指标，且近3个月无违规记录</div>';
     }
   }
+
+  // ── 初始化 ──
+  initSlotForm();
+  renderCalendar();
+  renderTimeGrid();
+  renderAppts();
   initLevels();
 </script>
 </body>
