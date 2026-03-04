@@ -433,11 +433,17 @@
       <div class="sec-title c-blue">咨询师注册认证</div>
       <div class="fg"><div class="fl">姓名 <span style="color:#ef4444;font-size:10px">必填</span></div><input class="fi" placeholder="请输入真实姓名"></div>
       <div class="fg"><div class="fl">身份证号 <span style="color:#ef4444;font-size:10px">必填</span></div><input class="fi" placeholder="请输入18位身份证号"></div>
-      <div class="fg"><div class="fl">毕业/在读院校 <span style="color:#ef4444;font-size:10px">必填</span></div><input class="fi" placeholder="请输入或选择院校名称"></div>
-      <div class="fg"><div class="fl">所学专业 <span style="color:#ef4444;font-size:10px">必填</span></div><input class="fi" placeholder="请输入或选择专业名称"></div>
+      <div class="fg"><div class="fl">毕业/在读院校 <span style="color:#ef4444;font-size:10px">必填</span></div>
+        <input class="fi" list="schoolList" id="schoolInput" placeholder="请选择或输入院校名称">
+        <datalist id="schoolList"></datalist>
+      </div>
+      <div class="fg"><div class="fl">所学专业 <span style="color:#ef4444;font-size:10px">必填</span></div>
+        <input class="fi" list="majorList" id="majorInput" placeholder="请选择或输入专业名称">
+        <datalist id="majorList"></datalist>
+      </div>
       <div class="fg">
         <div class="fl">学信网验证 <span style="color:#ef4444;font-size:10px">必填</span></div>
-        <div class="btn-row"><input class="fi flex-1" placeholder="请输入学信网验证码"><button class="btn-s bl">上传材料</button></div>
+        <input class="fi" placeholder="请输入学信网验证码">
       </div>
       <button class="btn-p bg-blue" data-toast="提交成功，请等待平台审核">提交认证</button>
       <div class="fh tc mt8">认证信息将严格审核，审核通过后方可开通咨询权限</div>
@@ -608,6 +614,21 @@
   if (phoneToggle) phoneToggle.addEventListener('change', () => {
     phoneInput.style.display = phoneToggle.checked ? 'block' : 'none';
   });
+
+  // ===== 注册页下拉列表初始化 =====
+  const SCHOOL_OPTIONS = [
+    '北京大学','清华大学','复旦大学','上海交通大学','浙江大学','南京大学'
+  ];
+  const MAJOR_OPTIONS = [
+    '计算机科学与技术','电子信息工程','金融学','法学','工商管理','机械工程'
+  ];
+  function initRegLists() {
+    const schoolD = document.getElementById('schoolList');
+    const majorD = document.getElementById('majorList');
+    if (schoolD) SCHOOL_OPTIONS.forEach(s => schoolD.appendChild(new Option(s)));
+    if (majorD) MAJOR_OPTIONS.forEach(m => majorD.appendChild(new Option(m)));
+  }
+  document.addEventListener('DOMContentLoaded', initRegLists);
 
   // ══════════════════════════════════════
   //  平台配置（从 localStorage 读取）
