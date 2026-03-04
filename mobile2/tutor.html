@@ -703,10 +703,11 @@
         groups[key].items.push(a);
       });
       Object.values(groups).forEach(g => {
+        const cntText = g.items.length > 1 ? `${g.items.length} 人待确认` : '待确认';
         html += `<div class="appt-group">
           <div class="ag-header">
             <span>📅 ${g.date} &nbsp; ${g.timeRange}</span>
-            <span class="ag-cnt">${g.items.length} 人待确认</span>
+            <span class="ag-cnt">${cntText}</span>
           </div>
           ${g.items.map(buildBookingCard).join('')}
         </div>`;
@@ -1243,7 +1244,6 @@
     _honorApplyFiles = [];
     renderHonorFilesList();
     document.getElementById('honorApplyModal').style.display = 'flex';
-    alert('✅ 申请认证弹窗已打开：' + t.name);
   }
 
   let _honorApplyFiles = [];  // 存储上传的文件信息
