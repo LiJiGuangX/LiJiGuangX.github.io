@@ -284,7 +284,7 @@
       <div class="card">
         <div class="ct" style="margin-bottom:4px;">🏅 荣誉认证</div>
         <div class="fh" style="margin-bottom:14px;">完善资质认证，在导师卡片上展示徽章，提升学生信任度</div>
-        <div id="honorList">
+        <div id="honorList" style="max-height:1000px;overflow-y:auto;padding-right:4px;">
           <div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">加载中…</div>
         </div>
       </div>
@@ -1120,38 +1120,37 @@
   function renderHonorList() {
     const el = document.getElementById('honorList');
     if (!el) return;
-    // Load from localStorage (written by admin.html)
-    let types = [];
-    try { types = JSON.parse(localStorage.getItem('honor_types') || '[]'); } catch(e){}
-
-    // Default types if admin hasn't configured any yet
-    if (!types.length) {
-      types = [
-        { id:1, name:'985/211 高校',    icon:'🎓', desc:'需上传学信网在线验证报告及在读/毕业证明', template:'1. 登录学信网获取在线验证报告截图\n2. 上传学生证（在读）或毕业证照片\n3. 提交后平台将在 2 个工作日内完成核验' },
-        { id:2, name:'优质咨询师',      icon:'⭐', desc:'好评率 ≥ 90% 且累计完成咨询 ≥ 20 次，系统自动触发审核', template:'本认证由平台系统自动推送，无需主动申请。系统检测到您满足条件后将发送通知' },
-        { id:3, name:'高考命中率认证',  icon:'🎯', desc:'历史辅导学生志愿命中率 ≥ 85%，需上传案例截图', template:'1. 整理历史辅导案例（学生姓名可脱敏）\n2. 截图呈现学生录取通知书\n3. 提交后平台核验数据真实性' },
-        { id:4, name:'职业资格证书',    icon:'📜', desc:'如教师资格证、职业规划师资格证等，需上传证书照片', template:'1. 上传证书正面清晰照片（JPG/PNG）\n2. 填写证书编号及颁发机构\n3. 平台将在 3 个工作日内完成核验' },
-      ];
-    }
-
+    
+    // Default types configuration
+    let types = [
+      { id:1, name:'985/211 高校',    icon:'🎓', desc:'需上传学信网在线验证报告及在读/毕业证明', template:'1. 登录学信网获取在线验证报告截图\n2. 上传学生证（在读）或毕业证照片\n3. 提交后平台将在 2 个工作日内完成核验' },
+      { id:2, name:'优质咨询师',      icon:'⭐', desc:'好评率 ≥ 90% 且累计完成咨询 ≥ 20 次，系统自动触发审核', template:'本认证由平台系统自动推送，无需主动申请。系统检测到您满足条件后将发送通知' },
+      { id:3, name:'高考命中率认证',  icon:'🎯', desc:'历史辅导学生志愿命中率 ≥ 85%，需上传案例截图', template:'1. 整理历史辅导案例（学生姓名可脱敏）\n2. 截图呈现学生录取通知书\n3. 提交后平台核验数据真实性' },
+      { id:4, name:'职业资格证书',    icon:'📜', desc:'如教师资格证、职业规划师资格证等，需上传证书照片', template:'1. 上传证书正面清晰照片（JPG/PNG）\n2. 填写证书编号及颁发机构\n3. 平台将在 3 个工作日内完成核验' },
+      { id:5, name:'年度优秀导师',    icon:'🏆', desc:'当年度咨询完成量 ≥ 50 次且好评率 ≥ 95%，需提交年度辅导报告', template:'1. 填写年度辅导总结报告（不少于500字）\n2. 上传典型辅导案例截图（不少于3份，学生信息可脱敏）\n3. 平台将综合评审后给予认证，每年1月评选一次' },
+      { id:6, name:'竞赛辅导认证',    icon:'🥇', desc:'具备高中学科竞赛辅导经验，需上传学生获奖证明（省级及以上）', template:'1. 上传辅导学生竞赛获奖证书（省级及以上，不少于2份）\n2. 填写辅导经历说明（学科、届次、获奖等级）\n3. 提交后平台将在 3 个工作日内完成核验' },
+      { id:7, name:'公益助学认证',    icon:'❤️', desc:'参与平台公益助学活动满 10 次，系统自动推送认证', template:'本认证由平台系统自动推送，无需主动申请。\n\n参与公益助学活动满10次后，系统将自动发起认证并向您发送站内通知。请持续参与公益活动以满足条件。' },
+    ];
+    
     // Load my applications
     let apps = [];
     try { apps = JSON.parse(localStorage.getItem('honor_applications') || '[]'); } catch(e){}
     let myApps = apps.filter(a => a.tutorId === MY_TUTOR_ID);
 
-    // Seed demo states covering all 4 cases if no records yet
-    if (!myApps.length) {
-      myApps = [
-        // id:1 → 无记录（未认证，可申请）
-        { id:201, tutorId:MY_TUTOR_ID, honorId:2, status:'approved',
-          reviewedAt:'2026-02-17' },                                          // id:2 → 已认证
-        { id:202, tutorId:MY_TUTOR_ID, honorId:3, status:'pending',
-          submittedAt:'2026-03-01' },                                          // id:3 → 审核中
-        { id:203, tutorId:MY_TUTOR_ID, honorId:4, status:'rejected',
-          rejectReason:'证书照片模糊，无法核实证书编号及颁发机构信息。请重新上传高清正面照片，确保证书编号、姓名、颁发机构清晰可读。',
-          reviewedAt:'2026-02-28' },                                           // id:4 → 审核未通过
-      ];
-    }
+    // Demo fallbacks — only fill in states for honor types that have no real app yet
+    const demoFallbacks = [
+      { id:201, tutorId:MY_TUTOR_ID, honorId:2, status:'approved',  reviewedAt:'2026-02-17' },
+      { id:202, tutorId:MY_TUTOR_ID, honorId:3, status:'pending',   submittedAt:'2026-03-01' },
+      { id:203, tutorId:MY_TUTOR_ID, honorId:4, status:'rejected',
+        rejectReason:'证书照片模糊，无法核实证书编号及颁发机构信息。请重新上传高清正面照片，确保证书编号、姓名、颁发机构清晰可读。',
+        reviewedAt:'2026-02-28' },
+      { id:204, tutorId:MY_TUTOR_ID, honorId:5, status:'rejected',
+        rejectReason:'您提交的 2024 年度辅导记录不足，认证要求当年度完成不少于 50 次咨询，当前记录仅 31 次。请在满足条件后重新提交申请。',
+        reviewedAt:'2026-02-20' },
+    ];
+    demoFallbacks.forEach(d => {
+      if (!myApps.find(a => a.honorId === d.honorId)) myApps.push(d);
+    });
 
     if (!types.length) {
       el.innerHTML = '<div style="text-align:center;padding:16px;font-size:13px;color:#9ca3af;">暂无荣誉类型，请联系管理员配置</div>';
@@ -1180,8 +1179,18 @@
           statusHtml = '<div class="honor-st-pend">⏳ 审核中（预计 1-2 个工作日）</div>';
         }
       } else {
-        statusHtml = '<div class="honor-st-none">未认证</div>';
-        btnHtml = '<button class="btn-s bl" style="font-size:12px;white-space:nowrap;" onclick="openHonorApplyModal(' + t.id + ')">申请认证</button>';
+        const cid = 'hc-' + t.id;
+        const condText = (t.template || '暂无申请条件说明').replace(/\n/g, '<br>');
+        statusHtml = '<div class="honor-st-none">未认证</div>' +
+          '<div id="' + cid + '" style="display:none;font-size:10px;color:#1e40af;' +
+          'background:#eff6ff;border-radius:6px;padding:6px 8px;margin-top:4px;line-height:1.6;border:1px solid #bfdbfe;">' +
+          condText + '</div>';
+        btnHtml = '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">' +
+          '<button class="btn-s" style="font-size:11px;white-space:nowrap;padding:4px 8px;" ' +
+          'onclick="toggleHonorReason(\'' + cid + '\')">查看条件</button>' +
+          '<button class="btn-s bl" style="font-size:11px;white-space:nowrap;padding:4px 8px;" ' +
+          'onclick="openHonorApplyModal(' + t.id + ')">申请认证</button>' +
+          '</div>';
       }
       return '<div class="honor-item">' +
         '<span class="honor-icon">' + t.icon + '</span>' +
@@ -1204,6 +1213,10 @@
         { id:2, name:'优质咨询师',     icon:'⭐', template:'本认证由平台系统自动推送，无需主动申请' },
         { id:3, name:'高考命中率认证', icon:'🎯', template:'1. 整理历史辅导案例\n2. 截图呈现学生录取通知书\n3. 提交后平台核验数据真实性' },
         { id:4, name:'职业资格证书',   icon:'📜', template:'1. 上传证书正面清晰照片（JPG/PNG）\n2. 填写证书编号及颁发机构\n3. 平台将在 3 个工作日内完成核验' },
+        { id:5, name:'年度优秀导师',   icon:'🏆', template:'1. 填写年度辅导总结报告（不少于500字）\n2. 上传典型辅导案例截图（不少于3份，学生信息可脱敏）\n3. 平台将综合评审后给予认证，每年1月评选一次' },
+        { id:6, name:'竞赛辅导认证',   icon:'🥇', template:'1. 上传辅导学生竞赛获奖证书（省级及以上，不少于2份）\n2. 填写辅导经历说明（学科、届次、获奖等级）\n3. 提交后平台将在 3 个工作日内完成核验' },
+        { id:7, name:'公益助学认证',   icon:'❤️', template:'本认证由平台系统自动推送，无需主动申请。\n\n参与公益助学活动满10次后，系统将自动发起认证并向您发送站内通知。' },
+        { id:8, name:'海外留学背景',   icon:'✈️', template:'1. 上传海外院校毕业证或在读证明（英文原件 + 中文译本）\n2. 上传官方成绩单（GPA 3.0 及以上）\n3. 填写留学经历简述（院校、专业、入学/毕业年份）\n4. 平台将在 5 个工作日内完成核验' },
       ];
     }
     const t = types.find(x => x.id === honorId);
