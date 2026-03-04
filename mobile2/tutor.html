@@ -1130,6 +1130,7 @@
         { id:1, name:'985/211 高校',    icon:'🎓', desc:'需上传学信网在线验证报告及在读/毕业证明', template:'1. 登录学信网获取在线验证报告截图\n2. 上传学生证（在读）或毕业证照片\n3. 提交后平台将在 2 个工作日内完成核验' },
         { id:2, name:'优质咨询师',      icon:'⭐', desc:'好评率 ≥ 90% 且累计完成咨询 ≥ 20 次，系统自动触发审核', template:'本认证由平台系统自动推送，无需主动申请。系统检测到您满足条件后将发送通知' },
         { id:3, name:'高考命中率认证',  icon:'🎯', desc:'历史辅导学生志愿命中率 ≥ 85%，需上传案例截图', template:'1. 整理历史辅导案例（学生姓名可脱敏）\n2. 截图呈现学生录取通知书\n3. 提交后平台核验数据真实性' },
+        { id:4, name:'职业资格证书',    icon:'📜', desc:'如教师资格证、职业规划师资格证等，需上传证书照片', template:'1. 上传证书正面清晰照片（JPG/PNG）\n2. 填写证书编号及颁发机构\n3. 平台将在 3 个工作日内完成核验' },
       ];
     }
 
@@ -1138,14 +1139,17 @@
     try { apps = JSON.parse(localStorage.getItem('honor_applications') || '[]'); } catch(e){}
     let myApps = apps.filter(a => a.tutorId === MY_TUTOR_ID);
 
-    // Seed demo states if no records for this tutor yet
+    // Seed demo states covering all 4 cases if no records yet
     if (!myApps.length) {
       myApps = [
+        // id:1 → 无记录（未认证，可申请）
         { id:201, tutorId:MY_TUTOR_ID, honorId:2, status:'approved',
-          reviewedAt:'2026-02-17' },
-        { id:202, tutorId:MY_TUTOR_ID, honorId:3, status:'rejected',
-          rejectReason:'案例截图模糊，无法核实录取信息。请重新上传高分辨率的录取通知书截图，确保学生姓名、院校、专业清晰可读。',
-          reviewedAt:'2026-02-22' },
+          reviewedAt:'2026-02-17' },                                          // id:2 → 已认证
+        { id:202, tutorId:MY_TUTOR_ID, honorId:3, status:'pending',
+          submittedAt:'2026-03-01' },                                          // id:3 → 审核中
+        { id:203, tutorId:MY_TUTOR_ID, honorId:4, status:'rejected',
+          rejectReason:'证书照片模糊，无法核实证书编号及颁发机构信息。请重新上传高清正面照片，确保证书编号、姓名、颁发机构清晰可读。',
+          reviewedAt:'2026-02-28' },                                           // id:4 → 审核未通过
       ];
     }
 
@@ -1199,6 +1203,7 @@
         { id:1, name:'985/211 高校',   icon:'🎓', template:'1. 登录学信网获取在线验证报告截图\n2. 上传学生证（在读）或毕业证照片\n3. 提交后平台将在 2 个工作日内完成核验' },
         { id:2, name:'优质咨询师',     icon:'⭐', template:'本认证由平台系统自动推送，无需主动申请' },
         { id:3, name:'高考命中率认证', icon:'🎯', template:'1. 整理历史辅导案例\n2. 截图呈现学生录取通知书\n3. 提交后平台核验数据真实性' },
+        { id:4, name:'职业资格证书',   icon:'📜', template:'1. 上传证书正面清晰照片（JPG/PNG）\n2. 填写证书编号及颁发机构\n3. 平台将在 3 个工作日内完成核验' },
       ];
     }
     const t = types.find(x => x.id === honorId);
