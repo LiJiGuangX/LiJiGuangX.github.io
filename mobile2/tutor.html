@@ -291,6 +291,14 @@
 
       <!-- 基础信息 -->
       <div class="fg">
+        <div class="fl">头像</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="av" id="avatarPreview" style="width:48px;height:48px;font-size:24px;background-size:cover;background-position:center;">👤</div>
+          <button class="btn-s bl" onclick="document.getElementById('avatarInput').click()">上传头像</button>
+          <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatarChange(event)">
+        </div>
+      </div>
+      <div class="fg">
         <div class="fl">自我介绍 <span style="color:#9ca3af;font-size:11px">限500字</span></div>
         <textarea class="fi" rows="3" placeholder="请简要介绍咨询优势、经历等"></textarea>
       </div>
@@ -604,7 +612,32 @@
     if (schoolD) SCHOOL_OPTIONS.forEach(s => schoolD.appendChild(new Option(s)));
     if (majorD) MAJOR_OPTIONS.forEach(m => majorD.appendChild(new Option(m)));
   }
-  document.addEventListener('DOMContentLoaded', initRegLists);
+  function handleAvatarChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const data = evt.target.result;
+      localStorage.setItem('tutor_avatar', data);
+      const el = document.getElementById('avatarPreview');
+      if (el) {
+        el.style.backgroundImage = 'url('+data+')';
+        el.textContent = '';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+  function loadAvatar() {
+    const data = localStorage.getItem('tutor_avatar');
+    if (data) {
+      const el = document.getElementById('avatarPreview');
+      if (el) {
+        el.style.backgroundImage = 'url('+data+')';
+        el.textContent = '';
+      }
+    }
+  }
+  document.addEventListener('DOMContentLoaded', () => { initRegLists(); loadAvatar(); });
 
   // ══════════════════════════════════════
   //  平台配置（从 localStorage 读取）
