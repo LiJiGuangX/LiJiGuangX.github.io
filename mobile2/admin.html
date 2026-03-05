@@ -155,7 +155,6 @@
   <div class="adm-nav">
     <button class="atab on" data-sec="s-dash">数据总览</button>
     <button class="atab" data-sec="s-cert">资质审核</button>
-    <button class="atab" data-sec="s-kw">关键词审核</button>
     <button class="atab" data-sec="s-cont">内容合规</button>
     <button class="atab" data-sec="s-disp">争议裁决</button>
     <button class="atab" data-sec="s-vio">违规处理</button>
@@ -187,7 +186,6 @@
       <div class="sh">待处理快速入口</div>
       <div class="qa">
         <div class="qa-c" onclick="sw('s-cert')"><span class="qa-ico">📝</span><div><div class="qa-lbl">导师资质审核</div><div class="qa-n">12</div></div></div>
-        <div class="qa-c" onclick="sw('s-kw')"><span class="qa-ico">🔑</span><div><div class="qa-lbl">关键词审核</div><div class="qa-n">36</div></div></div>
         <div class="qa-c" onclick="sw('s-honor-review')"><span class="qa-ico">🏅</span><div><div class="qa-lbl">荣誉申请审核</div><div class="qa-n" id="honorPendingCount">2</div></div></div>
         <div class="qa-c" onclick="sw('s-disp')"><span class="qa-ico">⚖️</span><div><div class="qa-lbl">争议裁决</div><div class="qa-n">3</div></div></div>
       </div>
@@ -222,31 +220,6 @@
       <button style="width:100%;padding:12px;background:#f3f4f6;border:none;border-radius:10px;font-size:14px;font-weight:600;color:#374151;cursor:pointer;font-family:inherit;margin-top:4px" data-toast="已批量通过学信网已验证的9条申请">⚡ 批量通过（仅学信网已自动验证）</button>
     </div>
 
-    <!-- ③ 关键词审核 -->
-    <div class="asec" id="s-kw">
-      <div class="fb">
-        <button class="fbn on">待审核 (36)</button>
-        <button class="fbn">已通过</button>
-        <button class="fbn">已驳回</button>
-      </div>
-      <div class="ri">
-        <div class="ri-hd"><div><div class="ri-name">「北大计算机内部资料」</div><div class="ri-meta">申请人：张XX（🎯 高级导师 · 北京大学）· 2026-03-01</div></div><span class="ai ai-mid">🤖 风险：中</span></div>
-        <div class="ri-body">「内部资料」可能引发虚假宣传联想<br>建议修改为：<strong>「北大计算机保研经验分享」</strong></div>
-        <div class="ra">
-          <button class="rb rb-ok" data-toast="关键词已通过">✅ 通过</button>
-          <button class="rb rb-mod" data-toast="已发送修改建议">✏️ 建议修改</button>
-          <button class="rb rb-no" data-toast="关键词已驳回">❌ 驳回</button>
-        </div>
-      </div>
-      <div class="ri">
-        <div class="ri-hd"><div><div class="ri-name">「竞赛获奖经历」</div><div class="ri-meta">申请人：王XX（⭐ 中级导师 · 复旦大学）· 2026-03-01</div></div><span class="ai ai-low">🤖 风险：低</span></div>
-        <div class="ri-body">与申请人资质（竞赛获奖证书已上传）匹配，无风险词汇，建议直接通过。</div>
-        <div class="ra">
-          <button class="rb rb-ok" data-toast="关键词已通过">✅ 通过</button>
-          <button class="rb rb-no" data-toast="关键词已驳回">❌ 驳回</button>
-        </div>
-      </div>
-    </div>
 
     <!-- ④ 内容合规审核 -->
     <div class="asec" id="s-cont">
