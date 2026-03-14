@@ -246,7 +246,7 @@
           <button class="btn-s" data-toast="选择银行卡支付">银行卡</button>
           <button class="btn-s" data-toast="选择余额支付">余额</button>
         </div>
-        <button class="btn-p bg-orange" data-goto="myappt" data-ttl="我的预约">确认支付</button>
+        <button class="btn-p bg-orange" id="pay-confirm">确认支付</button>
         <button class="btn-s or" data-goto="d-book" data-ttl="立即预约" style="margin-top:8px">返回修改</button>
       </div>
     </div>
@@ -309,12 +309,15 @@
           <span class="bdg" style="background:#fef9c3;color:#92400e">待确认</span>
         </div>
         <div style="background:#fff7ed;border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
-          <span style="font-size:12px;color:#92400e">⏳ 等待导师10分钟内确认，超时自动退款</span>
-          <span style="font-size:18px;font-weight:700;color:#dc2626;letter-spacing:2px;margin-left:8px" id="cd-num">09:59</span>
+          <span style="font-size:12px;color:#92400e">⏳ 等待导师1小时内确认，超时自动退款</span>
+          <span style="font-size:18px;font-weight:700;color:#dc2626;letter-spacing:2px;margin-left:8px" id="cd-num">60:00</span>
         </div>
         <div class="mai-bottom">
           <span class="mai-price" style="color:#d97706">100元（已支付）</span>
-          <button class="btn-s or" data-toast="取消申请，费用将原路退回">取消预约</button>
+          <div class="btn-row g8">
+            <button class="btn-s" data-goto="order" data-ttl="订单详情">订单详情</button>
+            <button class="btn-s or" data-toast="取消申请，费用将原路退回" id="pending-cancel">取消预约</button>
+          </div>
         </div>
       </div>
 
@@ -330,6 +333,7 @@
         <div class="mai-bottom">
           <span class="mai-price">100元</span>
           <div class="btn-row g8">
+            <button class="btn-s" data-goto="order" data-ttl="订单详情">订单详情</button>
             <button class="btn-s or" data-toast="取消预约">取消</button>
             <button class="btn-s" style="background:#d97706;color:white;border-color:#d97706" data-goto="meeting" data-ttl="视频咨询">进入会议</button>
           </div>
@@ -348,6 +352,7 @@
         <div class="mai-bottom">
           <span class="mai-price">150元</span>
           <div class="btn-row g8">
+            <button class="btn-s" data-goto="order" data-ttl="订单详情">订单详情</button>
             <button class="btn-s" data-toast="查看会议笔记">查看笔记</button>
             <button class="btn-s or" data-toast="请提交服务反馈">提交反馈</button>
           </div>
@@ -365,7 +370,30 @@
         </div>
         <div class="mai-bottom">
           <span style="font-size:12px;color:#9ca3af">退款30元（扣除50%）</span>
+          <button class="btn-s" data-goto="order" data-ttl="订单详情">订单详情</button>
         </div>
+      </div>
+    </div>
+
+    <!-- 订单详情页 -->
+    <div class="page" id="p-order">
+      <div class="card" style="margin:10px 10px 0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <div style="font-size:18px;font-weight:700">订单详情</div>
+            <div style="font-size:12px;color:#6b7280">订单号：BJ2026061019001</div>
+          </div>
+          <button class="btn-s" data-goto="myappt" data-ttl="我的预约">返回</button>
+        </div>
+        <div class="appt-row"><span class="appt-label">导师</span><span class="appt-value">张XX &nbsp;<span class="bdg bdg-blue">⭐⭐⭐⭐⭐ 五星导师</span></span></div>
+        <div class="appt-row"><span class="appt-label">咨询时间</span><span class="appt-value">2026-06-10 19:00-19:30</span></div>
+        <div class="appt-row"><span class="appt-label">订单状态</span><span id="order-status" class="bdg bdg-orange">待确认</span></div>
+        <div class="appt-row"><span class="appt-label">咨询费用</span><span class="appt-value">100元</span></div>
+        <div class="appt-row"><span class="appt-label">服务费</span><span class="appt-value">0元</span></div>
+        <div class="appt-row"><span class="appt-label">实付金额</span><span class="appt-value" style="color:#d97706">100元</span></div>
+        <div class="appt-row"><span class="appt-label">支付方式</span><span class="appt-value">微信支付</span></div>
+        <div class="appt-row"><span class="appt-label">取消说明</span><span id="order-cancel-info" class="appt-value" style="color:#9ca3af">若取消，按规则扣款50%。</span></div>
+        <div style="margin-top:12px" id="order-actions"><button class="btn-p bg-orange" id="order-cancel">取消订单</button></div>
       </div>
     </div>
 
@@ -385,10 +413,14 @@
 
 <script>
   const tb = document.getElementById('tb');
+  let orderStatus = '待确认';
+  let orderPaid = false;
 
   function showPage(id, title) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('p-' + id).classList.add('active');
+    const el = document.getElementById('p-' + id);
+    if (!el) return;
+    el.classList.add('active');
     tb.textContent = title;
   }
 
@@ -398,6 +430,41 @@
     clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 2200);
   }
 
+  function updateOrderPage() {
+    const statusEl = document.getElementById('order-status');
+    const infoEl = document.getElementById('order-cancel-info');
+    const actionEl = document.getElementById('order-actions');
+    if (statusEl) statusEl.textContent = orderStatus;
+    if (orderStatus === '已取消') {
+      if (infoEl) infoEl.textContent = '已取消：按规则扣除50%违约金，已退款50元。';
+      if (actionEl) actionEl.innerHTML = '<button class="btn-s or" data-goto="myappt" data-ttl="我的预约">已取消</button>';
+    } else {
+      if (infoEl) infoEl.textContent = '若取消订单，将扣除50%违约金。';
+      if (actionEl) actionEl.innerHTML = '<button class="btn-p bg-orange" id="order-cancel">取消订单</button>';
+      const cancelBtn = document.getElementById('order-cancel');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          orderStatus = '已取消';
+          updateOrderPage();
+          showToast('订单已取消，已扣除50%违约金');
+        });
+      }
+    }
+  }
+  updateOrderPage();
+
+  const payConfirmBtn = document.getElementById('pay-confirm');
+  if (payConfirmBtn) {
+    payConfirmBtn.addEventListener('click', () => {
+      orderPaid = true;
+      orderStatus = '待确认';
+      updateOrderPage();
+      showToast('支付成功，预约已生成订单');
+      showPage('myappt', '我的预约');
+      startCountdown();
+    });
+  }
+
   // Countdown timer shown inside my-appts pending card
   let cdTimer = null;
   let cdStarted = false;
@@ -405,7 +472,7 @@
     if (cdStarted) return;
     cdStarted = true;
     document.getElementById('pending-item').style.display = 'block';
-    let secs = 599; // 9:59
+    let secs = 3600; // 60:00
     const el = document.getElementById('cd-num');
     function tick() {
       const m = Math.floor(secs / 60).toString().padStart(2, '0');
@@ -439,9 +506,20 @@
     const goto = e.target.closest('[data-goto]');
     if (goto) {
       const id = goto.dataset.goto;
+      if (id === 'myappt' && e.target.closest('#d-book')) {
+        orderStatus = '待确认';
+        orderPaid = true;
+        updateOrderPage();
+        startCountdown();
+      }
+      if (id === 'order') {
+        if (!orderPaid) {
+          orderStatus = '待确认';
+          orderPaid = true;
+        }
+        updateOrderPage();
+      }
       showPage(id, goto.dataset.ttl);
-      // 从预约确认跳到我的预约时，触发待确认倒计时
-      if (id === 'myappt' && e.target.closest('#d-book')) startCountdown();
       return;
     }
     const dsecGoto = e.target.closest('[data-dsec-goto]');
@@ -489,6 +567,7 @@
       d.classList.add('sel-o');
     });
   });
+
 </script>
 </body>
 </html>
