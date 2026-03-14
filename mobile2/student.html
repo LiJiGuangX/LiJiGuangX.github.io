@@ -222,9 +222,32 @@
           </div>
           <div class="fg"><div class="fl">预设问题 <span style="color:#ef4444;font-size:11px">必填</span></div><textarea class="fi" rows="2" placeholder="请填写咨询的核心问题，帮助导师提前准备"></textarea></div>
           <div style="background:#fff7ed;border-radius:10px;padding:12px;font-size:14px;font-weight:600;color:#d97706;text-align:center;margin-bottom:12px">本次咨询费用：100元（30分钟）</div>
-          <button class="btn-p bg-orange" data-goto="myappt" data-ttl="我的预约">💳 预付费用 · 确认预约</button>
+          <button class="btn-p bg-orange" data-goto="pay" data-ttl="付款">💳 预付费用 · 确认预约</button>
           <div class="fh tc mt8">提前24小时取消全额退款；提前&lt;24小时取消扣50%；未到场不退款</div>
         </div>
+      </div>
+    </div>
+
+    <!-- 付费页面 -->
+    <div class="page" id="p-pay">
+      <div class="card">
+        <div style="font-size:18px;font-weight:700;margin-bottom:8px">确认支付</div>
+        <div style="margin-bottom:10px;color:#374151;font-size:14px;line-height:1.5">导师：张XX（高级导师）<br>咨询时间：2026-06-10 19:00-19:30<br>订单编号：BJ2026061019001</div>
+        <div style="background:#fff7ed;border-radius:10px;padding:10px;margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span>咨询费用</span><strong style="color:#d97706">100元</strong></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;"><span>服务费</span><span>0元</span></div>
+          <div style="border-top:1px dashed #e5e7eb;margin:8px 0"></div>
+          <div style="display:flex;justify-content:space-between;font-weight:700"><span>应付总计</span><span style="color:#d97706">100元</span></div>
+        </div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">选择支付方式</div>
+        <div class="pay-methods" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+          <button class="btn-s" data-toast="选择微信支付">微信支付</button>
+          <button class="btn-s" data-toast="选择支付宝支付">支付宝</button>
+          <button class="btn-s" data-toast="选择银行卡支付">银行卡</button>
+          <button class="btn-s" data-toast="选择余额支付">余额</button>
+        </div>
+        <button class="btn-p bg-orange" data-goto="myappt" data-ttl="我的预约">确认支付</button>
+        <button class="btn-s or" data-goto="d-book" data-ttl="立即预约" style="margin-top:8px">返回修改</button>
       </div>
     </div>
 
