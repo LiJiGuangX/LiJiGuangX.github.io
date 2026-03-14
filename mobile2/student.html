@@ -354,7 +354,7 @@
           <div class="btn-row g8">
             <button class="btn-s" data-goto="order" data-ttl="订单详情">订单详情</button>
             <button class="btn-s" data-toast="查看会议笔记">查看笔记</button>
-            <button class="btn-s or" data-toast="请提交服务反馈">提交反馈</button>
+            <button class="btn-s or" data-goto="feedback" data-ttl="服务反馈">提交反馈</button>
           </div>
         </div>
       </div>
@@ -394,6 +394,30 @@
         <div class="appt-row"><span class="appt-label">支付方式</span><span class="appt-value">微信支付</span></div>
         <div class="appt-row"><span class="appt-label">取消说明</span><span id="order-cancel-info" class="appt-value" style="color:#9ca3af">若取消，按规则扣款50%。</span></div>
         <div style="margin-top:12px" id="order-actions"><button class="btn-p bg-orange" id="order-cancel">取消订单</button></div>
+      </div>
+    </div>
+
+    <!-- 服务反馈页 -->
+    <div class="page" id="p-feedback">
+      <div class="card" style="margin:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <div style="font-size:18px;font-weight:700">服务反馈</div>
+            <div style="font-size:12px;color:#6b7280">评分与问题反馈</div>
+          </div>
+          <button class="btn-s" data-goto="myappt" data-ttl="我的预约">返回</button>
+        </div>
+        <div style="margin-bottom:10px">请给本次咨询评分（5分制）</div>
+        <div style="display:flex;gap:6px;margin-bottom:12px">
+          <button class="star-btn" data-rating="1">☆</button>
+          <button class="star-btn" data-rating="2">☆</button>
+          <button class="star-btn" data-rating="3">☆</button>
+          <button class="star-btn" data-rating="4">☆</button>
+          <button class="star-btn" data-rating="5">☆</button>
+        </div>
+        <div style="margin-bottom:8px;font-size:12px;color:#6b7280">问题反馈（可选）</div>
+        <textarea id="feedback-text" class="fi" rows="4" placeholder="请输入本次咨询问题、建议或改进点..."></textarea>
+        <button class="btn-p bg-orange" id="feedback-submit" style="margin-top:10px">提交反馈</button>
       </div>
     </div>
 
@@ -462,6 +486,40 @@
       showToast('支付成功，预约已生成订单');
       showPage('myappt', '我的预约');
       startCountdown();
+    });
+  }
+
+  // 服务反馈：评分选择与提交
+  let selectedRating = 5;
+  function renderStars(rating) {
+    document.querySelectorAll('.star-btn').forEach(btn => {
+      const r = Number(btn.dataset.rating);
+      btn.textContent = r <= rating ? '★' : '☆';
+      btn.style.color = r <= rating ? '#f59e0b' : '#9ca3af';
+    });
+  }
+  renderStars(selectedRating);
+
+  document.addEventListener('click', e => {
+    const star = e.target.closest('.star-btn');
+    if (star) {
+      selectedRating = Number(star.dataset.rating);
+      renderStars(selectedRating);
+      return;
+    }
+    const gotoFeed = e.target.closest('[data-goto="feedback"]');
+    if (gotoFeed) {
+      selectedRating = 5;
+      renderStars(selectedRating);
+    }
+  });
+  const feedbackSubmit = document.getElementById('feedback-submit');
+  if (feedbackSubmit) {
+    feedbackSubmit.addEventListener('click', () => {
+      const text = document.getElementById('feedback-text')?.value || '';
+      showToast(`已提交反馈 ${selectedRating}.0 分`);
+      showPage('myappt', '我的预约');
+      if (text.trim()) showToast('感谢您的问题反馈，我们会尽快处理');
     });
   }
 
